@@ -8,15 +8,17 @@ part of 'part_model.dart';
 
 _$PartModelImpl _$$PartModelImplFromJson(Map<String, dynamic> json) =>
     _$PartModelImpl(
-      name: json['name'] as String,
-      nsn: json['nsn'] as String,
-      partNumber: json['partNumber'] as String,
-      location: json['location'] as String,
-      quantity: json['quantity'] as int,
-      requisitionPoint: json['requisitionPoint'] as int,
-      requisitionQuantity: json['requisitionQuantity'] as int,
-      serialNumber: json['serialNumber'] as String,
-      unitOfIssue: $enumDecode(_$UnitOfIssueEnumMap, json['unitOfIssue']),
+      name: json['name'] as String? ?? 'unknown_part',
+      nsn: json['nsn'] as String? ?? 'unknown_part',
+      partNumber: json['partNumber'] as String? ?? 'unknown_part',
+      location: json['location'] as String? ?? 'unknown_part',
+      quantity: json['quantity'] as int? ?? -1,
+      requisitionPoint: json['requisitionPoint'] as int? ?? -1,
+      requisitionQuantity: json['requisitionQuantity'] as int? ?? -1,
+      serialNumber: json['serialNumber'] as String? ?? 'N/A',
+      unitOfIssue:
+          $enumDecodeNullable(_$UnitOfIssueEnumMap, json['unitOfIssue']) ??
+              UnitOfIssue.NOT_SPECIFIED,
     );
 
 Map<String, dynamic> _$$PartModelImplToJson(_$PartModelImpl instance) =>

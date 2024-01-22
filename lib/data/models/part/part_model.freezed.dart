@@ -201,36 +201,45 @@ class __$$PartModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PartModelImpl implements _PartModel {
   _$PartModelImpl(
-      {required this.name,
-      required this.nsn,
-      required this.partNumber,
-      required this.location,
-      required this.quantity,
-      required this.requisitionPoint,
-      required this.requisitionQuantity,
-      required this.serialNumber,
-      required this.unitOfIssue});
+      {this.name = 'unknown_part',
+      this.nsn = 'unknown_part',
+      this.partNumber = 'unknown_part',
+      this.location = 'unknown_part',
+      this.quantity = -1,
+      this.requisitionPoint = -1,
+      this.requisitionQuantity = -1,
+      this.serialNumber = 'N/A',
+      this.unitOfIssue = UnitOfIssue.NOT_SPECIFIED});
 
   factory _$PartModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PartModelImplFromJson(json);
 
   @override
+  @JsonKey()
   final String name;
   @override
+  @JsonKey()
   final String nsn;
   @override
+  @JsonKey()
   final String partNumber;
   @override
+  @JsonKey()
   final String location;
   @override
+  @JsonKey()
   final int quantity;
   @override
+  @JsonKey()
   final int requisitionPoint;
   @override
+  @JsonKey()
   final int requisitionQuantity;
   @override
+  @JsonKey()
   final String serialNumber;
   @override
+  @JsonKey()
   final UnitOfIssue unitOfIssue;
 
   @override
@@ -291,15 +300,15 @@ class _$PartModelImpl implements _PartModel {
 
 abstract class _PartModel implements Part {
   factory _PartModel(
-      {required final String name,
-      required final String nsn,
-      required final String partNumber,
-      required final String location,
-      required final int quantity,
-      required final int requisitionPoint,
-      required final int requisitionQuantity,
-      required final String serialNumber,
-      required final UnitOfIssue unitOfIssue}) = _$PartModelImpl;
+      {final String name,
+      final String nsn,
+      final String partNumber,
+      final String location,
+      final int quantity,
+      final int requisitionPoint,
+      final int requisitionQuantity,
+      final String serialNumber,
+      final UnitOfIssue unitOfIssue}) = _$PartModelImpl;
 
   factory _PartModel.fromJson(Map<String, dynamic> json) =
       _$PartModelImpl.fromJson;

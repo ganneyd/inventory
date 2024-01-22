@@ -22,15 +22,15 @@ class Part extends PartEntity with _$Part {
   ///           [serialNumber]
   ///           [unitOfIssue]
   factory Part({
-    required String name,
-    required String nsn,
-    required String partNumber,
-    required String location,
-    required int quantity,
-    required int requisitionPoint,
-    required int requisitionQuantity,
-    required String serialNumber,
-    required UnitOfIssue unitOfIssue,
+    @Default('unknown_part') String name,
+    @Default('unknown_part') String nsn,
+    @Default('unknown_part') String partNumber,
+    @Default('unknown_part') String location,
+    @Default(-1) int quantity,
+    @Default(-1) int requisitionPoint,
+    @Default(-1) int requisitionQuantity,
+    @Default('N/A') String serialNumber,
+    @Default(UnitOfIssue.NOT_SPECIFIED) UnitOfIssue unitOfIssue,
   }) = _PartModel;
 
   factory Part.fromJson(Map<String, dynamic> json) => _$PartFromJson(json);
