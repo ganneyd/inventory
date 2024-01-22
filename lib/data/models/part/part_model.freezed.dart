@@ -20,6 +20,7 @@ Part _$PartFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Part {
+  String get partID => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get nsn => throw _privateConstructorUsedError;
   String get partNumber => throw _privateConstructorUsedError;
@@ -41,7 +42,8 @@ abstract class $PartCopyWith<$Res> {
       _$PartCopyWithImpl<$Res, Part>;
   @useResult
   $Res call(
-      {String name,
+      {String partID,
+      String name,
       String nsn,
       String partNumber,
       String location,
@@ -65,6 +67,7 @@ class _$PartCopyWithImpl<$Res, $Val extends Part>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? partID = null,
     Object? name = null,
     Object? nsn = null,
     Object? partNumber = null,
@@ -76,6 +79,10 @@ class _$PartCopyWithImpl<$Res, $Val extends Part>
     Object? unitOfIssue = null,
   }) {
     return _then(_value.copyWith(
+      partID: null == partID
+          ? _value.partID
+          : partID // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -124,7 +131,8 @@ abstract class _$$PartModelImplCopyWith<$Res> implements $PartCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String name,
+      {String partID,
+      String name,
       String nsn,
       String partNumber,
       String location,
@@ -146,6 +154,7 @@ class __$$PartModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? partID = null,
     Object? name = null,
     Object? nsn = null,
     Object? partNumber = null,
@@ -157,6 +166,10 @@ class __$$PartModelImplCopyWithImpl<$Res>
     Object? unitOfIssue = null,
   }) {
     return _then(_$PartModelImpl(
+      partID: null == partID
+          ? _value.partID
+          : partID // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -201,7 +214,8 @@ class __$$PartModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PartModelImpl implements _PartModel {
   _$PartModelImpl(
-      {this.name = 'unknown_part',
+      {required this.partID,
+      this.name = 'unknown_part',
       this.nsn = 'unknown_part',
       this.partNumber = 'unknown_part',
       this.location = 'unknown_part',
@@ -214,6 +228,8 @@ class _$PartModelImpl implements _PartModel {
   factory _$PartModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PartModelImplFromJson(json);
 
+  @override
+  final String partID;
   @override
   @JsonKey()
   final String name;
@@ -244,7 +260,7 @@ class _$PartModelImpl implements _PartModel {
 
   @override
   String toString() {
-    return 'Part(name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue)';
+    return 'Part(partID: $partID, name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue)';
   }
 
   @override
@@ -252,6 +268,7 @@ class _$PartModelImpl implements _PartModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PartModelImpl &&
+            (identical(other.partID, partID) || other.partID == partID) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.nsn, nsn) || other.nsn == nsn) &&
             (identical(other.partNumber, partNumber) ||
@@ -274,6 +291,7 @@ class _$PartModelImpl implements _PartModel {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      partID,
       name,
       nsn,
       partNumber,
@@ -300,7 +318,8 @@ class _$PartModelImpl implements _PartModel {
 
 abstract class _PartModel implements Part {
   factory _PartModel(
-      {final String name,
+      {required final String partID,
+      final String name,
       final String nsn,
       final String partNumber,
       final String location,
@@ -313,6 +332,8 @@ abstract class _PartModel implements Part {
   factory _PartModel.fromJson(Map<String, dynamic> json) =
       _$PartModelImpl.fromJson;
 
+  @override
+  String get partID;
   @override
   String get name;
   @override

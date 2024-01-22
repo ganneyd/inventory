@@ -8,6 +8,7 @@ part of 'part_model.dart';
 
 _$PartModelImpl _$$PartModelImplFromJson(Map<String, dynamic> json) =>
     _$PartModelImpl(
+      partID: json['partID'] as String,
       name: json['name'] as String? ?? 'unknown_part',
       nsn: json['nsn'] as String? ?? 'unknown_part',
       partNumber: json['partNumber'] as String? ?? 'unknown_part',
@@ -23,6 +24,7 @@ _$PartModelImpl _$$PartModelImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$PartModelImplToJson(_$PartModelImpl instance) =>
     <String, dynamic>{
+      'partID': instance.partID,
       'name': instance.name,
       'nsn': instance.nsn,
       'partNumber': instance.partNumber,

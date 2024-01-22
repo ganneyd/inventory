@@ -22,6 +22,7 @@ class Part extends PartEntity with _$Part {
   ///           [serialNumber]
   ///           [unitOfIssue]
   factory Part({
+    required String partID,
     @Default('unknown_part') String name,
     @Default('unknown_part') String nsn,
     @Default('unknown_part') String partNumber,
