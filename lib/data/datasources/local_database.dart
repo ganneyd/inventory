@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:dartz/dartz_unsafe.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:logging/logging.dart';
@@ -27,11 +24,6 @@ abstract class LocalDataSource {
   Future<Map<String, dynamic>> readData(
       {required String tableName, required int index});
 
-  ///Retrieves all data in the [tableName]
-  Future<List<Map<String, dynamic>>> readDataList({
-    required String tableName,
-  });
-
   ///Deletes data in [tableName] at the [index] provided
   Future<void> deleteData({
     required String tableName,
@@ -50,9 +42,6 @@ class LocalDataSourceImplementation extends LocalDataSource {
         _localStorage = localStorage;
   final Box<Map<String, dynamic>> _localStorage;
   final Logger _localDataSourceLogger;
-  final StreamController<List<Map<String, dynamic>>> _streamController =
-      StreamController<List<Map<String, dynamic>>>();
-  int _currentPage = 0;
   @override
   Future<void> createData(
       {required String tableName,
@@ -89,26 +78,6 @@ class LocalDataSourceImplementation extends LocalDataSource {
     } catch (e) {
       _localDataSourceLogger
           .warning('error encountered reading data $index, message: $e');
-      throw ReadDataException();
-    }
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> readDataList(
-      {required String tableName}) async {
-    try {
-      List<Map<String, dynamic>> parts = [];
-      _localDataSourceLogger.finest('retrieving data from storage');
-      Iterable<Map<String, dynamic>> items = _localStorage.values;
-
-      for (Map<String, dynamic> item in items) {
-        parts.add(item);
-      }
-
-      return parts;
-    } catch (e) {
-      _localDataSourceLogger
-          .warning('error encountered reading data list, message: $e');
       throw ReadDataException();
     }
   }
