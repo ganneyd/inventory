@@ -29,6 +29,13 @@ abstract class LocalDataSource {
     required String tableName,
     required int index,
   });
+
+  ///Queries the [tableName] in the dataset finding a result based on the [queryKey]
+  ///in the [fieldName]
+  Future<List<Map<String, dynamic>>> queryData(
+      {required String tableName,
+      required String fieldName,
+      required String queryKey});
 }
 
 //*************************************************************************** */
@@ -93,6 +100,25 @@ class LocalDataSourceImplementation extends LocalDataSource {
     } catch (e) {
       _localDataSourceLogger
           .warning('error encountered updating data $index, message: $e');
+      throw UpdateDataException();
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> queryData(
+      {required String tableName,
+      required String fieldName,
+      required String queryKey}) async {
+    try {
+      _localDataSourceLogger.finest('searching for $queryKey in database');
+      List<Map<String, dynamic>> parts = _localStorage.values.where((part) {
+        return part[fieldName].toString().toLowerCase().contains(queryKey);
+      }).toList();
+
+      return parts;
+    } catch (e) {
+      _localDataSourceLogger
+          .warning('error encountered  querying the dataset, message: $e');
       throw UpdateDataException();
     }
   }
