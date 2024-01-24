@@ -4,7 +4,7 @@ import 'package:inventory_v1/core/util/util.dart';
 ///the database
 class PartEntity {
   PartEntity({
-    required this.partID,
+    required this.index,
     required this.name,
     required this.nsn,
     required this.partNumber,
@@ -17,7 +17,7 @@ class PartEntity {
   });
 
   ///The document ID of the part as specified by the database
-  final String partID;
+  final int index;
 
   ///Name of the part
   final String name;
