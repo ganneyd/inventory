@@ -7,6 +7,8 @@ part 'part_model.freezed.dart';
 // optional: Since our Part class is serializable, we must add this line.
 // But if Part was not serializable, we could skip it.
 part 'part_model.g.dart';
+//responsible fot data structure conversion between part entities and part models.
+part 'adapter.dart';
 
 ///Part Model. Represents a part stored within the database inventory
 @freezed
@@ -22,7 +24,7 @@ class Part extends PartEntity with _$Part {
   ///           [serialNumber]
   ///           [unitOfIssue]
   factory Part({
-    required String partID,
+    required int index,
     @Default('unknown_part') String name,
     @Default('unknown_part') String nsn,
     @Default('unknown_part') String partNumber,
