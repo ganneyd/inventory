@@ -15,13 +15,13 @@ abstract class Failure extends Equatable {
 
 ///Returned when an error is encounterd while getting data from the database
 ///
-class FetchDataFailure extends Failure {
+class ReadDataFailure extends Failure {
   ///Takes a error message that is then passed to the super class
   ///by default the error message is
-  ///[Unable to retrive the document right now, please try later.]
-  const FetchDataFailure(
+  ///[Unable to retrieve the document right now, please try later.]
+  const ReadDataFailure(
       {String errMsg =
-          'Unable to retrive the document right now, please try later.'})
+          'Unable to retrieve the document right now, please try later.'})
       : super(errorMessage: errMsg);
 }
 
