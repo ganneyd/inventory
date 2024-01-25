@@ -12,15 +12,14 @@ class PartRepositoryImplementation extends PartRepository {
       : _localDataSource = localDataSource;
 
   final LocalDataSource _localDataSource;
-  static const String _tableName = 'parts';
 
   @override
   Future<Either<Failure, void>> createPart(PartEntity partEntity) async {
     try {
       Part part = PartAdapter.fromEntity(partEntity);
 
-      return Right<Failure, void>(await _localDataSource.createData(
-          tableName: _tableName, newData: part.toJson()));
+      return Right<Failure, void>(
+          await _localDataSource.createData(newData: part.toJson()));
     } on CreateDataException {
       return const Left<Failure, void>(CreateDataFailure());
     } catch (e) {
@@ -31,8 +30,8 @@ class PartRepositoryImplementation extends PartRepository {
   @override
   Future<Either<Failure, void>> deletePart(PartEntity partEntity) async {
     try {
-      return Right<Failure, void>(await _localDataSource.deleteData(
-          tableName: _tableName, index: partEntity.index));
+      return Right<Failure, void>(
+          await _localDataSource.deleteData(index: partEntity.index));
     } on DeleteDataException {
       return const Left<Failure, void>(DeleteDataFailure());
     } catch (e) {
@@ -46,9 +45,7 @@ class PartRepositoryImplementation extends PartRepository {
       Part part = PartAdapter.fromEntity(partEntity);
 
       return Right<Failure, void>(await _localDataSource.updateData(
-          tableName: _tableName,
-          updatedData: part.toJson(),
-          index: part.index));
+          updatedData: part.toJson(), index: part.index));
     } on UpdateDataException {
       return const Left<Failure, void>(UpdateDataFailure());
     } catch (e) {
@@ -62,8 +59,7 @@ class PartRepositoryImplementation extends PartRepository {
     try {
       List<Part> parts = [];
       for (int i = startIndex; i < pageIndex; i++) {
-        Map<String, dynamic> part =
-            await _localDataSource.readData(tableName: _tableName, index: i);
+        Map<String, dynamic> part = await _localDataSource.readData(index: i);
         if (part != <String, dynamic>{}) {
           parts.add(Part.fromJson(part));
         }
@@ -83,7 +79,7 @@ class PartRepositoryImplementation extends PartRepository {
       List<Part> parts = [];
 
       List<Map<String, dynamic>> queryList = await _localDataSource.queryData(
-          tableName: _tableName, fieldName: fieldName, queryKey: queryKey);
+          fieldName: fieldName, queryKey: queryKey);
       for (Map<String, dynamic> item in queryList) {
         parts.add(Part.fromJson(item));
       }
