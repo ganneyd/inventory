@@ -13,10 +13,6 @@ class PartRepositoryImplementation extends PartRepository {
 
   final LocalDataSource _localDataSource;
   static const String _tableName = 'parts';
-  static const String partNsnField = 'nsn';
-  static const String partNameField = 'name';
-  static const String partNumberField = 'partNumber';
-  static const String partSerialNumberField = 'serialNumber';
 
   @override
   Future<Either<Failure, void>> createPart(PartEntity partEntity) async {

@@ -4,6 +4,11 @@ import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 
 ///Deals with all the [Part] related calls to the APIS and external services
 abstract class PartRepository {
+  static const String partNsnField = 'nsn';
+  static const String partNameField = 'name';
+  static const String partNumberField = 'partNumber';
+  static const String partSerialNumberField = 'serialNumber';
+
   ///Creates a part in the inventory database using the [partEntity] passed
   Future<Either<Failure, void>> createPart(PartEntity partEntity);
 
