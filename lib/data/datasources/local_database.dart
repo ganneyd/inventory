@@ -110,9 +110,14 @@ class LocalDataSourceImplementation extends LocalDataSource {
       required String fieldName,
       required String queryKey}) async {
     try {
+      final String cleanQuery = queryKey.replaceAll(RegExp(r'[^0-9]'), '');
       _localDataSourceLogger.finest('searching for $queryKey in database');
       List<Map<String, dynamic>> parts = _localStorage.values.where((part) {
-        return part[fieldName].toString().toLowerCase().contains(queryKey);
+        return part[fieldName]
+            .toString()
+            .replaceAll(RegExp(r'[^0-9]'), '')
+            .toLowerCase()
+            .contains(cleanQuery);
       }).toList();
 
       return parts;
