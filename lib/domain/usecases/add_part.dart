@@ -11,8 +11,8 @@ class AddPartUsecase implements UseCase<void, Params> {
 
   final PartRepository _partRepository;
   @override
-  Future<Either<Failure, void>> call(Params params) {
-    return _partRepository.createPart(params.partEntity);
+  Future<Either<Failure, void>> call(Params params) async {
+    return await _partRepository.createPart(params.partEntity);
   }
 }
 
