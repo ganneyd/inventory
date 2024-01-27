@@ -1,7 +1,8 @@
-import 'package:inventory_v1/core/util/unit_of_issue.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 
 class ValuesForTest {
-  static const List<Map<String, dynamic>> partsList = [
+  List<Map<String, dynamic>> partsList = [
     {
       'name': 'SCREW,MACHINE',
       'partNumber': 'MS38483-1-12',
@@ -11,7 +12,7 @@ class ValuesForTest {
       'requisitionPoint': 1,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12938',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'BOLT, HEX',
@@ -22,7 +23,7 @@ class ValuesForTest {
       'requisitionPoint': 2,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12939',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'NUT, HEX',
@@ -33,7 +34,7 @@ class ValuesForTest {
       'requisitionPoint': 3,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12940',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'WASHER, FLAT',
@@ -44,7 +45,7 @@ class ValuesForTest {
       'requisitionPoint': 4,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12941',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'SCREW, CAP',
@@ -55,7 +56,7 @@ class ValuesForTest {
       'requisitionPoint': 5,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12942',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'BOLT, SQUARE',
@@ -66,7 +67,7 @@ class ValuesForTest {
       'requisitionPoint': 6,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12943',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'NUT, WING',
@@ -77,7 +78,7 @@ class ValuesForTest {
       'requisitionPoint': 7,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12944',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'WASHER, LOCK',
@@ -88,7 +89,7 @@ class ValuesForTest {
       'requisitionPoint': 8,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12945',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'SCREW, SET',
@@ -99,7 +100,7 @@ class ValuesForTest {
       'requisitionPoint': 9,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12946',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
     {
       'name': 'BOLT, THREADED',
@@ -110,7 +111,23 @@ class ValuesForTest {
       'requisitionPoint': 10,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12947',
-      'unitOfIssue': UnitOfIssue.EA,
+      'unitOfIssue': 'EA',
     },
   ];
+
+  List<Map<String, dynamic>> getPartList() {
+    var parts = partsList.map((e) {
+      var newData = Map<String, dynamic>.from(e);
+      if (!e.containsKey('index')) {
+        newData['index'] = partsList.indexOf(e);
+      }
+      return newData;
+    }).toList();
+    return parts;
+  }
+
+  List<PartEntity> parts() {
+    var parts = getPartList().map((e) => Part.fromJson(e)).toList();
+    return parts;
+  }
 }

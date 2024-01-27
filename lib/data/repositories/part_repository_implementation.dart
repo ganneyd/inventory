@@ -57,8 +57,19 @@ class PartRepositoryImplementation extends PartRepository {
   Future<Either<Failure, List<PartEntity>>> getAllParts(
       int startIndex, int pageIndex) async {
     try {
+      var upperBound = _localDataSource.getLength();
+      var lowerBound = startIndex < 0 ? 0 : startIndex;
+
+      if (pageIndex < upperBound) {
+        upperBound = pageIndex + 1;
+      }
+
+      if (upperBound < lowerBound) {
+        throw ReadDataException();
+      }
+
       List<Part> parts = [];
-      for (int i = startIndex; i < pageIndex; i++) {
+      for (int i = lowerBound; i < upperBound; i++) {
         Map<String, dynamic> part = await _localDataSource.readData(index: i);
         if (part != <String, dynamic>{}) {
           parts.add(Part.fromJson(part));
@@ -68,7 +79,7 @@ class PartRepositoryImplementation extends PartRepository {
     } on ReadDataException {
       return const Left<Failure, List<PartEntity>>(ReadDataFailure());
     } catch (e) {
-      return const Left<Failure, List<PartEntity>>(ReadDataFailure());
+      return const Left<Failure, List<PartEntity>>(GetFailure());
     }
   }
 
