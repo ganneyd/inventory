@@ -46,7 +46,7 @@ void main() {
         return Right<Failure, List<PartEntity>>(parts);
       });
 
-      var results = await sut.call(const Params(queryKey: key));
+      var results = await sut.call(const GetAllPartByNameParams(queryKey: key));
       var rightResult = <PartEntity>[];
       results.fold((l) => null, (r) => rightResult = r);
       expect(rightResult, equals(expectedPartList));
@@ -63,7 +63,7 @@ void main() {
           .thenAnswer((invocation) async =>
               const Left<Failure, List<PartEntity>>(ReadDataFailure()));
 
-      var results = await sut.call(const Params(queryKey: key));
+      var results = await sut.call(const GetAllPartByNameParams(queryKey: key));
       Failure leftResult = const GetFailure();
       results.fold((l) => leftResult = l, (r) => null);
       expect(leftResult, equals(const ReadDataFailure()));

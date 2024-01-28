@@ -14,7 +14,7 @@ class MockPartRepository extends Mock implements PartRepository {}
 void main() {
   //Define variables to be used across the tests
   //system under test which is the Add Part Usecase
-  late GetPartsUseCase sut;
+  late GetAllPartsUsecase sut;
   //
   late MockPartRepository mockPartRepository;
   //
@@ -24,7 +24,7 @@ void main() {
     //initialize all the variables
     valuesForTest = ValuesForTest();
     mockPartRepository = MockPartRepository();
-    sut = GetPartsUseCase(mockPartRepository);
+    sut = GetAllPartsUsecase(mockPartRepository);
   });
 
   group('GetPartsUsecase.call()', () {
@@ -42,8 +42,8 @@ void main() {
         return Right<Failure, List<PartEntity>>(parts);
       });
 
-      var results =
-          await sut.call(Params(pageIndex: pageIndex, startIndex: startIndex));
+      var results = await sut
+          .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
       expect(results, isA<Right<Failure, List<PartEntity>>>());
       var rightResult = <PartEntity>[];
       results.fold((l) => null, (r) => rightResult = r);
@@ -60,8 +60,8 @@ void main() {
         return const Left<Failure, List<PartEntity>>(ReadDataFailure());
       });
 
-      var results =
-          await sut.call(Params(pageIndex: pageIndex, startIndex: startIndex));
+      var results = await sut
+          .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
       expect(results, isA<Left<Failure, List<PartEntity>>>());
       Failure leftResult = const GetFailure();
       results.fold((l) => leftResult = l, (r) => null);

@@ -12,13 +12,13 @@ class MockPartRepository extends Mock implements PartRepository {}
 
 void main() {
   late MockPartRepository mockPartRepository;
-  late GetPartBySerialNumberUseCase sut;
+  late GetPartBySerialNumberUsecase sut;
   late ValuesForTest valuesForTest;
 
   setUp(() {
     valuesForTest = ValuesForTest();
     mockPartRepository = MockPartRepository();
-    sut = GetPartBySerialNumberUseCase(mockPartRepository);
+    sut = GetPartBySerialNumberUsecase(mockPartRepository);
   });
 
   group('GetPartBySerialNumberUsecase.cal()', () {
@@ -46,7 +46,8 @@ void main() {
         return Right<Failure, List<PartEntity>>(parts);
       });
 
-      var results = await sut.call(const Params(queryKey: key));
+      var results =
+          await sut.call(const GetAllPartBySerialNumberParams(queryKey: key));
       verify(() => mockPartRepository.searchPartsByField(
           fieldName: name, queryKey: key)).called(1);
       var rightResult = <PartEntity>[];
@@ -63,7 +64,8 @@ void main() {
           .thenAnswer((invocation) async =>
               const Left<Failure, List<PartEntity>>(ReadDataFailure()));
 
-      var results = await sut.call(const Params(queryKey: key));
+      var results =
+          await sut.call(const GetAllPartBySerialNumberParams(queryKey: key));
       Failure leftResult = const GetFailure();
       results.fold((l) => leftResult = l, (r) => null);
       expect(leftResult, equals(const ReadDataFailure()));

@@ -36,7 +36,8 @@ void main() {
       when(() => mockPartRepository.createPart(typicalPartEntity))
           .thenAnswer((invocation) async => const Right<Failure, void>(null));
 
-      var results = await sut.call(Params(partEntity: typicalPartEntity));
+      var results =
+          await sut.call(AddPartParams(partEntity: typicalPartEntity));
       expect(results, isA<Right<Failure, void>>());
       verify(() => mockPartRepository.createPart(typicalPartEntity)).called(1);
     });
@@ -45,7 +46,8 @@ void main() {
       when(() => mockPartRepository.createPart(typicalPartEntity)).thenAnswer(
           (invocation) async => const Left<Failure, void>(CreateDataFailure()));
 
-      var results = await sut.call(Params(partEntity: typicalPartEntity));
+      var results =
+          await sut.call(AddPartParams(partEntity: typicalPartEntity));
       expect(results, isA<Left<Failure, void>>());
       verify(() => mockPartRepository.createPart(typicalPartEntity)).called(1);
     });

@@ -5,13 +5,15 @@ import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 
-class GetPartsUseCase implements UseCase<List<PartEntity>, Params> {
-  const GetPartsUseCase(PartRepository partRepository)
+class GetAllPartsUsecase
+    implements UseCase<List<PartEntity>, GetAllPartParams> {
+  const GetAllPartsUsecase(PartRepository partRepository)
       : _partRepository = partRepository;
 
   final PartRepository _partRepository;
   @override
-  Future<Either<Failure, List<PartEntity>>> call(Params params) async {
+  Future<Either<Failure, List<PartEntity>>> call(
+      GetAllPartParams params) async {
     Either<Failure, List<PartEntity>> usecase =
         await _partRepository.getAllParts(params.startIndex, params.pageIndex);
 
@@ -21,8 +23,8 @@ class GetPartsUseCase implements UseCase<List<PartEntity>, Params> {
   }
 }
 
-class Params extends Equatable {
-  const Params({required this.pageIndex, required this.startIndex});
+class GetAllPartParams extends Equatable {
+  const GetAllPartParams({required this.pageIndex, required this.startIndex});
   final int startIndex;
   final int pageIndex;
   @override
