@@ -18,8 +18,24 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AddPartState {
   Part? get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
-  AddPartStateStatus get addPartStateStatus =>
+  TextEditingController get nsnController => throw _privateConstructorUsedError;
+  TextEditingController get partNumberController =>
       throw _privateConstructorUsedError;
+  TextEditingController get serialNumberController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get nomenclatureController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get locationController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get unitOfIssueController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get quantityController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get requisitionPointController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get requisitionQuantityController =>
+      throw _privateConstructorUsedError;
+  dynamic get addPartStateStatus => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AddPartStateCopyWith<AddPartState> get copyWith =>
@@ -32,7 +48,19 @@ abstract class $AddPartStateCopyWith<$Res> {
           AddPartState value, $Res Function(AddPartState) then) =
       _$AddPartStateCopyWithImpl<$Res, AddPartState>;
   @useResult
-  $Res call({Part? part, String? error, AddPartStateStatus addPartStateStatus});
+  $Res call(
+      {Part? part,
+      String? error,
+      TextEditingController nsnController,
+      TextEditingController partNumberController,
+      TextEditingController serialNumberController,
+      TextEditingController nomenclatureController,
+      TextEditingController locationController,
+      TextEditingController unitOfIssueController,
+      TextEditingController quantityController,
+      TextEditingController requisitionPointController,
+      TextEditingController requisitionQuantityController,
+      dynamic addPartStateStatus});
 
   $PartCopyWith<$Res>? get part;
 }
@@ -52,7 +80,16 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
   $Res call({
     Object? part = freezed,
     Object? error = freezed,
-    Object? addPartStateStatus = null,
+    Object? nsnController = null,
+    Object? partNumberController = null,
+    Object? serialNumberController = null,
+    Object? nomenclatureController = null,
+    Object? locationController = null,
+    Object? unitOfIssueController = null,
+    Object? quantityController = null,
+    Object? requisitionPointController = null,
+    Object? requisitionQuantityController = null,
+    Object? addPartStateStatus = freezed,
   }) {
     return _then(_value.copyWith(
       part: freezed == part
@@ -63,10 +100,46 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
-      addPartStateStatus: null == addPartStateStatus
+      nsnController: null == nsnController
+          ? _value.nsnController
+          : nsnController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      partNumberController: null == partNumberController
+          ? _value.partNumberController
+          : partNumberController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      serialNumberController: null == serialNumberController
+          ? _value.serialNumberController
+          : serialNumberController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      nomenclatureController: null == nomenclatureController
+          ? _value.nomenclatureController
+          : nomenclatureController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      locationController: null == locationController
+          ? _value.locationController
+          : locationController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      unitOfIssueController: null == unitOfIssueController
+          ? _value.unitOfIssueController
+          : unitOfIssueController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      quantityController: null == quantityController
+          ? _value.quantityController
+          : quantityController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      requisitionPointController: null == requisitionPointController
+          ? _value.requisitionPointController
+          : requisitionPointController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      requisitionQuantityController: null == requisitionQuantityController
+          ? _value.requisitionQuantityController
+          : requisitionQuantityController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      addPartStateStatus: freezed == addPartStateStatus
           ? _value.addPartStateStatus
           : addPartStateStatus // ignore: cast_nullable_to_non_nullable
-              as AddPartStateStatus,
+              as dynamic,
     ) as $Val);
   }
 
@@ -91,7 +164,19 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
       __$$AddPartStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Part? part, String? error, AddPartStateStatus addPartStateStatus});
+  $Res call(
+      {Part? part,
+      String? error,
+      TextEditingController nsnController,
+      TextEditingController partNumberController,
+      TextEditingController serialNumberController,
+      TextEditingController nomenclatureController,
+      TextEditingController locationController,
+      TextEditingController unitOfIssueController,
+      TextEditingController quantityController,
+      TextEditingController requisitionPointController,
+      TextEditingController requisitionQuantityController,
+      dynamic addPartStateStatus});
 
   @override
   $PartCopyWith<$Res>? get part;
@@ -110,7 +195,16 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? part = freezed,
     Object? error = freezed,
-    Object? addPartStateStatus = null,
+    Object? nsnController = null,
+    Object? partNumberController = null,
+    Object? serialNumberController = null,
+    Object? nomenclatureController = null,
+    Object? locationController = null,
+    Object? unitOfIssueController = null,
+    Object? quantityController = null,
+    Object? requisitionPointController = null,
+    Object? requisitionQuantityController = null,
+    Object? addPartStateStatus = freezed,
   }) {
     return _then(_$AddPartStateImpl(
       part: freezed == part
@@ -121,10 +215,45 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
-      addPartStateStatus: null == addPartStateStatus
-          ? _value.addPartStateStatus
-          : addPartStateStatus // ignore: cast_nullable_to_non_nullable
-              as AddPartStateStatus,
+      nsnController: null == nsnController
+          ? _value.nsnController
+          : nsnController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      partNumberController: null == partNumberController
+          ? _value.partNumberController
+          : partNumberController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      serialNumberController: null == serialNumberController
+          ? _value.serialNumberController
+          : serialNumberController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      nomenclatureController: null == nomenclatureController
+          ? _value.nomenclatureController
+          : nomenclatureController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      locationController: null == locationController
+          ? _value.locationController
+          : locationController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      unitOfIssueController: null == unitOfIssueController
+          ? _value.unitOfIssueController
+          : unitOfIssueController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      quantityController: null == quantityController
+          ? _value.quantityController
+          : quantityController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      requisitionPointController: null == requisitionPointController
+          ? _value.requisitionPointController
+          : requisitionPointController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      requisitionQuantityController: null == requisitionQuantityController
+          ? _value.requisitionQuantityController
+          : requisitionQuantityController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
+      addPartStateStatus: freezed == addPartStateStatus
+          ? _value.addPartStateStatus!
+          : addPartStateStatus,
     ));
   }
 }
@@ -135,6 +264,15 @@ class _$AddPartStateImpl implements _AddPartState {
   _$AddPartStateImpl(
       {this.part,
       this.error,
+      required this.nsnController,
+      required this.partNumberController,
+      required this.serialNumberController,
+      required this.nomenclatureController,
+      required this.locationController,
+      required this.unitOfIssueController,
+      required this.quantityController,
+      required this.requisitionPointController,
+      required this.requisitionQuantityController,
       this.addPartStateStatus = AddPartStateStatus.loading});
 
   @override
@@ -142,12 +280,30 @@ class _$AddPartStateImpl implements _AddPartState {
   @override
   final String? error;
   @override
+  final TextEditingController nsnController;
+  @override
+  final TextEditingController partNumberController;
+  @override
+  final TextEditingController serialNumberController;
+  @override
+  final TextEditingController nomenclatureController;
+  @override
+  final TextEditingController locationController;
+  @override
+  final TextEditingController unitOfIssueController;
+  @override
+  final TextEditingController quantityController;
+  @override
+  final TextEditingController requisitionPointController;
+  @override
+  final TextEditingController requisitionQuantityController;
+  @override
   @JsonKey()
-  final AddPartStateStatus addPartStateStatus;
+  final dynamic addPartStateStatus;
 
   @override
   String toString() {
-    return 'AddPartState(part: $part, error: $error, addPartStateStatus: $addPartStateStatus)';
+    return 'AddPartState(part: $part, error: $error, nsnController: $nsnController, partNumberController: $partNumberController, serialNumberController: $serialNumberController, nomenclatureController: $nomenclatureController, locationController: $locationController, unitOfIssueController: $unitOfIssueController, quantityController: $quantityController, requisitionPointController: $requisitionPointController, requisitionQuantityController: $requisitionQuantityController, addPartStateStatus: $addPartStateStatus)';
   }
 
   @override
@@ -157,12 +313,47 @@ class _$AddPartStateImpl implements _AddPartState {
             other is _$AddPartStateImpl &&
             (identical(other.part, part) || other.part == part) &&
             (identical(other.error, error) || other.error == error) &&
-            (identical(other.addPartStateStatus, addPartStateStatus) ||
-                other.addPartStateStatus == addPartStateStatus));
+            (identical(other.nsnController, nsnController) ||
+                other.nsnController == nsnController) &&
+            (identical(other.partNumberController, partNumberController) ||
+                other.partNumberController == partNumberController) &&
+            (identical(other.serialNumberController, serialNumberController) ||
+                other.serialNumberController == serialNumberController) &&
+            (identical(other.nomenclatureController, nomenclatureController) ||
+                other.nomenclatureController == nomenclatureController) &&
+            (identical(other.locationController, locationController) ||
+                other.locationController == locationController) &&
+            (identical(other.unitOfIssueController, unitOfIssueController) ||
+                other.unitOfIssueController == unitOfIssueController) &&
+            (identical(other.quantityController, quantityController) ||
+                other.quantityController == quantityController) &&
+            (identical(other.requisitionPointController,
+                    requisitionPointController) ||
+                other.requisitionPointController ==
+                    requisitionPointController) &&
+            (identical(other.requisitionQuantityController,
+                    requisitionQuantityController) ||
+                other.requisitionQuantityController ==
+                    requisitionQuantityController) &&
+            const DeepCollectionEquality()
+                .equals(other.addPartStateStatus, addPartStateStatus));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, part, error, addPartStateStatus);
+  int get hashCode => Object.hash(
+      runtimeType,
+      part,
+      error,
+      nsnController,
+      partNumberController,
+      serialNumberController,
+      nomenclatureController,
+      locationController,
+      unitOfIssueController,
+      quantityController,
+      requisitionPointController,
+      requisitionQuantityController,
+      const DeepCollectionEquality().hash(addPartStateStatus));
 
   @JsonKey(ignore: true)
   @override
@@ -175,14 +366,41 @@ abstract class _AddPartState implements AddPartState {
   factory _AddPartState(
       {final Part? part,
       final String? error,
-      final AddPartStateStatus addPartStateStatus}) = _$AddPartStateImpl;
+      required final TextEditingController nsnController,
+      required final TextEditingController partNumberController,
+      required final TextEditingController serialNumberController,
+      required final TextEditingController nomenclatureController,
+      required final TextEditingController locationController,
+      required final TextEditingController unitOfIssueController,
+      required final TextEditingController quantityController,
+      required final TextEditingController requisitionPointController,
+      required final TextEditingController requisitionQuantityController,
+      final dynamic addPartStateStatus}) = _$AddPartStateImpl;
 
   @override
   Part? get part;
   @override
   String? get error;
   @override
-  AddPartStateStatus get addPartStateStatus;
+  TextEditingController get nsnController;
+  @override
+  TextEditingController get partNumberController;
+  @override
+  TextEditingController get serialNumberController;
+  @override
+  TextEditingController get nomenclatureController;
+  @override
+  TextEditingController get locationController;
+  @override
+  TextEditingController get unitOfIssueController;
+  @override
+  TextEditingController get quantityController;
+  @override
+  TextEditingController get requisitionPointController;
+  @override
+  TextEditingController get requisitionQuantityController;
+  @override
+  dynamic get addPartStateStatus;
   @override
   @JsonKey(ignore: true)
   _$$AddPartStateImplCopyWith<_$AddPartStateImpl> get copyWith =>
