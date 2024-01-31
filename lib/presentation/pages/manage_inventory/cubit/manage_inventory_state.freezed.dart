@@ -16,7 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ManageInventoryState {
-  Part? get part => throw _privateConstructorUsedError;
+  ScrollController get scrollController => throw _privateConstructorUsedError;
+  List<Part> get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   ManageInventoryStateStatus get manageInventoryStateStatus =>
       throw _privateConstructorUsedError;
@@ -33,11 +34,10 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
       _$ManageInventoryStateCopyWithImpl<$Res, ManageInventoryState>;
   @useResult
   $Res call(
-      {Part? part,
+      {ScrollController scrollController,
+      List<Part> part,
       String? error,
       ManageInventoryStateStatus manageInventoryStateStatus});
-
-  $PartCopyWith<$Res>? get part;
 }
 
 /// @nodoc
@@ -54,15 +54,20 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? part = freezed,
+    Object? scrollController = null,
+    Object? part = null,
     Object? error = freezed,
     Object? manageInventoryStateStatus = null,
   }) {
     return _then(_value.copyWith(
-      part: freezed == part
+      scrollController: null == scrollController
+          ? _value.scrollController
+          : scrollController // ignore: cast_nullable_to_non_nullable
+              as ScrollController,
+      part: null == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as List<Part>,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -72,18 +77,6 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
           : manageInventoryStateStatus // ignore: cast_nullable_to_non_nullable
               as ManageInventoryStateStatus,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PartCopyWith<$Res>? get part {
-    if (_value.part == null) {
-      return null;
-    }
-
-    return $PartCopyWith<$Res>(_value.part!, (value) {
-      return _then(_value.copyWith(part: value) as $Val);
-    });
   }
 }
 
@@ -96,12 +89,10 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Part? part,
+      {ScrollController scrollController,
+      List<Part> part,
       String? error,
       ManageInventoryStateStatus manageInventoryStateStatus});
-
-  @override
-  $PartCopyWith<$Res>? get part;
 }
 
 /// @nodoc
@@ -115,15 +106,20 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? part = freezed,
+    Object? scrollController = null,
+    Object? part = null,
     Object? error = freezed,
     Object? manageInventoryStateStatus = null,
   }) {
     return _then(_$ManageInventoryStateImpl(
-      part: freezed == part
-          ? _value.part
+      scrollController: null == scrollController
+          ? _value.scrollController
+          : scrollController // ignore: cast_nullable_to_non_nullable
+              as ScrollController,
+      part: null == part
+          ? _value._part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as List<Part>,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -140,12 +136,23 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
 
 class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
-      {this.part,
+      {required this.scrollController,
+      final List<Part> part = const <Part>[],
       this.error,
-      this.manageInventoryStateStatus = ManageInventoryStateStatus.loading});
+      this.manageInventoryStateStatus = ManageInventoryStateStatus.loading})
+      : _part = part;
 
   @override
-  final Part? part;
+  final ScrollController scrollController;
+  final List<Part> _part;
+  @override
+  @JsonKey()
+  List<Part> get part {
+    if (_part is EqualUnmodifiableListView) return _part;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_part);
+  }
+
   @override
   final String? error;
   @override
@@ -154,7 +161,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(part: $part, error: $error, manageInventoryStateStatus: $manageInventoryStateStatus)';
+    return 'ManageInventoryState(scrollController: $scrollController, part: $part, error: $error, manageInventoryStateStatus: $manageInventoryStateStatus)';
   }
 
   @override
@@ -162,7 +169,9 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ManageInventoryStateImpl &&
-            (identical(other.part, part) || other.part == part) &&
+            (identical(other.scrollController, scrollController) ||
+                other.scrollController == scrollController) &&
+            const DeepCollectionEquality().equals(other._part, _part) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.manageInventoryStateStatus,
                     manageInventoryStateStatus) ||
@@ -171,8 +180,12 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, part, error, manageInventoryStateStatus);
+  int get hashCode => Object.hash(
+      runtimeType,
+      scrollController,
+      const DeepCollectionEquality().hash(_part),
+      error,
+      manageInventoryStateStatus);
 
   @JsonKey(ignore: true)
   @override
@@ -185,13 +198,16 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
 abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
-          {final Part? part,
+          {required final ScrollController scrollController,
+          final List<Part> part,
           final String? error,
           final ManageInventoryStateStatus manageInventoryStateStatus}) =
       _$ManageInventoryStateImpl;
 
   @override
-  Part? get part;
+  ScrollController get scrollController;
+  @override
+  List<Part> get part;
   @override
   String? get error;
   @override

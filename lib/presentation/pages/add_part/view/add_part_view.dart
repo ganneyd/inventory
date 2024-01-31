@@ -6,7 +6,7 @@ import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.da
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
 class AddPartView extends StatelessWidget {
-  AddPartView() : super(key: const Key('add-part-view-constructor'));
+  const AddPartView() : super(key: const Key('add-part-view-constructor'));
 
   final double paddingValue = 200.0;
 //method to return the text fields wrapped in a padding along with a sized box
@@ -72,17 +72,18 @@ class AddPartView extends StatelessWidget {
             if (state.addPartStateStatus ==
                 AddPartStateStatus.createdDataSuccessfully) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.green,
+                  duration: const Duration(milliseconds: 400),
+                  content: Text('created part : ${state.part?.nsn}')));
+            }
+            if (state.addPartStateStatus ==
+                AddPartStateStatus.createdDataUnsuccessfully) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.red,
                   duration: const Duration(seconds: 2),
-                  content: Text('created part : ${state.part}')));
+                  content: Text('Unable to save part ${state.error}')));
             }
           });
-
-          if (state.addPartStateStatus ==
-              AddPartStateStatus.createdDataUnsuccessfully) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: const Duration(seconds: 2),
-                content: Text('Unable to save part ${state.error}')));
-          }
 
           return LayoutBuilder(builder: (builder, constraints) {
             return Scaffold(

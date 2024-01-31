@@ -31,7 +31,7 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
       errorMsg += 'Service Locator Or Path not Accessible, ';
     }
     //perform checks for Hive initialization
-    bool isHiveInitialized = Hive.isBoxOpen('parts');
+    bool isHiveInitialized = Hive.isBoxOpen(boxName);
     if (!isHiveInitialized) {
       _dependencyCubitLogger.warning('hive is a no go $isHiveInitialized');
       errorMsg += 'Hive, ';

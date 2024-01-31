@@ -1,10 +1,14 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/data/datasources/local_database.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:logging/logging.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
+
+const String boxName = 'newParts';
 
 final GetIt locator = GetIt.instance;
 Logger serviceLocatorLogger = Logger('service_locator');
@@ -17,21 +21,16 @@ Future<void> initDependencies() async {
 }
 
 Future<void> initHive() async {
-  serviceLocatorLogger.finest('initializing HIVE');
-  // Directory appDocumentDirectory;
-  // try {
-  //   appDocumentDirectory =
-  //       await path_provider.getApplicationDocumentsDirectory();
-  //   serviceLocatorLogger.finest('got application path for hive');
-  // } catch (e) {
-  //   serviceLocatorLogger
-  //       .warning('exception getting application path  getting temp ...$e  ');
-  //   appDocumentDirectory = await path_provider.getTemporaryDirectory();
-  //   serviceLocatorLogger.finest('got temp path');
-  // }
-  await Hive.initFlutter();
-  await Hive.openBox<Map<String, dynamic>>('parts');
-  serviceLocatorLogger.finest('initialized hive');
+  try {
+    serviceLocatorLogger.finest('initializing HIVE');
+    await Hive.initFlutter();
+    Hive.registerAdapter(PartEntityAdapter());
+    Hive.registerAdapter(UnitOfIssueAdapter());
+    await Hive.openBox<PartEntity>(boxName);
+    serviceLocatorLogger.finest('initialized hive');
+  } catch (e) {
+    serviceLocatorLogger.severe('Exception occurred initializing hive $e');
+  }
 }
 
 //Initialize the service locator
@@ -39,14 +38,14 @@ Future<void> initHive() async {
 Future<void> setupLocator() async {
 //! Datasource
 
-  locator.registerLazySingletonAsync<Box<Map<String, dynamic>>>(
-      () async => await Hive.openBox<Map<String, dynamic>>('parts'));
-  serviceLocatorLogger.finest('opened hive box');
+  if (Hive.isBoxOpen(boxName)) {
+    serviceLocatorLogger.finest('opened hive box');
+  }
 
   //!Data Layer
   //!Repositories
-  locator.registerLazySingleton<LocalDataSourceImplementation>(() =>
-      LocalDataSourceImplementation(Hive.box<Map<String, dynamic>>('parts')));
+  locator.registerLazySingleton<LocalDataSourceImplementation>(
+      () => LocalDataSourceImplementation(Hive.box<PartEntity>(boxName)));
   locator.registerLazySingleton<PartRepositoryImplementation>(() =>
       PartRepositoryImplementation(locator<LocalDataSourceImplementation>()));
   //!Usecases

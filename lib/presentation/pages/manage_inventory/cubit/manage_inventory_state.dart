@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 
@@ -10,13 +11,17 @@ enum ManageInventoryStateStatus {
   loadedUnsuccessfully,
   creatingData,
   createdDataSuccessfully,
-  createdDataUnsuccessfully
+  createdDataUnsuccessfully,
+  fetchingData,
+  fetchedDataSuccessfully,
+  fetchedDataUnsuccessfully
 }
 
 @freezed
 class ManageInventoryState with _$ManageInventoryState {
   factory ManageInventoryState({
-    Part? part,
+    required ScrollController scrollController,
+    @Default(<Part>[]) List<Part> part,
     String? error,
     @Default(ManageInventoryStateStatus.loading)
     ManageInventoryStateStatus manageInventoryStateStatus,

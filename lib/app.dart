@@ -26,7 +26,9 @@ class App extends StatelessWidget {
               body: state.dependencyCheckStateStatus ==
                       DependencyCheckStateStatus.loadedUnsuccessfully
                   ? Text(state.error != null ? state.error! : ' ')
-                  : const CircularProgressIndicator(),
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
             );
           },
         ),

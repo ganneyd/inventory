@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v1/presentation/pages/add_part/view/add_part_view.dart';
 import 'package:inventory_v1/presentation/pages/home_page/view/home_page_view.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/manage_inventory_view.dart';
 
 class RouteGenerator {
   static MaterialPageRoute getRoute(Widget view) {
@@ -10,9 +11,11 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/home_page':
-        return MaterialPageRoute(builder: (_) => HomePageView());
+        return getRoute(HomePageView());
       case '/add_part':
-        return getRoute(AddPartView());
+        return getRoute(const AddPartView());
+      case '/manage_inventory':
+        return getRoute(ManageInventory());
       default:
         return _errorRoute(settings.name);
     }
