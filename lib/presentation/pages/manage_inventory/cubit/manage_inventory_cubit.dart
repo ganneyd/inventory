@@ -1,79 +1,73 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:logging/logging.dart';
 
 class ManageInventoryCubit extends Cubit<ManageInventoryState> {
-  ManageInventoryCubit({required PartRepository partRepository})
+  ManageInventoryCubit(PartRepository partRepository)
       : _getAllPartsUsecase = GetAllPartsUsecase(partRepository),
-        _logger = Logger('manage-inventory-cubit'),
-        _isFetching = false,
+        _logger = Logger('manage-inv-cubit'),
         super(ManageInventoryState(scrollController: ScrollController()));
 
+  //usecase init
   final GetAllPartsUsecase _getAllPartsUsecase;
+  //for debugging
   final Logger _logger;
-  bool _isFetching;
   void loadParts() async {
-    var startIndex = state.part.length;
+    //set the indexes that the parts should be gotten from
+    var startIndex = state.parts.length;
     var pageIndex = startIndex + 20;
-    List<Part> oldList = state.part.toList();
-    _logger.finest(
-        'loading parts into state startIndex is $startIndex and pageIndex is $pageIndex');
-    emit(state.copyWith(
-        manageInventoryStateStatus: ManageInventoryStateStatus.loading));
-    _isFetching = true;
+    //get the current list of parts
+    List<Part> oldList = state.parts.toList();
+    //!debug
+    _logger
+        .finest('loading parts, startIndex:$startIndex pageIndex:$pageIndex');
 
-    //delay for a bit
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    //evoke usecase
     var results = await _getAllPartsUsecase
         .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
 
+    //unfold the results and return proper data to the UI
     results.fold((l) {
-      _logger
-          .warning('error encountered while getting parts from usecase', [l]);
+      //!debug
+      _logger.warning('error while retrieving all parts');
       emit(state.copyWith(
-          error: 'Unable to get parts at the time',
-          manageInventoryStateStatus: _isFetching
-              ? ManageInventoryStateStatus.fetchedDataUnsuccessfully
-              : ManageInventoryStateStatus.loadedUnsuccessfully));
-    }, (newList) {
-      for (var element in newList) {
-        oldList.add(element);
+          error: l.errorMessage,
+          status: ManageInventoryStateStatus.fetchedDataUnsuccessfully));
+    }, (newParts) {
+      for (var part in newParts) {
+        oldList.add(part);
       }
-
+      _logger.finest('retrieved all parts: ${state.parts.length}');
       emit(state.copyWith(
-          part: oldList,
-          manageInventoryStateStatus: _isFetching
-              ? ManageInventoryStateStatus.fetchedDataSuccessfully
-              : ManageInventoryStateStatus.loadedSuccessfully));
+          status: ManageInventoryStateStatus.fetchedDataSuccessfully,
+          parts: oldList));
     });
-    _logger.finest(
-        'Retrieved a list of parts. emit list has length of ${state.part.length}');
   }
 
+  //initialization method
   void init() {
+    //load up the first 20 parts
+    //tell the UI the data is loading
+    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
     loadParts();
+    //initialize the scroll controller callback function
     state.scrollController.addListener(() => _fetchMoreParts());
   }
 
+  //method to fetch more parts when the user scrolls to the end of the list
   void _fetchMoreParts() {
-    _logger.finest('fetching more parts ');
+    //check if user is actually at the end
     if (state.scrollController.position.pixels ==
         state.scrollController.position.maxScrollExtent) {
-      _logger.finest('scroll out of fetching more');
-      emit(state.copyWith(
-          manageInventoryStateStatus: ManageInventoryStateStatus.fetchingData));
-
+      emit(state.copyWith(status: ManageInventoryStateStatus.fetchingData));
       loadParts();
     }
   }
 
+//ensures the scroll controller is properly disposed of
   @override
   Future<void> close() {
     state.scrollController.dispose();
