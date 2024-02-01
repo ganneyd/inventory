@@ -16,10 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SearchResultsState {
-  Part? get part => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
-  SearchResultsStateStatus get searchResultsStateStatus =>
-      throw _privateConstructorUsedError;
+  ScrollController get scrollController => throw _privateConstructorUsedError;
+  List<Part> get parts => throw _privateConstructorUsedError;
+  String get error => throw _privateConstructorUsedError;
+  SearchResultsStateStatus get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SearchResultsStateCopyWith<SearchResultsState> get copyWith =>
@@ -33,11 +33,10 @@ abstract class $SearchResultsStateCopyWith<$Res> {
       _$SearchResultsStateCopyWithImpl<$Res, SearchResultsState>;
   @useResult
   $Res call(
-      {Part? part,
-      String? error,
-      SearchResultsStateStatus searchResultsStateStatus});
-
-  $PartCopyWith<$Res>? get part;
+      {ScrollController scrollController,
+      List<Part> parts,
+      String error,
+      SearchResultsStateStatus status});
 }
 
 /// @nodoc
@@ -53,36 +52,29 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? part = freezed,
-    Object? error = freezed,
-    Object? searchResultsStateStatus = null,
+    Object? scrollController = null,
+    Object? parts = null,
+    Object? error = null,
+    Object? status = null,
   }) {
     return _then(_value.copyWith(
-      part: freezed == part
-          ? _value.part
-          : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
-      error: freezed == error
+      scrollController: null == scrollController
+          ? _value.scrollController
+          : scrollController // ignore: cast_nullable_to_non_nullable
+              as ScrollController,
+      parts: null == parts
+          ? _value.parts
+          : parts // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-      searchResultsStateStatus: null == searchResultsStateStatus
-          ? _value.searchResultsStateStatus
-          : searchResultsStateStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as SearchResultsStateStatus,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PartCopyWith<$Res>? get part {
-    if (_value.part == null) {
-      return null;
-    }
-
-    return $PartCopyWith<$Res>(_value.part!, (value) {
-      return _then(_value.copyWith(part: value) as $Val);
-    });
   }
 }
 
@@ -95,12 +87,10 @@ abstract class _$$SearchResultsStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Part? part,
-      String? error,
-      SearchResultsStateStatus searchResultsStateStatus});
-
-  @override
-  $PartCopyWith<$Res>? get part;
+      {ScrollController scrollController,
+      List<Part> parts,
+      String error,
+      SearchResultsStateStatus status});
 }
 
 /// @nodoc
@@ -114,22 +104,27 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? part = freezed,
-    Object? error = freezed,
-    Object? searchResultsStateStatus = null,
+    Object? scrollController = null,
+    Object? parts = null,
+    Object? error = null,
+    Object? status = null,
   }) {
     return _then(_$SearchResultsStateImpl(
-      part: freezed == part
-          ? _value.part
-          : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
-      error: freezed == error
+      scrollController: null == scrollController
+          ? _value.scrollController
+          : scrollController // ignore: cast_nullable_to_non_nullable
+              as ScrollController,
+      parts: null == parts
+          ? _value._parts
+          : parts // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-      searchResultsStateStatus: null == searchResultsStateStatus
-          ? _value.searchResultsStateStatus
-          : searchResultsStateStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as SearchResultsStateStatus,
     ));
   }
@@ -139,21 +134,33 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
 
 class _$SearchResultsStateImpl implements _SearchResultsState {
   _$SearchResultsStateImpl(
-      {this.part,
-      this.error,
-      this.searchResultsStateStatus = SearchResultsStateStatus.loading});
+      {required this.scrollController,
+      final List<Part> parts = const <Part>[],
+      this.error = 'no-error',
+      this.status = SearchResultsStateStatus.loading})
+      : _parts = parts;
 
   @override
-  final Part? part;
-  @override
-  final String? error;
+  final ScrollController scrollController;
+  final List<Part> _parts;
   @override
   @JsonKey()
-  final SearchResultsStateStatus searchResultsStateStatus;
+  List<Part> get parts {
+    if (_parts is EqualUnmodifiableListView) return _parts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_parts);
+  }
+
+  @override
+  @JsonKey()
+  final String error;
+  @override
+  @JsonKey()
+  final SearchResultsStateStatus status;
 
   @override
   String toString() {
-    return 'SearchResultsState(part: $part, error: $error, searchResultsStateStatus: $searchResultsStateStatus)';
+    return 'SearchResultsState(scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
   }
 
   @override
@@ -161,16 +168,16 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SearchResultsStateImpl &&
-            (identical(other.part, part) || other.part == part) &&
+            (identical(other.scrollController, scrollController) ||
+                other.scrollController == scrollController) &&
+            const DeepCollectionEquality().equals(other._parts, _parts) &&
             (identical(other.error, error) || other.error == error) &&
-            (identical(
-                    other.searchResultsStateStatus, searchResultsStateStatus) ||
-                other.searchResultsStateStatus == searchResultsStateStatus));
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, part, error, searchResultsStateStatus);
+  int get hashCode => Object.hash(runtimeType, scrollController,
+      const DeepCollectionEquality().hash(_parts), error, status);
 
   @JsonKey(ignore: true)
   @override
@@ -182,17 +189,19 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
 
 abstract class _SearchResultsState implements SearchResultsState {
   factory _SearchResultsState(
-          {final Part? part,
-          final String? error,
-          final SearchResultsStateStatus searchResultsStateStatus}) =
-      _$SearchResultsStateImpl;
+      {required final ScrollController scrollController,
+      final List<Part> parts,
+      final String error,
+      final SearchResultsStateStatus status}) = _$SearchResultsStateImpl;
 
   @override
-  Part? get part;
+  ScrollController get scrollController;
   @override
-  String? get error;
+  List<Part> get parts;
   @override
-  SearchResultsStateStatus get searchResultsStateStatus;
+  String get error;
+  @override
+  SearchResultsStateStatus get status;
   @override
   @JsonKey(ignore: true)
   _$$SearchResultsStateImplCopyWith<_$SearchResultsStateImpl> get copyWith =>
