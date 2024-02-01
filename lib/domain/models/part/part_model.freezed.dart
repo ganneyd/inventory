@@ -214,7 +214,7 @@ class __$$PartModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PartModelImpl implements _PartModel {
   _$PartModelImpl(
-      {required this.index,
+      {this.index = 0,
       this.name = 'unknown_part',
       this.nsn = 'unknown_part',
       this.partNumber = 'unknown_part',
@@ -229,6 +229,7 @@ class _$PartModelImpl implements _PartModel {
       _$$PartModelImplFromJson(json);
 
   @override
+  @JsonKey()
   final int index;
   @override
   @JsonKey()
@@ -318,7 +319,7 @@ class _$PartModelImpl implements _PartModel {
 
 abstract class _PartModel implements Part {
   factory _PartModel(
-      {required final int index,
+      {final int index,
       final String name,
       final String nsn,
       final String partNumber,

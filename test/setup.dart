@@ -1,5 +1,5 @@
-import 'package:inventory_v1/data/models/part/part_model.dart';
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/models/part/part_model.dart';
 
 class ValuesForTest {
   List<Map<String, dynamic>> partsList = [

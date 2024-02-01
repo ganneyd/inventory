@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/data/datasources/local_database.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
-import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/cubit/dependency_check_state.dart';
 import 'package:inventory_v1/service_locator.dart';
@@ -31,18 +30,10 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
       errorMsg += 'Service Locator Or Path not Accessible, ';
     }
     //perform checks for Hive initialization
-    bool isHiveInitialized = Hive.isBoxOpen('parts');
+    bool isHiveInitialized = Hive.isBoxOpen(boxName);
     if (!isHiveInitialized) {
       _dependencyCubitLogger.warning('hive is a no go $isHiveInitialized');
       errorMsg += 'Hive, ';
-    }
-
-    //Perform checks to for local database initialization
-    bool isLocalDatabaseInitialized = _isLocalDatabaseInitialized();
-
-    if (!isLocalDatabaseInitialized) {
-      _dependencyCubitLogger.warning('local database is a no go');
-      errorMsg += 'Local Database, ';
     }
 
     //Perform checks to for Part Repository initialization
@@ -61,7 +52,6 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
     }
 
     if (!isUsecasesInitialized ||
-        !isLocalDatabaseInitialized ||
         !isHiveInitialized ||
         !isPartRepositoryInitialized) {
       emit(DependencyCheckState(
@@ -75,18 +65,6 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
           dependencyCheckStateStatus:
               DependencyCheckStateStatus.loadedSuccessfully));
     }
-  }
-}
-
-bool _isLocalDatabaseInitialized() {
-  try {
-    LocalDataSourceImplementation localDataSource = locator();
-    if (localDataSource.getLength() >= 0) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
   }
 }
 

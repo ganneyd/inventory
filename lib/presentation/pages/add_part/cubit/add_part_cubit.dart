@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
 import 'package:inventory_v1/service_locator.dart';
@@ -21,6 +18,7 @@ class AddPartCubit extends Cubit<AddPartState> {
 
     results.fold(
         (l) => emit(state.copyWith(
+            error: l.errorMessage,
             addPartStateStatus: AddPartStateStatus.createdDataUnsuccessfully)),
         (r) => emit(state.copyWith(
             addPartStateStatus: AddPartStateStatus.createdDataSuccessfully)));

@@ -72,17 +72,16 @@ class AddPartView extends StatelessWidget {
             if (state.addPartStateStatus ==
                 AddPartStateStatus.createdDataSuccessfully) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  duration: const Duration(seconds: 2),
+                  duration: const Duration(milliseconds: 100),
                   content: Text('created part : ${state.part}')));
             }
+            if (state.addPartStateStatus ==
+                AddPartStateStatus.createdDataUnsuccessfully) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  duration: const Duration(seconds: 2),
+                  content: Text('Unable to save part ${state.error}')));
+            }
           });
-
-          if (state.addPartStateStatus ==
-              AddPartStateStatus.createdDataUnsuccessfully) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: const Duration(seconds: 2),
-                content: Text('Unable to save part ${state.error}')));
-          }
 
           return LayoutBuilder(builder: (builder, constraints) {
             return Scaffold(
