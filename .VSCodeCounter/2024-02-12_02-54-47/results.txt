@@ -1,0 +1,69 @@
+Date : 2024-02-12 02:54:47
+Directory : /Users/ganneyd/softwaredev/inventory_v1/test
+Total : 24 files,  2633 codes, 549 comments, 429 blanks, all 3611 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         24 |      2,633 |        549 |        429 |      3,611 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                              | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                 |         24 |      2,633 |        549 |        429 |      3,611 |
+| . (Files)                                                                                                         |          2 |        215 |          1 |          9 |        225 |
+| data                                                                                                              |          2 |        679 |        265 |        143 |      1,087 |
+| data/datasource                                                                                                   |          1 |        203 |         65 |         45 |        313 |
+| data/repositories                                                                                                 |          1 |        476 |        200 |         98 |        774 |
+| domain                                                                                                            |         14 |        658 |         66 |        123 |        847 |
+| domain/usecases                                                                                                   |         14 |        658 |         66 |        123 |        847 |
+| domain/usecases (Files)                                                                                           |          9 |        417 |         64 |         82 |        563 |
+| domain/usecases/checkout                                                                                          |          5 |        241 |          2 |         41 |        284 |
+| presentation                                                                                                      |          6 |      1,081 |        217 |        154 |      1,452 |
+| presentation/dependency_check                                                                                     |          2 |        238 |         51 |         27 |        316 |
+| presentation/dependency_check (Files)                                                                             |          1 |          0 |          0 |          1 |          1 |
+| presentation/dependency_check/cubit                                                                               |          1 |        238 |         51 |         26 |        315 |
+| presentation/pages                                                                                                |          4 |        843 |        166 |        127 |      1,136 |
+| presentation/pages/add_part                                                                                       |          1 |        339 |         73 |         59 |        471 |
+| presentation/pages/add_part/cubit                                                                                 |          1 |        339 |         73 |         59 |        471 |
+| presentation/pages/home_page                                                                                      |          1 |         15 |          0 |          3 |         18 |
+| presentation/pages/home_page/cubit                                                                                |          1 |         15 |          0 |          3 |         18 |
+| presentation/pages/manage_inventory                                                                               |          1 |        314 |         80 |         46 |        440 |
+| presentation/pages/manage_inventory/cubit                                                                         |          1 |        314 |         80 |         46 |        440 |
+| presentation/pages/search_page                                                                                    |          1 |        175 |         13 |         19 |        207 |
+| presentation/pages/search_page/cubit                                                                              |          1 |        175 |         13 |         19 |        207 |
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                          | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/ganneyd/softwaredev/inventory_v1/test/data/datasource/datasource.dart                                      | Dart     |        203 |         65 |         45 |        313 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/data/repositories/part_repository_test.dart                          | Dart     |        476 |        200 |         98 |        774 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/add_part_usecase_test.dart                           | Dart     |         42 |          7 |          9 |         58 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/add_checkout_part_test.dart                 | Dart     |         71 |          0 |          9 |         80 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/get_all_checkout_parts_test.dart            | Dart     |         56 |          0 |          8 |         64 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/get_most_recent_checkout_parts_test.dart    | Dart     |          0 |          0 |          1 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/get_unverified_checkout_parts_test.dart     | Dart     |         56 |          0 |          8 |         64 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/verify_checkout_part_test.dart              | Dart     |         58 |          2 |         15 |         75 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/delete_part_usecase_test.dart                        | Dart     |         40 |          7 |          9 |         56 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/edit_part_usecase_test.dart                          | Dart     |         40 |          7 |          9 |         56 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_all_part_usecase_test.dart                       | Dart     |         58 |          7 |          9 |         74 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_low_quantity_parts_test.dart                     | Dart     |         49 |          0 |         15 |         64 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_name_usecase_test.dart                   | Dart     |         47 |          6 |          7 |         60 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_nsn_usecase_test.dart                    | Dart     |         45 |         10 |          8 |         63 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_part_number_usecase_test.dart            | Dart     |         48 |         10 |          8 |         66 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_serial_number_usecase_test.dart          | Dart     |         48 |         10 |          8 |         66 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/dependency_check/app_test.dart                          | Dart     |          0 |          0 |          1 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/dependency_check/cubit/dependency_cubit_test.dart       | Dart     |        238 |         51 |         26 |        315 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/add_part/cubit/add_part_cubit_test.dart           | Dart     |        339 |         73 |         59 |        471 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/home_page/cubit/home_page_cubit_test.dart         | Dart     |         15 |          0 |          3 |         18 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/manage_inventory/cubit/manage_inventory_test.dart | Dart     |        314 |         80 |         46 |        440 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/search_page/cubit/search_part_cubit_test.dart     | Dart     |        175 |         13 |         19 |        207 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/setup.dart                                                           | Dart     |        215 |          1 |          7 |        223 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/widget_test.dart                                                     | Dart     |          0 |          0 |          2 |          2 |
+| Total                                                                                                             |          |      2,633 |        549 |        429 |      3,611 |
++-------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

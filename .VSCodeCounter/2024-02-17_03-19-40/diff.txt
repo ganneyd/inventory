@@ -1,0 +1,83 @@
+Date : 2024-02-17 03:19:40
+Directory : /Users/ganneyd/softwaredev/inventory_v1/lib
+Total : 31 files,  -253 codes, -14 comments, -20 blanks, all -287 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         31 |       -253 |        -14 |        -20 |       -287 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                     |         31 |       -253 |        -14 |        -20 |       -287 |
+| . (Files)                                                                                                             |          2 |          1 |          0 |          2 |          3 |
+| data                                                                                                                  |          7 |       -447 |        -22 |        -35 |       -504 |
+| data/models                                                                                                           |          5 |       -445 |        -22 |        -35 |       -502 |
+| data/models/checked-out                                                                                               |          1 |         -1 |          0 |          0 |         -1 |
+| data/models/part                                                                                                      |          3 |       -476 |        -22 |        -38 |       -536 |
+| data/models/part_order                                                                                                |          1 |         32 |          0 |          3 |         35 |
+| data/repositories                                                                                                     |          2 |         -2 |          0 |          0 |         -2 |
+| domain                                                                                                                |          7 |         76 |          2 |          9 |         87 |
+| domain/entities                                                                                                       |          4 |         70 |          2 |          9 |         81 |
+| domain/entities/checked-out                                                                                           |          2 |         37 |          1 |          5 |         43 |
+| domain/entities/part                                                                                                  |          1 |          2 |          1 |          1 |          4 |
+| domain/entities/part_order                                                                                            |          1 |         31 |          0 |          3 |         34 |
+| domain/usecases                                                                                                       |          3 |          6 |          0 |          0 |          6 |
+| domain/usecases/checkout                                                                                              |          3 |          6 |          0 |          0 |          6 |
+| presentation                                                                                                          |         15 |        117 |          6 |          4 |        127 |
+| presentation/dependency_check                                                                                         |          3 |         49 |          2 |          3 |         54 |
+| presentation/dependency_check/cubit                                                                                   |          3 |         49 |          2 |          3 |         54 |
+| presentation/pages                                                                                                    |         11 |         64 |          4 |          1 |         69 |
+| presentation/pages/checkout                                                                                           |          4 |         64 |          0 |         -1 |         63 |
+| presentation/pages/checkout/cubit                                                                                     |          3 |         35 |          0 |         -1 |         34 |
+| presentation/pages/checkout/view                                                                                      |          1 |         29 |          0 |          0 |         29 |
+| presentation/pages/manage_inventory                                                                                   |          3 |        -14 |          4 |          2 |         -8 |
+| presentation/pages/manage_inventory/cubit                                                                             |          1 |        -23 |          4 |          2 |        -17 |
+| presentation/pages/manage_inventory/view                                                                              |          2 |          9 |          0 |          0 |          9 |
+| presentation/pages/search_results                                                                                     |          4 |         14 |          0 |          0 |         14 |
+| presentation/pages/search_results/cubit                                                                               |          2 |          0 |          0 |          0 |          0 |
+| presentation/pages/search_results/view                                                                                |          2 |         14 |          0 |          0 |         14 |
+| presentation/widgets                                                                                                  |          1 |          4 |          0 |          0 |          4 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                              | language | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/models/checked-out/checked_out_model.dart                            | Dart     |         -1 |          0 |          0 |         -1 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/models/part/part_model.dart                                          | Dart     |          1 |          0 |          0 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/models/part/part_model.freezed.dart                                  | Dart     |       -378 |        -15 |        -26 |       -419 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/models/part/part_model.g.dart                                        | Dart     |        -99 |         -7 |        -12 |       -118 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/models/part_order/part_order_model.dart                              | Dart     |         32 |          0 |          3 |         35 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/repositories/checked_out_part_repository_implementation.dart         | Dart     |         -3 |          0 |          0 |         -3 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/data/repositories/part_repository_implementation.dart                     | Dart     |          1 |          0 |          0 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/entities/checked-out/cart_check_out_entity.dart                    | Dart     |         16 |          1 |          3 |         20 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/entities/checked-out/checked_out_entity.dart                       | Dart     |         21 |          0 |          2 |         23 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/entities/part/part_entity.dart                                     | Dart     |          2 |          1 |          1 |          4 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/entities/part_order/part_order_entity.dart                         | Dart     |         31 |          0 |          3 |         34 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/usecases/checkout/add_checkout_parts.dart                          | Dart     |         -3 |          0 |         -2 |         -5 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/usecases/checkout/get_all_checkout_parts.dart                      | Dart     |          7 |          0 |          2 |          9 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/domain/usecases/checkout/verify_checkout_part.dart                        | Dart     |          2 |          0 |          0 |          2 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/dependency_check/cubit/dependency_check_cubit.dart           | Dart     |         25 |          2 |          3 |         30 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/dependency_check/cubit/dependency_check_state.dart           | Dart     |          1 |          0 |          0 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/dependency_check/cubit/dependency_check_state.freezed.dart   | Dart     |         23 |          0 |          0 |         23 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/checkout/cubit/checkout_cubit.dart                     | Dart     |          8 |          0 |          0 |          8 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/checkout/cubit/checkout_state.dart                     | Dart     |          2 |          0 |         -1 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/checkout/cubit/checkout_state.freezed.dart             | Dart     |         25 |          0 |          0 |         25 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/checkout/view/checkout_view.dart                       | Dart     |         29 |          0 |          0 |         29 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart     | Dart     |        -23 |          4 |          2 |        -17 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/manage_inventory/view/check_out_part_page_view.dart    | Dart     |          8 |          0 |          0 |          8 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/manage_inventory/view/manage_inventory_view.dart       | Dart     |          1 |          0 |          0 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/search_results/cubit/search_results_cubit.dart         | Dart     |          3 |          0 |          0 |          3 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/search_results/cubit/search_results_state.freezed.dart | Dart     |         -3 |          0 |          0 |         -3 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/search_results/view/cart_drawer.dart                   | Dart     |          2 |          0 |          0 |          2 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/pages/search_results/view/search_results_view.dart           | Dart     |         12 |          0 |          0 |         12 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/presentation/widgets/generic_app_bar_widget.dart                          | Dart     |          4 |          0 |          0 |          4 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/route_generator.dart                                                      | Dart     |          1 |          0 |          1 |          2 |
+| /Users/ganneyd/softwaredev/inventory_v1/lib/service_locator.dart                                                      | Dart     |          0 |          0 |          1 |          1 |
+| Total                                                                                                                 |          |       -253 |        -14 |        -20 |       -287 |
++-----------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

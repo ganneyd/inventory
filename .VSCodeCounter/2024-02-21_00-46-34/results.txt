@@ -1,0 +1,78 @@
+Date : 2024-02-21 00:46:34
+Directory : /Users/ganneyd/softwaredev/inventory_v1/test
+Total : 32 files,  3716 codes, 507 comments, 577 blanks, all 4800 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         32 |      3,716 |        507 |        577 |      4,800 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                              | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                 |         32 |      3,716 |        507 |        577 |      4,800 |
+| . (Files)                                                                                                         |          2 |        312 |          1 |         14 |        327 |
+| data                                                                                                              |          4 |        938 |        259 |        175 |      1,372 |
+| data/datasource                                                                                                   |          1 |        203 |         65 |         45 |        313 |
+| data/repositories                                                                                                 |          3 |        735 |        194 |        130 |      1,059 |
+| domain                                                                                                            |         20 |      1,106 |         68 |        200 |      1,374 |
+| domain/usecases                                                                                                   |         20 |      1,106 |         68 |        200 |      1,374 |
+| domain/usecases (Files)                                                                                           |          9 |        409 |         64 |         85 |        558 |
+| domain/usecases/checkout                                                                                          |          5 |        353 |          4 |         58 |        415 |
+| domain/usecases/order                                                                                             |          6 |        344 |          0 |         57 |        401 |
+| presentation                                                                                                      |          6 |      1,360 |        179 |        188 |      1,727 |
+| presentation/dependency_check                                                                                     |          2 |        286 |         59 |         31 |        376 |
+| presentation/dependency_check (Files)                                                                             |          1 |          0 |          0 |          1 |          1 |
+| presentation/dependency_check/cubit                                                                               |          1 |        286 |         59 |         30 |        375 |
+| presentation/pages                                                                                                |          4 |      1,074 |        120 |        157 |      1,351 |
+| presentation/pages/add_part                                                                                       |          1 |        339 |         73 |         59 |        471 |
+| presentation/pages/add_part/cubit                                                                                 |          1 |        339 |         73 |         59 |        471 |
+| presentation/pages/home_page                                                                                      |          1 |         15 |          0 |          3 |         18 |
+| presentation/pages/home_page/cubit                                                                                |          1 |         15 |          0 |          3 |         18 |
+| presentation/pages/manage_inventory                                                                               |          1 |        545 |         34 |         76 |        655 |
+| presentation/pages/manage_inventory/cubit                                                                         |          1 |        545 |         34 |         76 |        655 |
+| presentation/pages/search_page                                                                                    |          1 |        175 |         13 |         19 |        207 |
+| presentation/pages/search_page/cubit                                                                              |          1 |        175 |         13 |         19 |        207 |
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                          | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/ganneyd/softwaredev/inventory_v1/test/data/datasource/datasource.dart                                      | Dart     |        203 |         65 |         45 |        313 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/data/repositories/check_out_part_repository_implementation_test.dart | Dart     |         64 |          0 |         12 |         76 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/data/repositories/order_part_repository_implementation_test.dart     | Dart     |        202 |          0 |         23 |        225 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/data/repositories/part_repository_test.dart                          | Dart     |        469 |        194 |         95 |        758 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/add_part_usecase_test.dart                           | Dart     |         42 |          7 |          9 |         58 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/add_checkout_part_test.dart                 | Dart     |        102 |          0 |          9 |        111 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/get_all_checkout_parts_test.dart            | Dart     |         65 |          0 |         10 |         75 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/get_most_recent_checkout_parts_test.dart    | Dart     |          0 |          0 |          1 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/get_unverified_checkout_parts_test.dart     | Dart     |         56 |          0 |          8 |         64 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/checkout/verify_checkout_part_test.dart              | Dart     |        130 |          4 |         30 |        164 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/delete_part_usecase_test.dart                        | Dart     |         40 |          7 |          9 |         56 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/edit_part_usecase_test.dart                          | Dart     |         40 |          7 |          9 |         56 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_all_part_usecase_test.dart                       | Dart     |         50 |          7 |         12 |         69 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_low_quantity_parts_test.dart                     | Dart     |         49 |          0 |         15 |         64 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_name_usecase_test.dart                   | Dart     |         47 |          6 |          7 |         60 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_nsn_usecase_test.dart                    | Dart     |         45 |         10 |          8 |         63 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_part_number_usecase_test.dart            | Dart     |         48 |         10 |          8 |         66 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/get_part_by_serial_number_usecase_test.dart          | Dart     |         48 |         10 |          8 |         66 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/order/create_part_order_test.dart                    | Dart     |         40 |          0 |         11 |         51 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/order/delete_part_order_test.dart                    | Dart     |         40 |          0 |         11 |         51 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/order/edit_part_order_test.dart                      | Dart     |         40 |          0 |         11 |         51 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/order/fulfill_part_orders_test.dart                  | Dart     |        124 |          0 |         11 |        135 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/order/get_all_part_orders_test.dart                  | Dart     |         55 |          0 |          9 |         64 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/domain/usecases/order/get_part_order_test.dart                       | Dart     |         45 |          0 |          4 |         49 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/dependency_check/app_test.dart                          | Dart     |          0 |          0 |          1 |          1 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/dependency_check/cubit/dependency_cubit_test.dart       | Dart     |        286 |         59 |         30 |        375 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/add_part/cubit/add_part_cubit_test.dart           | Dart     |        339 |         73 |         59 |        471 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/home_page/cubit/home_page_cubit_test.dart         | Dart     |         15 |          0 |          3 |         18 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/manage_inventory/cubit/manage_inventory_test.dart | Dart     |        545 |         34 |         76 |        655 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/presentation/pages/search_page/cubit/search_part_cubit_test.dart     | Dart     |        175 |         13 |         19 |        207 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/setup.dart                                                           | Dart     |        312 |          1 |         12 |        325 |
+| /Users/ganneyd/softwaredev/inventory_v1/test/widget_test.dart                                                     | Dart     |          0 |          0 |          2 |          2 |
+| Total                                                                                                             |          |      3,716 |        507 |        577 |      4,800 |
++-------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

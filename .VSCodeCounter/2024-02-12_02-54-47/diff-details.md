@@ -1,0 +1,132 @@
+# Diff Details
+
+Date : 2024-02-12 02:54:47
+
+Directory /Users/ganneyd/softwaredev/inventory_v1/test
+
+Total : 117 files,  -3136 codes, 151 comments, -248 blanks, all -3233 lines
+
+[Summary](results.md) / [Details](details.md) / [Diff Summary](diff.md) / Diff Details
+
+## Files
+| filename | language | code | comment | blank | total |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| [lib/core/error/exceptions.dart](/lib/core/error/exceptions.dart) | Dart | -6 | -10 | -6 | -22 |
+| [lib/core/error/failures.dart](/lib/core/error/failures.dart) | Dart | -42 | -30 | -13 | -85 |
+| [lib/core/usecases/usecases.dart](/lib/core/usecases/usecases.dart) | Dart | -10 | -5 | -3 | -18 |
+| [lib/core/util/unit_of_issue.dart](/lib/core/util/unit_of_issue.dart) | Dart | -33 | -10 | -11 | -54 |
+| [lib/core/util/unit_of_issue.g.dart](/lib/core/util/unit_of_issue.g.dart) | Dart | -60 | -4 | -8 | -72 |
+| [lib/core/util/util.dart](/lib/core/util/util.dart) | Dart | -1 | 0 | -1 | -2 |
+| [lib/data/datasources/local_database.dart](/lib/data/datasources/local_database.dart) | Dart | -115 | -14 | -22 | -151 |
+| [lib/data/entities/checked-out/checked_out_entity.dart](/lib/data/entities/checked-out/checked_out_entity.dart) | Dart | -17 | -6 | -7 | -30 |
+| [lib/data/entities/part/adapter.dart](/lib/data/entities/part/adapter.dart) | Dart | 0 | 0 | -1 | -1 |
+| [lib/data/entities/part/part_entity.dart](/lib/data/entities/part/part_entity.dart) | Dart | -38 | -12 | -12 | -62 |
+| [lib/data/models/checked-out/checked_out_model.dart](/lib/data/models/checked-out/checked_out_model.dart) | Dart | -34 | -4 | -9 | -47 |
+| [lib/data/models/checked-out/checked_out_model.g.dart](/lib/data/models/checked-out/checked_out_model.g.dart) | Dart | -45 | -4 | -8 | -57 |
+| [lib/data/models/part/adapter.dart](/lib/data/models/part/adapter.dart) | Dart | -16 | -3 | -2 | -21 |
+| [lib/data/models/part/part_model.dart](/lib/data/models/part/part_model.dart) | Dart | -22 | -15 | -4 | -41 |
+| [lib/data/models/part/part_model.freezed.dart](/lib/data/models/part/part_model.freezed.dart) | Dart | -320 | -15 | -26 | -361 |
+| [lib/data/models/part/part_model.g.dart](/lib/data/models/part/part_model.g.dart) | Dart | -38 | -4 | -6 | -48 |
+| [lib/data/models/pol/pol_model.dart](/lib/data/models/pol/pol_model.dart) | Dart | 0 | 0 | -1 | -1 |
+| [lib/data/repositories/checked_out_part_repository_implementation.dart](/lib/data/repositories/checked_out_part_repository_implementation.dart) | Dart | -113 | 0 | -11 | -124 |
+| [lib/data/repositories/part_repository_implementation.dart](/lib/data/repositories/part_repository_implementation.dart) | Dart | -163 | -11 | -19 | -193 |
+| [lib/domain/repositories/checked_out_part_repository.dart](/lib/domain/repositories/checked_out_part_repository.dart) | Dart | -14 | -6 | -6 | -26 |
+| [lib/domain/repositories/part_repository.dart](/lib/domain/repositories/part_repository.dart) | Dart | -26 | -12 | -12 | -50 |
+| [lib/domain/usecases/add_part.dart](/lib/domain/usecases/add_part.dart) | Dart | -21 | 0 | -5 | -26 |
+| [lib/domain/usecases/checkout/add_checkout_parts.dart](/lib/domain/usecases/checkout/add_checkout_parts.dart) | Dart | -65 | 0 | -7 | -72 |
+| [lib/domain/usecases/checkout/checkout_usecase_bucket.dart](/lib/domain/usecases/checkout/checkout_usecase_bucket.dart) | Dart | -5 | 0 | -1 | -6 |
+| [lib/domain/usecases/checkout/get_all_checkout_parts.dart](/lib/domain/usecases/checkout/get_all_checkout_parts.dart) | Dart | -30 | 0 | -4 | -34 |
+| [lib/domain/usecases/checkout/get_most_recent_checkout_parts.dart](/lib/domain/usecases/checkout/get_most_recent_checkout_parts.dart) | Dart | 0 | 0 | -2 | -2 |
+| [lib/domain/usecases/checkout/get_unverified_checkout_parts.dart](/lib/domain/usecases/checkout/get_unverified_checkout_parts.dart) | Dart | -42 | 0 | -4 | -46 |
+| [lib/domain/usecases/checkout/verify_checkout_part.dart](/lib/domain/usecases/checkout/verify_checkout_part.dart) | Dart | -42 | 0 | -5 | -47 |
+| [lib/domain/usecases/delete_part.dart](/lib/domain/usecases/delete_part.dart) | Dart | -21 | 0 | -6 | -27 |
+| [lib/domain/usecases/edit_part.dart](/lib/domain/usecases/edit_part.dart) | Dart | -21 | 0 | -5 | -26 |
+| [lib/domain/usecases/get_all_part.dart](/lib/domain/usecases/get_all_part.dart) | Dart | -30 | 0 | -5 | -35 |
+| [lib/domain/usecases/get_database_length.dart](/lib/domain/usecases/get_database_length.dart) | Dart | -12 | 0 | -4 | -16 |
+| [lib/domain/usecases/get_low_quantity_parts.dart](/lib/domain/usecases/get_low_quantity_parts.dart) | Dart | -46 | 0 | -7 | -53 |
+| [lib/domain/usecases/get_part_by_name.dart](/lib/domain/usecases/get_part_by_name.dart) | Dart | -32 | 0 | -5 | -37 |
+| [lib/domain/usecases/get_part_by_nsn.dart](/lib/domain/usecases/get_part_by_nsn.dart) | Dart | -32 | 0 | -5 | -37 |
+| [lib/domain/usecases/get_part_by_part_number.dart](/lib/domain/usecases/get_part_by_part_number.dart) | Dart | -32 | 0 | -5 | -37 |
+| [lib/domain/usecases/get_part_by_serial_number.dart](/lib/domain/usecases/get_part_by_serial_number.dart) | Dart | -32 | 0 | -5 | -37 |
+| [lib/domain/usecases/usecases_bucket.dart](/lib/domain/usecases/usecases_bucket.dart) | Dart | -11 | 0 | -1 | -12 |
+| [lib/main.dart](/lib/main.dart) | Dart | -12 | 0 | -3 | -15 |
+| [lib/presentation/dependency_check/app.dart](/lib/presentation/dependency_check/app.dart) | Dart | -43 | 0 | -4 | -47 |
+| [lib/presentation/dependency_check/cubit/dependency_check_cubit.dart](/lib/presentation/dependency_check/cubit/dependency_check_cubit.dart) | Dart | -101 | -12 | -23 | -136 |
+| [lib/presentation/dependency_check/cubit/dependency_check_state.dart](/lib/presentation/dependency_check/cubit/dependency_check_state.dart) | Dart | -19 | -1 | -4 | -24 |
+| [lib/presentation/dependency_check/cubit/dependency_check_state.freezed.dart](/lib/presentation/dependency_check/cubit/dependency_check_state.freezed.dart) | Dart | -225 | -15 | -23 | -263 |
+| [lib/presentation/pages/add_part/cubit/add_part_cubit.dart](/lib/presentation/pages/add_part/cubit/add_part_cubit.dart) | Dart | -115 | -15 | -10 | -140 |
+| [lib/presentation/pages/add_part/cubit/add_part_state.dart](/lib/presentation/pages/add_part/cubit/add_part_state.dart) | Dart | -32 | -1 | -4 | -37 |
+| [lib/presentation/pages/add_part/cubit/add_part_state.freezed.dart](/lib/presentation/pages/add_part/cubit/add_part_state.freezed.dart) | Dart | -398 | -15 | -23 | -436 |
+| [lib/presentation/pages/add_part/view/add_part_view.dart](/lib/presentation/pages/add_part/view/add_part_view.dart) | Dart | -154 | -6 | -10 | -170 |
+| [lib/presentation/pages/checkout/cubit/checkout_cubit.dart](/lib/presentation/pages/checkout/cubit/checkout_cubit.dart) | Dart | -51 | 0 | -11 | -62 |
+| [lib/presentation/pages/checkout/cubit/checkout_state.dart](/lib/presentation/pages/checkout/cubit/checkout_state.dart) | Dart | -19 | -1 | -4 | -24 |
+| [lib/presentation/pages/checkout/cubit/checkout_state.freezed.dart](/lib/presentation/pages/checkout/cubit/checkout_state.freezed.dart) | Dart | -150 | -16 | -24 | -190 |
+| [lib/presentation/pages/checkout/view/build_checkout_section.dart](/lib/presentation/pages/checkout/view/build_checkout_section.dart) | Dart | 0 | 0 | -1 | -1 |
+| [lib/presentation/pages/checkout/view/checkout_view.dart](/lib/presentation/pages/checkout/view/checkout_view.dart) | Dart | -132 | -2 | -4 | -138 |
+| [lib/presentation/pages/home_page/cubit/home_page_cubit.dart](/lib/presentation/pages/home_page/cubit/home_page_cubit.dart) | Dart | -5 | 0 | -2 | -7 |
+| [lib/presentation/pages/home_page/cubit/home_page_state.dart](/lib/presentation/pages/home_page/cubit/home_page_state.dart) | Dart | -20 | -1 | -4 | -25 |
+| [lib/presentation/pages/home_page/cubit/home_page_state.freezed.dart](/lib/presentation/pages/home_page/cubit/home_page_state.freezed.dart) | Dart | -142 | -15 | -23 | -180 |
+| [lib/presentation/pages/home_page/view/home_page_buttons.dart](/lib/presentation/pages/home_page/view/home_page_buttons.dart) | Dart | 0 | 0 | -1 | -1 |
+| [lib/presentation/pages/home_page/view/home_page_view.dart](/lib/presentation/pages/home_page/view/home_page_view.dart) | Dart | -55 | 0 | -4 | -59 |
+| [lib/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart](/lib/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart) | Dart | -120 | -19 | -21 | -160 |
+| [lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart](/lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart) | Dart | -29 | -1 | -4 | -34 |
+| [lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.freezed.dart](/lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.freezed.dart) | Dart | -284 | -19 | -27 | -330 |
+| [lib/presentation/pages/manage_inventory/view/check_out_part_page_view.dart](/lib/presentation/pages/manage_inventory/view/check_out_part_page_view.dart) | Dart | -135 | -2 | -7 | -144 |
+| [lib/presentation/pages/manage_inventory/view/manage_inventory_view.dart](/lib/presentation/pages/manage_inventory/view/manage_inventory_view.dart) | Dart | -128 | 0 | -4 | -132 |
+| [lib/presentation/pages/manage_inventory/view/part_page_view.dart](/lib/presentation/pages/manage_inventory/view/part_page_view.dart) | Dart | -122 | 0 | -8 | -130 |
+| [lib/presentation/pages/pages_bucket.dart](/lib/presentation/pages/pages_bucket.dart) | Dart | -2 | 0 | -1 | -3 |
+| [lib/presentation/pages/part_view/cubit/part_view_cubit.dart](/lib/presentation/pages/part_view/cubit/part_view_cubit.dart) | Dart | 0 | 0 | -1 | -1 |
+| [lib/presentation/pages/part_view/cubit/part_view_state.dart](/lib/presentation/pages/part_view/cubit/part_view_state.dart) | Dart | -20 | -1 | -4 | -25 |
+| [lib/presentation/pages/part_view/cubit/part_view_state.freezed.dart](/lib/presentation/pages/part_view/cubit/part_view_state.freezed.dart) | Dart | -143 | -15 | -23 | -181 |
+| [lib/presentation/pages/search_results/cubit/search_results_cubit.dart](/lib/presentation/pages/search_results/cubit/search_results_cubit.dart) | Dart | -134 | -17 | -18 | -169 |
+| [lib/presentation/pages/search_results/cubit/search_results_state.dart](/lib/presentation/pages/search_results/cubit/search_results_state.dart) | Dart | -29 | -1 | -4 | -34 |
+| [lib/presentation/pages/search_results/cubit/search_results_state.freezed.dart](/lib/presentation/pages/search_results/cubit/search_results_state.freezed.dart) | Dart | -316 | -20 | -28 | -364 |
+| [lib/presentation/pages/search_results/view/add_to_cart_dialog.dart](/lib/presentation/pages/search_results/view/add_to_cart_dialog.dart) | Dart | -89 | -2 | -5 | -96 |
+| [lib/presentation/pages/search_results/view/cart_drawer.dart](/lib/presentation/pages/search_results/view/cart_drawer.dart) | Dart | -91 | -6 | -5 | -102 |
+| [lib/presentation/pages/search_results/view/part_not_found.dart](/lib/presentation/pages/search_results/view/part_not_found.dart) | Dart | -13 | 0 | -3 | -16 |
+| [lib/presentation/pages/search_results/view/search_results_section.dart](/lib/presentation/pages/search_results/view/search_results_section.dart) | Dart | -52 | -2 | -2 | -56 |
+| [lib/presentation/pages/search_results/view/search_results_view.dart](/lib/presentation/pages/search_results/view/search_results_view.dart) | Dart | -142 | -4 | -9 | -155 |
+| [lib/presentation/utils/number_input_formatter.dart](/lib/presentation/utils/number_input_formatter.dart) | Dart | -12 | -2 | -3 | -17 |
+| [lib/presentation/utils/text_input_formatter.dart](/lib/presentation/utils/text_input_formatter.dart) | Dart | -19 | -3 | -4 | -26 |
+| [lib/presentation/utils/utils_bucket.dart](/lib/presentation/utils/utils_bucket.dart) | Dart | -3 | -1 | -2 | -6 |
+| [lib/presentation/utils/validator.dart](/lib/presentation/utils/validator.dart) | Dart | -16 | -1 | -2 | -19 |
+| [lib/presentation/widgets/buttons/large_button_widget.dart](/lib/presentation/widgets/buttons/large_button_widget.dart) | Dart | -21 | 0 | -2 | -23 |
+| [lib/presentation/widgets/buttons/small_button_widget.dart](/lib/presentation/widgets/buttons/small_button_widget.dart) | Dart | -25 | 0 | -2 | -27 |
+| [lib/presentation/widgets/dialogs/go_to_homeview_dialog.dart](/lib/presentation/widgets/dialogs/go_to_homeview_dialog.dart) | Dart | -30 | 0 | -2 | -32 |
+| [lib/presentation/widgets/form/drop_down_widget.dart](/lib/presentation/widgets/form/drop_down_widget.dart) | Dart | 0 | 0 | -1 | -1 |
+| [lib/presentation/widgets/form/form_fields_widget.dart](/lib/presentation/widgets/form/form_fields_widget.dart) | Dart | -44 | 0 | -2 | -46 |
+| [lib/presentation/widgets/generic_app_bar_widget.dart](/lib/presentation/widgets/generic_app_bar_widget.dart) | Dart | -36 | -2 | -3 | -41 |
+| [lib/presentation/widgets/loaded_successfully_widget.dart](/lib/presentation/widgets/loaded_successfully_widget.dart) | Dart | -17 | -2 | -3 | -22 |
+| [lib/presentation/widgets/loading_widget.dart](/lib/presentation/widgets/loading_widget.dart) | Dart | -10 | -2 | -3 | -15 |
+| [lib/presentation/widgets/part_display_card_widget.dart](/lib/presentation/widgets/part_display_card_widget.dart) | Dart | -49 | 0 | -2 | -51 |
+| [lib/presentation/widgets/search_bar_widget.dart](/lib/presentation/widgets/search_bar_widget.dart) | Dart | -35 | 0 | -3 | -38 |
+| [lib/presentation/widgets/widget_bucket.dart](/lib/presentation/widgets/widget_bucket.dart) | Dart | -4 | 0 | -1 | -5 |
+| [lib/route_generator.dart](/lib/route_generator.dart) | Dart | -49 | -1 | -5 | -55 |
+| [lib/service_locator.dart](/lib/service_locator.dart) | Dart | -68 | -9 | -9 | -86 |
+| [lib/theme.dart](/lib/theme.dart) | Dart | -222 | -1 | -8 | -231 |
+| [test/data/datasource/datasource.dart](/test/data/datasource/datasource.dart) | Dart | 203 | 65 | 45 | 313 |
+| [test/data/repositories/part_repository_test.dart](/test/data/repositories/part_repository_test.dart) | Dart | 476 | 200 | 98 | 774 |
+| [test/domain/usecases/add_part_usecase_test.dart](/test/domain/usecases/add_part_usecase_test.dart) | Dart | 42 | 7 | 9 | 58 |
+| [test/domain/usecases/checkout/add_checkout_part_test.dart](/test/domain/usecases/checkout/add_checkout_part_test.dart) | Dart | 71 | 0 | 9 | 80 |
+| [test/domain/usecases/checkout/get_all_checkout_parts_test.dart](/test/domain/usecases/checkout/get_all_checkout_parts_test.dart) | Dart | 56 | 0 | 8 | 64 |
+| [test/domain/usecases/checkout/get_most_recent_checkout_parts_test.dart](/test/domain/usecases/checkout/get_most_recent_checkout_parts_test.dart) | Dart | 0 | 0 | 1 | 1 |
+| [test/domain/usecases/checkout/get_unverified_checkout_parts_test.dart](/test/domain/usecases/checkout/get_unverified_checkout_parts_test.dart) | Dart | 56 | 0 | 8 | 64 |
+| [test/domain/usecases/checkout/verify_checkout_part_test.dart](/test/domain/usecases/checkout/verify_checkout_part_test.dart) | Dart | 58 | 2 | 15 | 75 |
+| [test/domain/usecases/delete_part_usecase_test.dart](/test/domain/usecases/delete_part_usecase_test.dart) | Dart | 40 | 7 | 9 | 56 |
+| [test/domain/usecases/edit_part_usecase_test.dart](/test/domain/usecases/edit_part_usecase_test.dart) | Dart | 40 | 7 | 9 | 56 |
+| [test/domain/usecases/get_all_part_usecase_test.dart](/test/domain/usecases/get_all_part_usecase_test.dart) | Dart | 58 | 7 | 9 | 74 |
+| [test/domain/usecases/get_low_quantity_parts_test.dart](/test/domain/usecases/get_low_quantity_parts_test.dart) | Dart | 49 | 0 | 15 | 64 |
+| [test/domain/usecases/get_part_by_name_usecase_test.dart](/test/domain/usecases/get_part_by_name_usecase_test.dart) | Dart | 47 | 6 | 7 | 60 |
+| [test/domain/usecases/get_part_by_nsn_usecase_test.dart](/test/domain/usecases/get_part_by_nsn_usecase_test.dart) | Dart | 45 | 10 | 8 | 63 |
+| [test/domain/usecases/get_part_by_part_number_usecase_test.dart](/test/domain/usecases/get_part_by_part_number_usecase_test.dart) | Dart | 48 | 10 | 8 | 66 |
+| [test/domain/usecases/get_part_by_serial_number_usecase_test.dart](/test/domain/usecases/get_part_by_serial_number_usecase_test.dart) | Dart | 48 | 10 | 8 | 66 |
+| [test/presentation/dependency_check/app_test.dart](/test/presentation/dependency_check/app_test.dart) | Dart | 0 | 0 | 1 | 1 |
+| [test/presentation/dependency_check/cubit/dependency_cubit_test.dart](/test/presentation/dependency_check/cubit/dependency_cubit_test.dart) | Dart | 238 | 51 | 26 | 315 |
+| [test/presentation/pages/add_part/cubit/add_part_cubit_test.dart](/test/presentation/pages/add_part/cubit/add_part_cubit_test.dart) | Dart | 339 | 73 | 59 | 471 |
+| [test/presentation/pages/home_page/cubit/home_page_cubit_test.dart](/test/presentation/pages/home_page/cubit/home_page_cubit_test.dart) | Dart | 15 | 0 | 3 | 18 |
+| [test/presentation/pages/manage_inventory/cubit/manage_inventory_test.dart](/test/presentation/pages/manage_inventory/cubit/manage_inventory_test.dart) | Dart | 314 | 80 | 46 | 440 |
+| [test/presentation/pages/search_page/cubit/search_part_cubit_test.dart](/test/presentation/pages/search_page/cubit/search_part_cubit_test.dart) | Dart | 175 | 13 | 19 | 207 |
+| [test/setup.dart](/test/setup.dart) | Dart | 215 | 1 | 7 | 223 |
+| [test/widget_test.dart](/test/widget_test.dart) | Dart | 0 | 0 | 2 | 2 |
+
+[Summary](results.md) / [Details](details.md) / [Diff Summary](diff.md) / Diff Details
