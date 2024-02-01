@@ -41,10 +41,10 @@ abstract class LocalDataSource {
 class LocalDataSourceImplementation extends LocalDataSource {
   ///Takes a instance of the open [Box]
   LocalDataSourceImplementation(Box<Map<String, dynamic>> localStorage)
-      : _localDataSourceLogger = Logger('Local_Database'),
+      : _logger = Logger('Local_Database'),
         _localStorage = localStorage;
   final Box<Map<String, dynamic>> _localStorage;
-  final Logger _localDataSourceLogger;
+  final Logger _logger;
 
   Map<String, dynamic> _removeIndex(Map<String, dynamic> data) {
     var newData = Map<String, dynamic>.from(data);
@@ -61,7 +61,10 @@ class LocalDataSourceImplementation extends LocalDataSource {
   Map<String, dynamic> _addIndex(Map<String, dynamic> data) {
     var newData = Map<String, dynamic>.from(data);
     if (!data.containsKey('index')) {
-      newData['index'] = _localStorage.keys.toList().indexOf(data);
+      _logger.finest('found index _addIndex() is: ');
+      var index = _localStorage.values.toList().indexOf(data);
+      _logger.finest('found index _addIndex() is: $index');
+      newData['index'] = index;
     }
     return newData;
   }
@@ -76,10 +79,9 @@ class LocalDataSourceImplementation extends LocalDataSource {
   Future<void> createData({required Map<String, dynamic> newData}) async {
     try {
       await _localStorage.add(_removeIndex(newData));
-      _localDataSourceLogger.finest('added new data entry $newData?[nsn]');
+      _logger.finest('added new data entry $newData?[nsn]');
     } catch (e) {
-      _localDataSourceLogger
-          .warning('error encountered adding data, message: $e');
+      _logger.warning('error encountered adding data, message: $e');
       throw CreateDataException();
     }
   }
@@ -87,35 +89,37 @@ class LocalDataSourceImplementation extends LocalDataSource {
   @override
   Future<void> deleteData({required int index}) async {
     if (!_indexWithinBounds(index)) {
-      _localDataSourceLogger.warning('error encountered deleting data $index');
+      _logger.warning('error encountered deleting data $index');
       throw DeleteDataException();
     }
     await _localStorage.deleteAt(index);
-    _localDataSourceLogger.finest('deleted data $index');
+    _logger.finest('deleted data $index');
   }
 
   @override
   Future<Map<String, dynamic>> readData({required int index}) async {
-    _localDataSourceLogger.finest('retrieve data from storage at $index');
+    _logger.finest('retrieve data from storage at $index');
 
     if (!_indexWithinBounds(index)) {
-      _localDataSourceLogger.warning('error encountered reading data $index');
+      _logger.warning('error encountered reading data $index');
       throw ReadDataException();
     }
 
-    final Map<String, dynamic>? data = _localStorage.getAt(index);
-    return data != null ? _addIndex(data) : {};
+    Map<String, dynamic>? data = _localStorage.getAt(index);
+    data = data ?? {};
+    data['index'] = index;
+    return data;
   }
 
   @override
   Future<void> updateData(
       {required Map<String, dynamic> updatedData, required int index}) async {
     if (!_indexWithinBounds(index)) {
-      _localDataSourceLogger.warning('error encountered updating data $index');
+      _logger.warning('error encountered updating data $index');
       throw UpdateDataException();
     }
 
-    _localDataSourceLogger.finest('updating data in storage at $index');
+    _logger.finest('updating data in storage at $index');
     return _localStorage.putAt(index, updatedData);
   }
 
@@ -123,11 +127,11 @@ class LocalDataSourceImplementation extends LocalDataSource {
   Future<List<Map<String, dynamic>>> queryData(
       {required String fieldName, required String queryKey}) async {
     if (!_localStorage.containsKey(fieldName)) {
-      _localDataSourceLogger.warning('error encountered  querying the dataset');
+      _logger.warning('error encountered  querying the dataset');
       throw ReadDataException();
     }
     final String cleanQuery = _cleanKey(queryKey);
-    _localDataSourceLogger.finest('searching for $queryKey in database');
+    _logger.finest('searching for $queryKey in database');
     List<Map<String, dynamic>> parts = _localStorage.values.where((data) {
       bool match = _cleanKey(data[fieldName]).contains(cleanQuery);
       return match;
