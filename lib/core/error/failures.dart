@@ -31,7 +31,7 @@ class CreateDataFailure extends Failure {
   ///Takes an error message that is then passed to the super class
   ///by default the error message is
   ///[Unable to store your info in the database, please try again later.]
-  const CreateDataFailure(
+  CreateDataFailure(
       {String errMsg =
           'Unable to store your info in the database, please try again later.'})
       : super(errorMessage: errMsg);
@@ -72,5 +72,13 @@ class GetFailure extends Failure {
       {String errMsg =
           // ignore: lines_longer_than_80_chars
           'Location permissions are permanently denied, we cannot request permissions.'})
+      : super(errorMessage: errMsg);
+}
+
+///Returned when a variable is out of bounds of a specified constraint
+class OutOfBoundsFailure extends Failure {
+  ///
+  OutOfBoundsFailure(
+      {String errMsg = 'The value was out of the constraint bounds'})
       : super(errorMessage: errMsg);
 }
