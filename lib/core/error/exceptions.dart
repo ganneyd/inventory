@@ -17,5 +17,5 @@ class ReadDataException implements Exception {}
 ///from the database
 class DeleteDataException implements Exception {}
 
-//Thrown when an index is out of the specified bounds
+///Thrown when an index is out of the specified bounds
 class IndexOutOfBounds implements Exception {}
