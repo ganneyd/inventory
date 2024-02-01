@@ -4,7 +4,7 @@ import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:inventory_v1/data/datasources/local_database.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'setup.dart';
+import '../../setup.dart';
 
 // Class to mock the Hive box for testing purposes
 class MockHiveBox extends Mock implements Box<Map<String, dynamic>> {}
