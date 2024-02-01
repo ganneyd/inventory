@@ -16,14 +16,13 @@ class ManageInventory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
-        create: (_) => ManageInventoryCubit(
-            partRepository: locator<PartRepositoryImplementation>())
-          ..init(),
+        create: (_) =>
+            ManageInventoryCubit(locator<PartRepositoryImplementation>())
+              ..init(),
         child: BlocBuilder<ManageInventoryCubit, ManageInventoryState>(
           builder: (context, state) {
             SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-              if (state.manageInventoryStateStatus ==
-                  ManageInventoryStateStatus.loading) {
+              if (state.status == ManageInventoryStateStatus.loading) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.blue,
                     duration: Durations.short4,
@@ -31,14 +30,14 @@ class ManageInventory extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     )));
               }
-              if (state.manageInventoryStateStatus ==
+              if (state.status ==
                   ManageInventoryStateStatus.fetchedDataSuccessfully) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.green,
                     duration: Duration(milliseconds: 100),
                     content: Icon(Icons.check)));
               }
-              if (state.manageInventoryStateStatus ==
+              if (state.status ==
                   ManageInventoryStateStatus.fetchedDataUnsuccessfully) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red,
@@ -47,7 +46,7 @@ class ManageInventory extends StatelessWidget {
               }
             });
 
-            if (state.manageInventoryStateStatus ==
+            if (state.status ==
                 ManageInventoryStateStatus.loadedUnsuccessfully) {
               return const Center(
                 child: Text('Unable to load data'),
@@ -62,14 +61,14 @@ class ManageInventory extends StatelessWidget {
                   )),
               body: ListView.builder(
                 controller: state.scrollController,
-                itemCount: state.part.length,
+                itemCount: state.parts.length,
                 itemBuilder: (context, index) {
                   _logger.finest('Loading part $index into view');
                   return PartCardDisplay(
-                      nsn: state.part[index].index.toString(),
-                      checkedOutAmount: state.part[index].quantity.toString(),
-                      location: state.part[index].location,
-                      partName: state.part[index].name);
+                      nsn: state.parts[index].index.toString(),
+                      checkedOutAmount: index.toString(),
+                      location: state.parts[index].location,
+                      partName: state.parts[index].name);
                 },
               ),
             );
