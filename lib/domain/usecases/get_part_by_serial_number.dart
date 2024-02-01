@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 
 class GetPartBySerialNumberUsecase

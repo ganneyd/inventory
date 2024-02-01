@@ -1,13 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/models/part/part_model.dart';
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/delete_part.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../data/datasource/setup.dart';
+import '../../setup.dart';
 
 //class to mock the part repository for testing purposes
 class MockPartRepository extends Mock implements PartRepository {}
@@ -44,7 +44,7 @@ void main() {
 
     test('should return Failure upon error deleting the part', () async {
       when(() => mockPartRepository.deletePart(typicalPartEntity)).thenAnswer(
-          (invocation) async => const Left<Failure, void>(CreateDataFailure()));
+          (invocation) async => Left<Failure, void>(CreateDataFailure()));
 
       var results =
           await sut.call(DeletePartParams(partEntity: typicalPartEntity));
