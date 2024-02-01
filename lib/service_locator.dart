@@ -1,8 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/data/datasources/local_database.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:logging/logging.dart';
@@ -12,9 +12,10 @@ const String boxName = 'newParts';
 
 final GetIt locator = GetIt.instance;
 Logger serviceLocatorLogger = Logger('service_locator');
+
+//initialize various dependencies
 Future<void> initDependencies() async {
   serviceLocatorLogger = Logger('service_logga');
-  WidgetsFlutterBinding.ensureInitialized();
   await initHive();
   serviceLocatorLogger.finest('initializing service locator');
   await setupLocator();

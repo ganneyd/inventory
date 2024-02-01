@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 
 ///Deals with all the [Part] related calls to the APIS and external services
 abstract class PartRepository {
