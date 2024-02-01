@@ -4,7 +4,5 @@ import 'package:inventory_v1/presentation/pages/home_page/cubit/home_page_state.
 
 class HomePageCubit extends Cubit<HomePageState> {
   HomePageCubit({required PartRepository partRepository})
-      : _partRepository = partRepository,
-        super(HomePageState());
-  final PartRepository _partRepository;
+      : super(HomePageState());
 }
