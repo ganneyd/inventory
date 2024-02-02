@@ -9,6 +9,9 @@ abstract class PartRepository {
   static const String partNumberField = 'partNumber';
   static const String partSerialNumberField = 'serialNumber';
 
+  ///Returns the number of items in the database
+  Future<Either<Failure, int>> getDatabaseLength();
+
   ///Creates a part in the inventory database using the [partEntity] passed
   Future<Either<Failure, void>> createPart(PartEntity partEntity);
 
