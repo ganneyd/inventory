@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/presentation/cubit/dependency_check_cubit.dart';
-import 'package:inventory_v1/presentation/cubit/dependency_check_state.dart';
+import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_cubit.dart';
+import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_state.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/route_generator.dart';
 
