@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
+import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 import 'package:inventory_v1/service_locator.dart';
 import 'package:logging/logging.dart';
@@ -21,8 +22,17 @@ class ManageInventory extends StatelessWidget {
               ..init(),
         child: BlocBuilder<ManageInventoryCubit, ManageInventoryState>(
           builder: (context, state) {
+            if (state.status == ManageInventoryStateStatus.loading) {
+              return const LoadingView();
+            }
+            if (state.status ==
+                ManageInventoryStateStatus.loadedUnsuccessfully) {
+              return const Center(
+                child: Text('Unable to load data'),
+              );
+            }
             SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-              if (state.status == ManageInventoryStateStatus.loading) {
+              if (state.status == ManageInventoryStateStatus.fetchingData) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.blue,
                     duration: Durations.short4,
@@ -33,9 +43,12 @@ class ManageInventory extends StatelessWidget {
               if (state.status ==
                   ManageInventoryStateStatus.fetchedDataSuccessfully) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    backgroundColor: Colors.green,
-                    duration: Duration(milliseconds: 100),
-                    content: Icon(Icons.check)));
+                  backgroundColor: Colors.green,
+                  duration: Duration(milliseconds: 10),
+                  content: SizedBox(
+                    height: 5,
+                  ),
+                ));
               }
               if (state.status ==
                   ManageInventoryStateStatus.fetchedDataUnsuccessfully) {
@@ -46,12 +59,6 @@ class ManageInventory extends StatelessWidget {
               }
             });
 
-            if (state.status ==
-                ManageInventoryStateStatus.loadedUnsuccessfully) {
-              return const Center(
-                child: Text('Unable to load data'),
-              );
-            }
             return Scaffold(
               appBar: AppBar(
                   title: const Text('Manage Inventory'),
@@ -65,10 +72,12 @@ class ManageInventory extends StatelessWidget {
                 itemBuilder: (context, index) {
                   _logger.finest('Loading part $index into view');
                   return PartCardDisplay(
-                      nsn: state.parts[index].index.toString(),
-                      checkedOutAmount: index.toString(),
-                      location: state.parts[index].location,
-                      partName: state.parts[index].name);
+                    nsn: state.parts[index].nsn,
+                    checkedOutAmount: index.toString(),
+                    location: state.parts[index].location,
+                    partName: state.parts[index].serialNumber,
+                    unitOfIssue: state.parts[index].unitOfIssue,
+                  );
                 },
               ),
             );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/presentation/cubit/dependency_check_cubit.dart';
 import 'package:inventory_v1/presentation/cubit/dependency_check_state.dart';
+import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/route_generator.dart';
 
 class App extends StatelessWidget {
@@ -23,13 +24,10 @@ class App extends StatelessWidget {
             });
 
             return Scaffold(
-              body: state.dependencyCheckStateStatus ==
-                      DependencyCheckStateStatus.loadedUnsuccessfully
-                  ? Text(state.error != null ? state.error! : ' ')
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-            );
+                body: state.dependencyCheckStateStatus ==
+                        DependencyCheckStateStatus.loadedUnsuccessfully
+                    ? Text(state.error != null ? state.error! : ' ')
+                    : const LoadingView());
           },
         ),
       ),
