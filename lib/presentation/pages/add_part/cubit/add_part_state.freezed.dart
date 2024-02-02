@@ -18,6 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AddPartState {
   Part? get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
+  GlobalKey<FormState> get formKey => throw _privateConstructorUsedError;
+  bool get isFormValid => throw _privateConstructorUsedError;
+  UnitOfIssue get unitOfIssue => throw _privateConstructorUsedError;
   TextEditingController get nsnController => throw _privateConstructorUsedError;
   TextEditingController get partNumberController =>
       throw _privateConstructorUsedError;
@@ -26,8 +29,6 @@ mixin _$AddPartState {
   TextEditingController get nomenclatureController =>
       throw _privateConstructorUsedError;
   TextEditingController get locationController =>
-      throw _privateConstructorUsedError;
-  TextEditingController get unitOfIssueController =>
       throw _privateConstructorUsedError;
   TextEditingController get quantityController =>
       throw _privateConstructorUsedError;
@@ -51,12 +52,14 @@ abstract class $AddPartStateCopyWith<$Res> {
   $Res call(
       {Part? part,
       String? error,
+      GlobalKey<FormState> formKey,
+      bool isFormValid,
+      UnitOfIssue unitOfIssue,
       TextEditingController nsnController,
       TextEditingController partNumberController,
       TextEditingController serialNumberController,
       TextEditingController nomenclatureController,
       TextEditingController locationController,
-      TextEditingController unitOfIssueController,
       TextEditingController quantityController,
       TextEditingController requisitionPointController,
       TextEditingController requisitionQuantityController,
@@ -80,12 +83,14 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
   $Res call({
     Object? part = freezed,
     Object? error = freezed,
+    Object? formKey = null,
+    Object? isFormValid = null,
+    Object? unitOfIssue = null,
     Object? nsnController = null,
     Object? partNumberController = null,
     Object? serialNumberController = null,
     Object? nomenclatureController = null,
     Object? locationController = null,
-    Object? unitOfIssueController = null,
     Object? quantityController = null,
     Object? requisitionPointController = null,
     Object? requisitionQuantityController = null,
@@ -100,6 +105,18 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
+      formKey: null == formKey
+          ? _value.formKey
+          : formKey // ignore: cast_nullable_to_non_nullable
+              as GlobalKey<FormState>,
+      isFormValid: null == isFormValid
+          ? _value.isFormValid
+          : isFormValid // ignore: cast_nullable_to_non_nullable
+              as bool,
+      unitOfIssue: null == unitOfIssue
+          ? _value.unitOfIssue
+          : unitOfIssue // ignore: cast_nullable_to_non_nullable
+              as UnitOfIssue,
       nsnController: null == nsnController
           ? _value.nsnController
           : nsnController // ignore: cast_nullable_to_non_nullable
@@ -119,10 +136,6 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
       locationController: null == locationController
           ? _value.locationController
           : locationController // ignore: cast_nullable_to_non_nullable
-              as TextEditingController,
-      unitOfIssueController: null == unitOfIssueController
-          ? _value.unitOfIssueController
-          : unitOfIssueController // ignore: cast_nullable_to_non_nullable
               as TextEditingController,
       quantityController: null == quantityController
           ? _value.quantityController
@@ -167,12 +180,14 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
   $Res call(
       {Part? part,
       String? error,
+      GlobalKey<FormState> formKey,
+      bool isFormValid,
+      UnitOfIssue unitOfIssue,
       TextEditingController nsnController,
       TextEditingController partNumberController,
       TextEditingController serialNumberController,
       TextEditingController nomenclatureController,
       TextEditingController locationController,
-      TextEditingController unitOfIssueController,
       TextEditingController quantityController,
       TextEditingController requisitionPointController,
       TextEditingController requisitionQuantityController,
@@ -195,12 +210,14 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? part = freezed,
     Object? error = freezed,
+    Object? formKey = null,
+    Object? isFormValid = null,
+    Object? unitOfIssue = null,
     Object? nsnController = null,
     Object? partNumberController = null,
     Object? serialNumberController = null,
     Object? nomenclatureController = null,
     Object? locationController = null,
-    Object? unitOfIssueController = null,
     Object? quantityController = null,
     Object? requisitionPointController = null,
     Object? requisitionQuantityController = null,
@@ -215,6 +232,18 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
+      formKey: null == formKey
+          ? _value.formKey
+          : formKey // ignore: cast_nullable_to_non_nullable
+              as GlobalKey<FormState>,
+      isFormValid: null == isFormValid
+          ? _value.isFormValid
+          : isFormValid // ignore: cast_nullable_to_non_nullable
+              as bool,
+      unitOfIssue: null == unitOfIssue
+          ? _value.unitOfIssue
+          : unitOfIssue // ignore: cast_nullable_to_non_nullable
+              as UnitOfIssue,
       nsnController: null == nsnController
           ? _value.nsnController
           : nsnController // ignore: cast_nullable_to_non_nullable
@@ -234,10 +263,6 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
       locationController: null == locationController
           ? _value.locationController
           : locationController // ignore: cast_nullable_to_non_nullable
-              as TextEditingController,
-      unitOfIssueController: null == unitOfIssueController
-          ? _value.unitOfIssueController
-          : unitOfIssueController // ignore: cast_nullable_to_non_nullable
               as TextEditingController,
       quantityController: null == quantityController
           ? _value.quantityController
@@ -264,12 +289,14 @@ class _$AddPartStateImpl implements _AddPartState {
   _$AddPartStateImpl(
       {this.part,
       this.error,
+      required this.formKey,
+      this.isFormValid = false,
+      this.unitOfIssue = UnitOfIssue.EA,
       required this.nsnController,
       required this.partNumberController,
       required this.serialNumberController,
       required this.nomenclatureController,
       required this.locationController,
-      required this.unitOfIssueController,
       required this.quantityController,
       required this.requisitionPointController,
       required this.requisitionQuantityController,
@@ -280,6 +307,14 @@ class _$AddPartStateImpl implements _AddPartState {
   @override
   final String? error;
   @override
+  final GlobalKey<FormState> formKey;
+  @override
+  @JsonKey()
+  final bool isFormValid;
+  @override
+  @JsonKey()
+  final UnitOfIssue unitOfIssue;
+  @override
   final TextEditingController nsnController;
   @override
   final TextEditingController partNumberController;
@@ -289,8 +324,6 @@ class _$AddPartStateImpl implements _AddPartState {
   final TextEditingController nomenclatureController;
   @override
   final TextEditingController locationController;
-  @override
-  final TextEditingController unitOfIssueController;
   @override
   final TextEditingController quantityController;
   @override
@@ -303,7 +336,7 @@ class _$AddPartStateImpl implements _AddPartState {
 
   @override
   String toString() {
-    return 'AddPartState(part: $part, error: $error, nsnController: $nsnController, partNumberController: $partNumberController, serialNumberController: $serialNumberController, nomenclatureController: $nomenclatureController, locationController: $locationController, unitOfIssueController: $unitOfIssueController, quantityController: $quantityController, requisitionPointController: $requisitionPointController, requisitionQuantityController: $requisitionQuantityController, addPartStateStatus: $addPartStateStatus)';
+    return 'AddPartState(part: $part, error: $error, formKey: $formKey, isFormValid: $isFormValid, unitOfIssue: $unitOfIssue, nsnController: $nsnController, partNumberController: $partNumberController, serialNumberController: $serialNumberController, nomenclatureController: $nomenclatureController, locationController: $locationController, quantityController: $quantityController, requisitionPointController: $requisitionPointController, requisitionQuantityController: $requisitionQuantityController, addPartStateStatus: $addPartStateStatus)';
   }
 
   @override
@@ -313,6 +346,11 @@ class _$AddPartStateImpl implements _AddPartState {
             other is _$AddPartStateImpl &&
             (identical(other.part, part) || other.part == part) &&
             (identical(other.error, error) || other.error == error) &&
+            (identical(other.formKey, formKey) || other.formKey == formKey) &&
+            (identical(other.isFormValid, isFormValid) ||
+                other.isFormValid == isFormValid) &&
+            (identical(other.unitOfIssue, unitOfIssue) ||
+                other.unitOfIssue == unitOfIssue) &&
             (identical(other.nsnController, nsnController) ||
                 other.nsnController == nsnController) &&
             (identical(other.partNumberController, partNumberController) ||
@@ -323,8 +361,6 @@ class _$AddPartStateImpl implements _AddPartState {
                 other.nomenclatureController == nomenclatureController) &&
             (identical(other.locationController, locationController) ||
                 other.locationController == locationController) &&
-            (identical(other.unitOfIssueController, unitOfIssueController) ||
-                other.unitOfIssueController == unitOfIssueController) &&
             (identical(other.quantityController, quantityController) ||
                 other.quantityController == quantityController) &&
             (identical(other.requisitionPointController,
@@ -344,12 +380,14 @@ class _$AddPartStateImpl implements _AddPartState {
       runtimeType,
       part,
       error,
+      formKey,
+      isFormValid,
+      unitOfIssue,
       nsnController,
       partNumberController,
       serialNumberController,
       nomenclatureController,
       locationController,
-      unitOfIssueController,
       quantityController,
       requisitionPointController,
       requisitionQuantityController,
@@ -366,12 +404,14 @@ abstract class _AddPartState implements AddPartState {
   factory _AddPartState(
       {final Part? part,
       final String? error,
+      required final GlobalKey<FormState> formKey,
+      final bool isFormValid,
+      final UnitOfIssue unitOfIssue,
       required final TextEditingController nsnController,
       required final TextEditingController partNumberController,
       required final TextEditingController serialNumberController,
       required final TextEditingController nomenclatureController,
       required final TextEditingController locationController,
-      required final TextEditingController unitOfIssueController,
       required final TextEditingController quantityController,
       required final TextEditingController requisitionPointController,
       required final TextEditingController requisitionQuantityController,
@@ -382,6 +422,12 @@ abstract class _AddPartState implements AddPartState {
   @override
   String? get error;
   @override
+  GlobalKey<FormState> get formKey;
+  @override
+  bool get isFormValid;
+  @override
+  UnitOfIssue get unitOfIssue;
+  @override
   TextEditingController get nsnController;
   @override
   TextEditingController get partNumberController;
@@ -391,8 +437,6 @@ abstract class _AddPartState implements AddPartState {
   TextEditingController get nomenclatureController;
   @override
   TextEditingController get locationController;
-  @override
-  TextEditingController get unitOfIssueController;
   @override
   TextEditingController get quantityController;
   @override
