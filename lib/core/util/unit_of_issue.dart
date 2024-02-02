@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 part 'unit_of_issue.g.dart';
 
@@ -34,4 +35,19 @@ enum UnitOfIssue {
   ///USED IF A PART  ISSUE IS NOT SPECIFIED OR UNKNOWN
   @HiveField(6)
   NOT_SPECIFIED
+}
+
+extension UnitOfIssueExtension on UnitOfIssue {
+  String get displayValue {
+    return toString().split('.').last; // Returns only the enum value
+  }
+
+  static List<DropdownMenuEntry<UnitOfIssue>> enumToDropDownEntries() {
+    var values = UnitOfIssue.values.toList();
+    values.removeLast();
+    return values.map((value) {
+      return DropdownMenuEntry<UnitOfIssue>(
+          value: value, label: value.displayValue);
+    }).toList();
+  }
 }
