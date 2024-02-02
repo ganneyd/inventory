@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_cubit.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
+import 'package:inventory_v1/presentation/utils/utils_bucket.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
 class AddPartView extends StatelessWidget {
@@ -41,18 +43,7 @@ class AddPartView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AddPartCubit>(
-        create: (_) => AddPartCubit(AddPartState(
-              addPartStateStatus: AddPartStateStatus.loadedSuccessfully,
-              locationController: TextEditingController(),
-              nsnController: TextEditingController(),
-              nomenclatureController: TextEditingController(),
-              partNumberController: TextEditingController(),
-              requisitionPointController: TextEditingController(),
-              requisitionQuantityController: TextEditingController(),
-              quantityController: TextEditingController(),
-              unitOfIssueController: TextEditingController(),
-              serialNumberController: TextEditingController(),
-            )),
+        create: (_) => AddPartCubit(),
         child:
             BlocBuilder<AddPartCubit, AddPartState>(builder: (context, state) {
           if (state.addPartStateStatus == AddPartStateStatus.loading) {
@@ -73,7 +64,7 @@ class AddPartView extends StatelessWidget {
                 AddPartStateStatus.createdDataSuccessfully) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   duration: const Duration(milliseconds: 100),
-                  content: Text('created part : ${state.part}')));
+                  content: Text('created part : ${state.part?.nsn}')));
             }
             if (state.addPartStateStatus ==
                 AddPartStateStatus.createdDataUnsuccessfully) {
@@ -95,58 +86,74 @@ class AddPartView extends StatelessWidget {
               body: SizedBox(
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _wrapWithPadding([
-                          CustomTextField(
-                              controller: state.nsnController, hintText: 'NSN'),
-                          CustomTextField(
-                              controller: state.nomenclatureController,
-                              hintText: 'NOMENCLATURE'),
-                        ], paddingValue),
-                        _wrapWithPadding([
-                          CustomTextField(
-                              controller: state.partNumberController,
-                              hintText: 'PART NO.'),
-                          CustomTextField(
-                              controller: state.locationController,
-                              hintText: 'LOCATION'),
-                        ], paddingValue),
-                        _wrapWithPadding([
-                          CustomTextField(
-                              controller: state.serialNumberController,
-                              hintText: 'SERIAL NUMBER'),
-                          CustomTextField(
-                              controller: state.unitOfIssueController,
-                              hintText: 'UNIT OF ISSUE'),
-                        ], paddingValue),
-                        _wrapWithPadding([
-                          CustomTextField(
-                              controller: state.quantityController,
-                              hintText: 'QUANTITY'),
-                          CustomTextField(
-                              controller: state.requisitionQuantityController,
-                              hintText: 'REQUISITION OBJ'),
-                          CustomTextField(
-                              controller: state.requisitionPointController,
-                              hintText: 'REQUISITION POINT'),
-                        ], paddingValue),
-                        _wrapWithPadding([
-                          SmallButton(
-                              buttonName: 'Add Part',
-                              onPressed: () {
-                                BlocProvider.of<AddPartCubit>(context)
-                                    .savePart();
-                              }),
-                          SmallButton(
-                              buttonName: 'Apply',
-                              onPressed: () {
-                                BlocProvider.of<AddPartCubit>(context)
-                                    .applyPart();
-                              }),
-                        ], paddingValue)
-                      ])),
+                  child: Form(
+                    key: state.formKey,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _wrapWithPadding([
+                            CustomTextField(
+                                maxLength: 16,
+                                inputFormatter: [NSNInputFormatter()],
+                                controller: state.nsnController,
+                                hintText: 'NSN'),
+                            CustomTextField(
+                                controller: state.nomenclatureController,
+                                hintText: 'NOMENCLATURE'),
+                          ], paddingValue),
+                          _wrapWithPadding([
+                            CustomTextField(
+                                controller: state.partNumberController,
+                                hintText: 'PART NO.'),
+                            CustomTextField(
+                                controller: state.locationController,
+                                hintText: 'LOCATION'),
+                          ], paddingValue),
+                          _wrapWithPadding([
+                            CustomTextField(
+                                validation: (value) => null,
+                                controller: state.serialNumberController,
+                                hintText: 'SERIAL NUMBER'),
+                            DropdownMenu<UnitOfIssue>(
+                                initialSelection: state.unitOfIssue,
+                                onSelected: (value) =>
+                                    BlocProvider.of<AddPartCubit>(context)
+                                        .dropDownMenuHandler(
+                                            value ?? UnitOfIssue.NOT_SPECIFIED),
+                                dropdownMenuEntries: UnitOfIssueExtension
+                                    .enumToDropDownEntries()),
+                          ], paddingValue),
+                          _wrapWithPadding([
+                            CustomTextField(
+                                isNumberInput: true,
+                                controller: state.quantityController,
+                                hintText: 'QUANTITY'),
+                            CustomTextField(
+                                isNumberInput: true,
+                                controller: state.requisitionQuantityController,
+                                hintText: 'REQUISITION OBJ'),
+                            CustomTextField(
+                                isNumberInput: true,
+                                controller: state.requisitionPointController,
+                                hintText: 'REQUISITION POINT'),
+                          ], paddingValue),
+                          _wrapWithPadding([
+                            SmallButton(
+                                isDisabled: !state.isFormValid,
+                                buttonName: 'Add Part',
+                                onPressed: () {
+                                  BlocProvider.of<AddPartCubit>(context)
+                                      .savePart();
+                                }),
+                            SmallButton(
+                                buttonName: 'Apply',
+                                onPressed: () {
+                                  BlocProvider.of<AddPartCubit>(context)
+                                      .applyPart();
+                                }),
+                          ], paddingValue)
+                        ]),
+                  )),
             );
           });
         }));
