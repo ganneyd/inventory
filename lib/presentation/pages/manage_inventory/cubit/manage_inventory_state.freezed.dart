@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ManageInventoryState {
+  int get databaseLength => throw _privateConstructorUsedError;
   ScrollController get scrollController => throw _privateConstructorUsedError;
   List<Part> get parts => throw _privateConstructorUsedError;
   dynamic get error => throw _privateConstructorUsedError;
@@ -33,7 +34,8 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
       _$ManageInventoryStateCopyWithImpl<$Res, ManageInventoryState>;
   @useResult
   $Res call(
-      {ScrollController scrollController,
+      {int databaseLength,
+      ScrollController scrollController,
       List<Part> parts,
       dynamic error,
       ManageInventoryStateStatus status});
@@ -53,12 +55,17 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? databaseLength = null,
     Object? scrollController = null,
     Object? parts = null,
     Object? error = freezed,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
+      databaseLength: null == databaseLength
+          ? _value.databaseLength
+          : databaseLength // ignore: cast_nullable_to_non_nullable
+              as int,
       scrollController: null == scrollController
           ? _value.scrollController
           : scrollController // ignore: cast_nullable_to_non_nullable
@@ -88,7 +95,8 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {ScrollController scrollController,
+      {int databaseLength,
+      ScrollController scrollController,
       List<Part> parts,
       dynamic error,
       ManageInventoryStateStatus status});
@@ -105,12 +113,17 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? databaseLength = null,
     Object? scrollController = null,
     Object? parts = null,
     Object? error = freezed,
     Object? status = null,
   }) {
     return _then(_$ManageInventoryStateImpl(
+      databaseLength: null == databaseLength
+          ? _value.databaseLength
+          : databaseLength // ignore: cast_nullable_to_non_nullable
+              as int,
       scrollController: null == scrollController
           ? _value.scrollController
           : scrollController // ignore: cast_nullable_to_non_nullable
@@ -132,12 +145,16 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
 
 class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
-      {required this.scrollController,
+      {this.databaseLength = 0,
+      required this.scrollController,
       final List<Part> parts = const <Part>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
       : _parts = parts;
 
+  @override
+  @JsonKey()
+  final int databaseLength;
   @override
   final ScrollController scrollController;
   final List<Part> _parts;
@@ -158,7 +175,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
+    return 'ManageInventoryState(databaseLength: $databaseLength, scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
   }
 
   @override
@@ -166,6 +183,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ManageInventoryStateImpl &&
+            (identical(other.databaseLength, databaseLength) ||
+                other.databaseLength == databaseLength) &&
             (identical(other.scrollController, scrollController) ||
                 other.scrollController == scrollController) &&
             const DeepCollectionEquality().equals(other._parts, _parts) &&
@@ -176,6 +195,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      databaseLength,
       scrollController,
       const DeepCollectionEquality().hash(_parts),
       const DeepCollectionEquality().hash(error),
@@ -192,11 +212,14 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
 abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
-      {required final ScrollController scrollController,
+      {final int databaseLength,
+      required final ScrollController scrollController,
       final List<Part> parts,
       final dynamic error,
       final ManageInventoryStateStatus status}) = _$ManageInventoryStateImpl;
 
+  @override
+  int get databaseLength;
   @override
   ScrollController get scrollController;
   @override
