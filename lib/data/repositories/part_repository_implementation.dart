@@ -198,4 +198,14 @@ class PartRepositoryImplementation extends PartRepository {
       return const Left<Failure, List<PartEntity>>(ReadDataFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, int>> getDatabaseLength() async {
+    try {
+      var length = _localDataSource.length;
+      return Right<Failure, int>(length);
+    } catch (e) {
+      return const Left<Failure, int>(ReadDataFailure());
+    }
+  }
 }
