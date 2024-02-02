@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
-import 'package:inventory_v1/presentation/cubit/dependency_check_state.dart';
+import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_state.dart';
 import 'package:inventory_v1/service_locator.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
