@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/util.dart';
+import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_cubit.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
 import 'package:inventory_v1/presentation/utils/utils_bucket.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
+import 'package:inventory_v1/service_locator.dart';
 
 class AddPartView extends StatelessWidget {
   const AddPartView() : super(key: const Key('add-part-view-constructor'));
@@ -43,7 +45,17 @@ class AddPartView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AddPartCubit>(
-        create: (_) => AddPartCubit(),
+        create: (_) => AddPartCubit(
+            addPartUsecase: locator<AddPartUsecase>(),
+            formKey: GlobalKey<FormState>(),
+            nsnController: TextEditingController(),
+            nomenclatureController: TextEditingController(),
+            partNumberController: TextEditingController(),
+            requisitionPointController: TextEditingController(),
+            requisitionQuantityController: TextEditingController(),
+            quantityController: TextEditingController(),
+            serialNumberController: TextEditingController(),
+            locationController: TextEditingController()),
         child:
             BlocBuilder<AddPartCubit, AddPartState>(builder: (context, state) {
           if (state.addPartStateStatus == AddPartStateStatus.loading) {
