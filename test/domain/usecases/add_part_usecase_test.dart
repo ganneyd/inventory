@@ -34,7 +34,7 @@ void main() {
   group('.call()', () {
     test('should return void upon creating the part successfully', () async {
       when(() => mockPartRepository.createPart(typicalPartEntity))
-          .thenAnswer((invocation) async => const Right<Failure, void>(null));
+          .thenAnswer((_) async => const Right<Failure, void>(null));
 
       var results =
           await sut.call(AddPartParams(partEntity: typicalPartEntity));
