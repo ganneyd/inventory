@@ -9,10 +9,10 @@ class ValuesForTest {
       'nsn': '5310-00-023-9878',
       'location': 'V1A2B',
       'quantity': 30,
-      'requisitionPoint': 1,
+      'requisitionPoint': 10,
       'requisitionQuantity': 1,
       'serialNumber': 'SY12938',
-      'unitOfIssue': 'EA',
+      'unitOfIssue': 'HD',
     },
     {
       'name': 'BOLT, HEX',
