@@ -1,34 +1,57 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
-import 'package:inventory_v1/service_locator.dart';
 
 class AddPartCubit extends Cubit<AddPartState> {
-  AddPartCubit()
-      : _addPartUsecase = locator<AddPartUsecase>(),
-        super(AddPartState(
-          formKey: GlobalKey<FormState>(),
-          addPartStateStatus: AddPartStateStatus.loadedSuccessfully,
-          locationController: TextEditingController(),
-          nsnController: TextEditingController(),
-          nomenclatureController: TextEditingController(),
-          partNumberController: TextEditingController(),
-          requisitionPointController: TextEditingController(),
-          requisitionQuantityController: TextEditingController(),
-          quantityController: TextEditingController(),
-          serialNumberController: TextEditingController(),
-        ));
+  final AddPartUsecase addPartUsecase;
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nsnController;
+  final TextEditingController nomenclatureController;
+  final TextEditingController partNumberController;
+  final TextEditingController requisitionPointController;
+  final TextEditingController requisitionQuantityController;
+  final TextEditingController quantityController;
+  final TextEditingController serialNumberController;
+  final TextEditingController locationController;
 
-  final AddPartUsecase _addPartUsecase;
+  AddPartCubit({
+    required this.addPartUsecase,
+    required this.formKey,
+    required this.nsnController,
+    required this.nomenclatureController,
+    required this.partNumberController,
+    required this.requisitionPointController,
+    required this.requisitionQuantityController,
+    required this.quantityController,
+    required this.serialNumberController,
+    required this.locationController,
+  }) : super(
+          AddPartState(
+            formKey: formKey,
+            addPartStateStatus: AddPartStateStatus.loadedSuccessfully,
+            locationController: locationController,
+            nsnController: nsnController,
+            nomenclatureController: nomenclatureController,
+            partNumberController: partNumberController,
+            requisitionPointController: requisitionPointController,
+            requisitionQuantityController: requisitionQuantityController,
+            quantityController: quantityController,
+            serialNumberController: serialNumberController,
+          ),
+        );
 
   ///method to save parts by emitting new state with the part
   void savePart() async {
     //first apply() the part to check validation
     applyPart();
-    var results = await _addPartUsecase(AddPartParams(partEntity: _getPart()));
+
+    var results =
+        await addPartUsecase.call(AddPartParams(partEntity: state.part!));
 
     results.fold(
         //emit failure
@@ -41,29 +64,37 @@ class AddPartCubit extends Cubit<AddPartState> {
       _clearForm();
       //emit success
       emit(state.copyWith(
+          error: 'success creating part',
           isFormValid: false,
           addPartStateStatus: AddPartStateStatus.createdDataSuccessfully));
     });
   }
 
   void applyPart() {
-    //emit that the data is being created
-    emit(state.copyWith(addPartStateStatus: AddPartStateStatus.creatingData));
     //check that the form is valid first
-    if (state.formKey.currentState!.validate()) {
-      //if its valid then emit the part with the state and update that the form
-      //is valid now
-      emit(state.copyWith(
-          isFormValid: true,
-          part: _getPart(),
-          addPartStateStatus: AddPartStateStatus.loadedSuccessfully));
-      //if its not valid emit new status
+    if (state.formKey.currentState != null) {
+      if (state.formKey.currentState!.validate()) {
+        //if its valid then emit the part with the state and update that the form
+        //is valid now
+        emit(state.copyWith(
+            isFormValid: true,
+            part: _getPart(),
+            addPartStateStatus: AddPartStateStatus.loadedSuccessfully));
+        //if its not valid emit new status
+      } else {
+        //tell the user what the error was
+        //form is not valid
+        emit(state.copyWith(
+            isFormValid: false,
+            error: 'Please enter correct values',
+            addPartStateStatus: AddPartStateStatus.loadedUnsuccessfully));
+      }
     } else {
       //tell the user what the error was
       //form is not valid
       emit(state.copyWith(
           isFormValid: false,
-          error: 'Please enter correct values',
+          error: 'Error encountered trying to save form, please try again',
           addPartStateStatus: AddPartStateStatus.loadedUnsuccessfully));
     }
   }
@@ -80,7 +111,8 @@ class AddPartCubit extends Cubit<AddPartState> {
             ? 'N/A'
             : state.serialNumberController.text,
         requisitionPoint: int.parse(state.requisitionPointController.text),
-        requisitionQuantity: int.parse(state.requisitionPointController.text),
+        requisitionQuantity:
+            int.parse(state.requisitionQuantityController.text),
         quantity: int.parse(state.quantityController.text),
         nsn: state.nsnController.text,
         partNumber: state.partNumberController.text,
