@@ -4,20 +4,20 @@ import 'package:inventory_v1/domain/models/part/part_model.dart';
 class ValuesForTest {
   List<Map<String, dynamic>> partsList = [
     {
-      'name': 'SCREW,MACHINE',
-      'partNumber': 'MS38483-1-12',
-      'nsn': '5310-00-023-9878',
+      'name': 'SCREW,SEQUENCE',
+      'partNumber': 'MS40483-1-12',
+      'nsn': '5310-00-024-9878',
       'location': 'V1A2B',
       'quantity': 30,
       'requisitionPoint': 10,
       'requisitionQuantity': 1,
-      'serialNumber': 'SY12938',
+      'serialNumber': 'SY13938',
       'unitOfIssue': 'HD',
     },
     {
       'name': 'BOLT, HEX',
-      'partNumber': 'MS38483-1-13',
-      'nsn': '5310-00-023-9879',
+      'partNumber': 'MS41483-1-13',
+      'nsn': '5310-00-223-9849',
       'location': 'V1A2C',
       'quantity': 25,
       'requisitionPoint': 2,
@@ -27,8 +27,8 @@ class ValuesForTest {
     },
     {
       'name': 'NUT, HEX',
-      'partNumber': 'MS38483-1-14',
-      'nsn': '5310-00-023-9880',
+      'partNumber': 'MS40483-1-14',
+      'nsn': '5310-00-024-9878',
       'location': 'V1A2D',
       'quantity': 40,
       'requisitionPoint': 3,
@@ -61,12 +61,12 @@ class ValuesForTest {
     {
       'name': 'BOLT, SQUARE',
       'partNumber': 'MS38483-1-17',
-      'nsn': '5310-00-023-9883',
+      'nsn': '5310-00-023-9878',
       'location': 'V1A2G',
       'quantity': 28,
       'requisitionPoint': 6,
       'requisitionQuantity': 1,
-      'serialNumber': 'SY12943',
+      'serialNumber': 'SY13943',
       'unitOfIssue': 'EA',
     },
     {
