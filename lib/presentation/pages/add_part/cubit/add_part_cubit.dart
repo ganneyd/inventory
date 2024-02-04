@@ -1,7 +1,5 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
@@ -50,24 +48,26 @@ class AddPartCubit extends Cubit<AddPartState> {
     //first apply() the part to check validation
     applyPart();
 
-    var results =
-        await addPartUsecase.call(AddPartParams(partEntity: state.part!));
+    if (state.isFormValid) {
+      var results =
+          await addPartUsecase.call(AddPartParams(partEntity: state.part!));
 
-    results.fold(
-        //emit failure
-        (l) => emit(state.copyWith(
+      results.fold(
+          //emit failure
+          (l) => emit(state.copyWith(
+              isFormValid: false,
+              error: l.errorMessage,
+              addPartStateStatus:
+                  AddPartStateStatus.createdDataUnsuccessfully)), (r) {
+        //clear form
+        _clearForm();
+        //emit success
+        emit(state.copyWith(
+            error: 'success creating part',
             isFormValid: false,
-            error: l.errorMessage,
-            addPartStateStatus: AddPartStateStatus.createdDataUnsuccessfully)),
-        (r) {
-      //clear form
-      _clearForm();
-      //emit success
-      emit(state.copyWith(
-          error: 'success creating part',
-          isFormValid: false,
-          addPartStateStatus: AddPartStateStatus.createdDataSuccessfully));
-    });
+            addPartStateStatus: AddPartStateStatus.createdDataSuccessfully));
+      });
+    }
   }
 
   void applyPart() {
