@@ -19,6 +19,8 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
   }
   final Logger _dependencyCubitLogger;
   Logger getLogger() => _dependencyCubitLogger;
+
+  ///Attempts to either retrieve/create or check that dependencies exists or can be accessed
   Future<void> checkDependencies() async {
     await Future.delayed(const Duration(seconds: 1));
     _dependencyCubitLogger.finest('checking if dependencies are good');
