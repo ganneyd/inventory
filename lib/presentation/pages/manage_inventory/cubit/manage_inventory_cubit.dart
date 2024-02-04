@@ -2,35 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/domain/models/part/part_model.dart';
-import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:logging/logging.dart';
 
 class ManageInventoryCubit extends Cubit<ManageInventoryState> {
-  ManageInventoryCubit(PartRepository partRepository)
-      : _getAllPartsUsecase = GetAllPartsUsecase(partRepository),
-        _getDatabaseLength = GetDatabaseLength(partRepository),
-        _logger = Logger('manage-inv-cubit'),
-        super(ManageInventoryState(scrollController: ScrollController()));
+  ManageInventoryCubit(
+      {int fetchPartAmount = 20,
+      required this.getAllPartsUsecase,
+      required this.getDatabaseLength,
+      required ScrollController scrollController})
+      : _logger = Logger('manage-inv-cubit'),
+        super(ManageInventoryState(
+            scrollController: scrollController,
+            fetchPartAmount: fetchPartAmount));
 
   //usecase init
-  final GetAllPartsUsecase _getAllPartsUsecase;
-  final GetDatabaseLength _getDatabaseLength;
+  final GetAllPartsUsecase getAllPartsUsecase;
+  final GetDatabaseLength getDatabaseLength;
   //for debugging
   final Logger _logger;
+
+  ///Method uses the [GetAllPartsUsecase] to retrieve the parts lazily
   void loadParts() async {
     //set the indexes that the parts should be gotten from
     var startIndex = state.parts.length;
     //retrieve 20 elements at a time
-    var pageIndex = startIndex + 50;
+    var pageIndex = startIndex + state.fetchPartAmount;
     //get the current list of parts
     List<Part> oldList = state.parts.toList();
     //!debug
     _logger
         .finest('loading parts, startIndex:$startIndex pageIndex:$pageIndex');
 
-    var results = await _getAllPartsUsecase
+    var results = await getAllPartsUsecase
         .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
 
     //unfold the results and return proper data to the UI
@@ -55,14 +60,17 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
   //initialization method
   void init() async {
-    var length = await _getDatabaseLength.call(NoParams());
-    length.fold((l) => 0, (r) => emit(state.copyWith(databaseLength: r)));
+    var length = await getDatabaseLength.call(NoParams());
     //load up the first 20 parts
     //tell the UI the data is loading
-    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
+    length.fold(
+        (l) => emit(state.copyWith(databaseLength: 0)),
+        (r) => emit(state.copyWith(
+            databaseLength: r, status: ManageInventoryStateStatus.loading)));
+
     loadParts();
     //initialize the scroll controller callback function
-    state.scrollController.addListener(() => _fetchMoreParts());
+    state.scrollController.addListener(_fetchMoreParts);
   }
 
   //method to fetch more parts when the user scrolls to the end of the list
@@ -72,7 +80,6 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
             state.scrollController.position.maxScrollExtent &&
         state.parts.length < state.databaseLength) {
       emit(state.copyWith(status: ManageInventoryStateStatus.fetchingData));
-      await Future.delayed(Durations.short1);
       loadParts();
     }
   }
