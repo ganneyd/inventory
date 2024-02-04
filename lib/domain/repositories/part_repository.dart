@@ -2,13 +2,29 @@ import 'package:dartz/dartz.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
 
+///Represents the different fields that are searchable in the database
+enum PartField {
+  ///NSN field
+  nsn,
+
+  ///NAME
+  name,
+
+  ///PART NUMBER
+  partNumber,
+
+  ///SERIAL NUMBER
+  serialNumber
+}
+
+extension PartFieldExtension on PartField {
+  String get displayValue {
+    return toString().split('.').last; // Returns only the enum value
+  }
+}
+
 ///Deals with all the [Part] related calls to the APIS and external services
 abstract class PartRepository {
-  static const String partNsnField = 'nsn';
-  static const String partNameField = 'name';
-  static const String partNumberField = 'partNumber';
-  static const String partSerialNumberField = 'serialNumber';
-
   ///Returns the number of items in the database
   Future<Either<Failure, int>> getDatabaseLength();
 
@@ -21,7 +37,7 @@ abstract class PartRepository {
 
   ///Retrieves a particular part using the part National Stock Number [NSN]
   Future<Either<Failure, List<PartEntity>>> searchPartsByField({
-    required String fieldName,
+    required PartField fieldName,
     required String queryKey,
   });
 
