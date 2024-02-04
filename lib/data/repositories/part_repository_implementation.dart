@@ -145,14 +145,34 @@ class PartRepositoryImplementation extends PartRepository {
   }
 
   String _cleanKey(String key) {
+    // Create a new string 'cleanKey' by removing all non-alphanumeric characters from 'key'
+    // This is done using a regular expression that matches any character that is NOT a letter (a-zA-Z) or a number (0-9)
+    // The 'r' before the string indicates a raw string, which treats backslashes as literal characters
     var cleanKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-    cleanKey.replaceAll("-", "");
+    // Return the sanitized 'cleanKey' string
     return cleanKey;
+  }
+
+  String _removeNumbers(String input) {
+    // Use a regular expression to match and remove all digits (0-9) from the input string
+    // The 'r' before the string indicates a raw string, which treats backslashes as literal characters
+    // '[0-9]' is a character class that matches any digit between 0 and 9
+    // The 'replaceAll' function replaces all substrings that match the pattern with an empty string, effectively removing them
+    String result = input.replaceAll(RegExp(r'[0-9]'), '');
+    return result; // Return the modified string with digits removed, leaving only letters and possibly other characters
+  }
+
+  String _removeLetters(String input) {
+    // Use a regular expression to match and remove all letters (both lowercase and uppercase) from the input string
+    // The regular expression '[a-zA-Z]' matches any character in the ranges 'a-z' or 'A-Z', which includes all lowercase and uppercase letters
+    // The 'replaceAll' function replaces all substrings that match the pattern (letters in this case) with an empty string, effectively removing them
+    String result = input.replaceAll(RegExp(r'[a-zA-Z]'), '');
+    return result; // Return the modified string with letters removed, leaving only digits and possibly other non-letter characters
   }
 
   @override
   Future<Either<Failure, List<PartEntity>>> searchPartsByField(
-      {required String fieldName, required String queryKey}) async {
+      {required PartField fieldName, required String queryKey}) async {
     try {
       List<PartEntity> parts = [];
       _logger.finest(
@@ -174,14 +194,25 @@ class PartRepositoryImplementation extends PartRepository {
       _logger.finest('searching for $queryKey in database');
       parts = _localDataSource.values.where((data) {
         switch (fieldName) {
-          case PartRepository.partNameField:
-            return _cleanKey(data.name).contains(cleanQuery);
-          case PartRepository.partNsnField:
-            return _cleanKey(data.nsn).contains(cleanQuery);
-          case PartRepository.partNumberField:
-            return _cleanKey(data.name).contains(cleanQuery);
-          case PartRepository.partSerialNumberField:
-            return _cleanKey(data.serialNumber).contains(cleanQuery);
+          case PartField.name:
+            var searchKey =
+                _removeNumbers(_removeNumbers(cleanQuery.toLowerCase()));
+            if (searchKey == '') {
+              return false;
+            }
+            return _cleanKey(data.name.toLowerCase()).contains(searchKey);
+          case PartField.nsn:
+            var searchKey = _removeLetters(cleanQuery);
+            if (searchKey == '') {
+              return false;
+            }
+            return _cleanKey(data.nsn).contains(searchKey);
+          case PartField.partNumber:
+            return _cleanKey(data.partNumber.toLowerCase())
+                .contains(cleanQuery.toLowerCase());
+          case PartField.serialNumber:
+            return _cleanKey(data.serialNumber.toLowerCase())
+                .contains(cleanQuery.toLowerCase());
           default:
             return false;
         }
