@@ -18,6 +18,7 @@ enum ManageInventoryStateStatus {
 @freezed
 class ManageInventoryState with _$ManageInventoryState {
   factory ManageInventoryState({
+    @Default(20) int fetchPartAmount,
     @Default(0) int databaseLength,
     required ScrollController scrollController,
     @Default(<Part>[]) List<Part> parts,

@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ManageInventoryState {
+  int get fetchPartAmount => throw _privateConstructorUsedError;
   int get databaseLength => throw _privateConstructorUsedError;
   ScrollController get scrollController => throw _privateConstructorUsedError;
 <<<<<<< HEAD
@@ -41,7 +42,8 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
       _$ManageInventoryStateCopyWithImpl<$Res, ManageInventoryState>;
   @useResult
   $Res call(
-      {int databaseLength,
+      {int fetchPartAmount,
+      int databaseLength,
       ScrollController scrollController,
       List<Part> parts,
       dynamic error,
@@ -63,6 +65,7 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? fetchPartAmount = null,
     Object? databaseLength = null,
     Object? scrollController = null,
 <<<<<<< HEAD
@@ -74,6 +77,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
+      fetchPartAmount: null == fetchPartAmount
+          ? _value.fetchPartAmount
+          : fetchPartAmount // ignore: cast_nullable_to_non_nullable
+              as int,
       databaseLength: null == databaseLength
           ? _value.databaseLength
           : databaseLength // ignore: cast_nullable_to_non_nullable
@@ -113,7 +120,8 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int databaseLength,
+      {int fetchPartAmount,
+      int databaseLength,
       ScrollController scrollController,
       List<Part> parts,
       dynamic error,
@@ -132,6 +140,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? fetchPartAmount = null,
     Object? databaseLength = null,
     Object? scrollController = null,
 <<<<<<< HEAD
@@ -143,6 +152,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
     Object? status = null,
   }) {
     return _then(_$ManageInventoryStateImpl(
+      fetchPartAmount: null == fetchPartAmount
+          ? _value.fetchPartAmount
+          : fetchPartAmount // ignore: cast_nullable_to_non_nullable
+              as int,
       databaseLength: null == databaseLength
           ? _value.databaseLength
           : databaseLength // ignore: cast_nullable_to_non_nullable
@@ -182,13 +195,17 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
 
 class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
-      {this.databaseLength = 0,
+      {this.fetchPartAmount = 20,
+      this.databaseLength = 0,
       required this.scrollController,
       final List<Part> parts = const <Part>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
       : _parts = parts;
 
+  @override
+  @JsonKey()
+  final int fetchPartAmount;
   @override
   @JsonKey()
   final int databaseLength;
@@ -213,7 +230,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(databaseLength: $databaseLength, scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
+    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, databaseLength: $databaseLength, scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
   }
 
   @override
@@ -221,6 +238,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ManageInventoryStateImpl &&
+            (identical(other.fetchPartAmount, fetchPartAmount) ||
+                other.fetchPartAmount == fetchPartAmount) &&
             (identical(other.databaseLength, databaseLength) ||
                 other.databaseLength == databaseLength) &&
             (identical(other.scrollController, scrollController) ||
@@ -242,6 +261,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      fetchPartAmount,
       databaseLength,
       scrollController,
 <<<<<<< HEAD
@@ -265,12 +285,15 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
 abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
-      {final int databaseLength,
+      {final int fetchPartAmount,
+      final int databaseLength,
       required final ScrollController scrollController,
       final List<Part> parts,
       final dynamic error,
       final ManageInventoryStateStatus status}) = _$ManageInventoryStateImpl;
 
+  @override
+  int get fetchPartAmount;
   @override
   int get databaseLength;
   @override
