@@ -322,5 +322,544 @@ void main() {
       verify(() => mockDatasource.delete(any())).called(1);
     });
   });
-  group('.searchPartsByField()', () {});
+  group('.searchPartsByField() nsn', () {
+    void mockSetUp() {
+      when(() => mockDatasource.containsKey(PartField.nsn))
+          .thenAnswer((invocation) => true);
+
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => valuesForTest.parts());
+    }
+
+    test('matches the query nsn 9878', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: '9878');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 3 parts that match the query
+      expect(resultPartList.length, 3);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[2]);
+      expect(resultPartList[2], valuesForTest.parts()[5]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+
+    test('matches the query regardless of letters', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: '9878');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 3 parts that match the query
+      expect(resultPartList.length, 3);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[2]);
+      expect(resultPartList[2], valuesForTest.parts()[5]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+    test('matches the query regardless of special characters ', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: '#*@#-0-024-98(*78');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 2 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[2]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+
+    test('no match found', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: '7634829048');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultPartList.length, 0);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+
+    test('no match found when query is all letters', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: 'no-match');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultPartList.length, 0);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+
+    test('ReadDataException() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.containsKey(PartField.nsn))
+          .thenAnswer((invocation) => throw ReadDataException());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      //this method shouldn't be called
+      verifyNever(() => mockDatasource.values);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+
+    test('Exception() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => throw Exception());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.nsn, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
+    });
+  });
+
+  group('.searchPartsByField() name', () {
+    void mockSetUp() {
+      when(() => mockDatasource.containsKey(PartField.name))
+          .thenAnswer((invocation) => true);
+
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => valuesForTest.parts());
+    }
+
+    test('matches the query regardless of case name ScRew', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: 'ScRew');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //check the type of the result
+      expect(results, isA<Right<Failure, List<PartEntity>>>());
+      //based on the query provided and the data we have in the setup
+      //there is only 3 parts that match the query
+      expect(resultPartList.length, 3);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[4]);
+      expect(resultPartList[2], valuesForTest.parts()[8]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+
+    test('matches the query regardless of special characters', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: '-@!#&*#)-ScreW-,,,se');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 2 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[8]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+
+    test('matches the query regardless of numbers', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: '-98938-ScreW-,,,se');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 2 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[8]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+
+    test('no match found', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: 'no-match');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultPartList.length, 0);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+
+    test('no match found when query is all numbers ', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: '3424566');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultPartList.length, 0);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+
+    test('ReadDataException() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.containsKey(PartField.name))
+          .thenAnswer((invocation) => throw ReadDataException());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      //this method shouldn't be called
+      verifyNever(() => mockDatasource.values);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+
+    test('Exception() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => throw Exception());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.name, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
+    });
+  });
+
+  group('.searchPartsByField() part number', () {
+    void mockSetUp() {
+      when(() => mockDatasource.containsKey(PartField.partNumber))
+          .thenAnswer((invocation) => true);
+
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => valuesForTest.parts());
+    }
+
+    test('matches the query regardless of case', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.partNumber, queryKey: 'Ms40483-1');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //check the type of the result
+      expect(results, isA<Right<Failure, List<PartEntity>>>());
+      //based on the query provided and the data we have in the setup
+      //there is only 3 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[2]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
+    });
+
+    test('matches the query regardless of special characters', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.partNumber, queryKey: '@#)()m*(S4)0');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 2 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[2]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
+    });
+
+    test('no match found', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.partNumber, queryKey: 'no-match');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultPartList.length, 0);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
+    });
+
+    test('ReadDataException() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.containsKey(PartField.partNumber))
+          .thenAnswer((invocation) => throw ReadDataException());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.partNumber, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      //this method shouldn't be called
+      verifyNever(() => mockDatasource.values);
+      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
+    });
+
+    test('Exception() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => throw Exception());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.partNumber, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
+    });
+  });
+
+  group('.searchPartsByField() serial number', () {
+    void mockSetUp() {
+      when(() => mockDatasource.containsKey(PartField.serialNumber))
+          .thenAnswer((invocation) => true);
+
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => valuesForTest.parts());
+    }
+
+    test('matches the query regardless of case', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.serialNumber, queryKey: 'sY13');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //check the type of the result
+      expect(results, isA<Right<Failure, List<PartEntity>>>());
+      //based on the query provided and the data we have in the setup
+      //there is only 3 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[5]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.serialNumber))
+          .called(1);
+    });
+
+    test('matches the query regardless of special characters', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.serialNumber, queryKey: '@#)()s*(Y)13');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is only 2 parts that match the query
+      expect(resultPartList.length, 2);
+      expect(resultPartList[0], valuesForTest.parts()[0]);
+      expect(resultPartList[1], valuesForTest.parts()[5]);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.serialNumber))
+          .called(1);
+    });
+
+    test('no match found', () async {
+      //setup
+      mockSetUp();
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.serialNumber, queryKey: 'no-match');
+
+      //extract the returned list
+      var resultPartList = <PartEntity>[];
+
+      results.fold((l) => null, (r) => resultPartList = r);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultPartList.length, 0);
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.serialNumber))
+          .called(1);
+    });
+
+    test('ReadDataException() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.containsKey(PartField.serialNumber))
+          .thenAnswer((invocation) => throw ReadDataException());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.serialNumber, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      //this method shouldn't be called
+      verifyNever(() => mockDatasource.values);
+      verify(() => mockDatasource.containsKey(PartField.serialNumber))
+          .called(1);
+    });
+
+    test('Exception() handling', () async {
+      //setup
+      mockSetUp();
+      when(() => mockDatasource.values)
+          .thenAnswer((invocation) => throw Exception());
+      //await the results
+      var results = await sut.searchPartsByField(
+          fieldName: PartField.serialNumber, queryKey: 'no-match');
+
+      Failure resultFailure = const GetFailure();
+
+      results.fold((l) => resultFailure = l, (r) => null);
+      //based on the query provided and the data we have in the setup
+      //there is no parts that matches the query
+      expect(resultFailure, const ReadDataFailure());
+      //verify that the appropriate methods from the datasource was used
+      verify(() => mockDatasource.values).called(1);
+      verify(() => mockDatasource.containsKey(PartField.serialNumber))
+          .called(1);
+    });
+  });
 }
