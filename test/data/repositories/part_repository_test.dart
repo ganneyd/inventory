@@ -90,7 +90,7 @@ void main() {
     });
   });
 
-  group('getAllParts', () {
+  group('getAllParts()', () {
     //setup mock calls for the tests
     void mockSetup() {
       when(() => mockDatasource.length)
@@ -190,4 +190,137 @@ void main() {
       verify(() => mockDatasource.getAt(startIndex)).called(1);
     });
   });
+
+  group('.getDatabaseLength()', () {
+    test('Should return the length of the database', () async {
+      //setup
+      when(() => mockDatasource.length)
+          .thenAnswer((invocation) => valuesForTest.parts().length);
+
+      var results = await sut.getDatabaseLength();
+      int length = 0;
+
+      results.fold((l) => null, (r) => length = r);
+      //results should be a Right
+      expect(results, isA<Right<Failure, int>>());
+      //the returned length should be equal to the .parts() length
+      expect(length, valuesForTest.parts().length);
+
+      //verify that the datasource length was called
+      verify(() => mockDatasource.length).called(1);
+    });
+
+    test('Should return ReadDataFailure()', () async {
+      //setup
+      when(() => mockDatasource.length)
+          .thenAnswer((invocation) => throw Exception());
+
+      var results = await sut.getDatabaseLength();
+
+      //results should be a Left
+      expect(results, isA<Left<Failure, int>>());
+
+      //verify that the datasource length was called
+      verify(() => mockDatasource.length).called(1);
+    });
+  });
+
+  group('.editPart()', () {
+    test('Should return Right<Failure,void>', () async {
+      when(() => mockDatasource.putAt(
+              any(that: isA<int>()), any(that: isA<PartEntity>())))
+          .thenAnswer((invocation) async {});
+      var results = await sut.editPart(typicalPartEntity);
+      expect(results, isA<Right<Failure, void>>());
+      verify(() => mockDatasource.putAt(any(), any())).called(1);
+    });
+
+    test('Should return UpdateFailure on UpdateException', () async {
+      //setup to throw an UpdateDataException()
+      when(() => mockDatasource.putAt(
+              any(that: isA<int>()), any(that: isA<PartEntity>())))
+          .thenAnswer((invocation) async => throw UpdateDataException());
+      //setup checks
+      Failure failure = const GetFailure();
+      //await the call to the repo
+      var results = await sut.editPart(typicalPartEntity);
+      //unfold the results
+      results.fold((l) => failure = l, (_) => null);
+      //check that the return type is a Left
+      expect(results, isA<Left<Failure, void>>());
+      //check that we got a UpdateFailure()
+      expect(failure, const UpdateDataFailure());
+      //the .putAt() should still be called
+      verify(() => mockDatasource.putAt(any(), any())).called(1);
+    });
+    test('Should return UpdateFailure() on Exception', () async {
+      //setup to throw an Exception()
+      when(() => mockDatasource.putAt(
+              any(that: isA<int>()), any(that: isA<PartEntity>())))
+          .thenAnswer((invocation) async => throw Exception());
+      //setup checks
+      Failure failure = const GetFailure();
+      //await the call to the repo
+      var results = await sut.editPart(typicalPartEntity);
+      //unfold the results
+      results.fold((l) => failure = l, (_) => null);
+      //check that the return type is a Left
+      expect(results, isA<Left<Failure, void>>());
+      //check that we got a UpdateFailure()
+      expect(failure, const UpdateDataFailure());
+      //the .putAt() should still be called
+      verify(() => mockDatasource.putAt(any(), any())).called(1);
+    });
+  });
+  group('.deletePart()', () {
+    test('Should return Right<Failure,void>', () async {
+      //setup .delete() mock method
+      when(() => mockDatasource.delete(any(that: isA<int>())))
+          .thenAnswer((invocation) async {});
+      //await the results
+      var results = await sut.deletePart(typicalPartEntity);
+      //result should be of type Right
+      expect(results, isA<Right<Failure, void>>());
+      verify(() => mockDatasource.delete(
+            any(),
+          )).called(1);
+    });
+
+    test('Should return DeleteDataFailure() on DeleteDataException()',
+        () async {
+      //setup to throw an DeleteDataException()
+      when(() => mockDatasource.delete(any(that: isA<int>())))
+          .thenAnswer((invocation) async => throw DeleteDataException());
+      //setup checks
+      Failure failure = const GetFailure();
+      //await the call to the repo
+      var results = await sut.deletePart(typicalPartEntity);
+      //unfold the results
+      results.fold((l) => failure = l, (_) => null);
+      //check that the return type is a Left
+      expect(results, isA<Left<Failure, void>>());
+      //check that we got a UpdateFailure()
+      expect(failure, const DeleteDataFailure());
+      //the .putAt() should still be called
+      verify(() => mockDatasource.delete(any())).called(1);
+    });
+    test('Should return DeleteDataFailure() on Exception', () async {
+      //setup to throw an Exception()
+      when(() => mockDatasource.delete(any(that: isA<int>())))
+          .thenAnswer((invocation) async => throw Exception());
+      //setup checks
+      Failure failure = const GetFailure();
+      //await the call to the repo
+      var results = await sut.deletePart(typicalPartEntity);
+      //unfold the results
+      results.fold((l) => failure = l, (_) => null);
+      //check that the return type is a Left
+      expect(results, isA<Left<Failure, void>>());
+      //check that we got a DeleteDataFailure()
+      expect(failure, const DeleteDataFailure());
+      //the .putAt() should still be called
+      verify(() => mockDatasource.delete(any())).called(1);
+    });
+  });
+  group('.searchPartsByField()', () {});
 }
