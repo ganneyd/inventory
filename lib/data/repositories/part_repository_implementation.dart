@@ -203,6 +203,7 @@ class PartRepositoryImplementation extends PartRepository {
   Future<Either<Failure, int>> getDatabaseLength() async {
     try {
       var length = _localDataSource.length;
+      _logger.finest('retrieved database length and it is $length');
       return Right<Failure, int>(length);
     } catch (e) {
       return const Left<Failure, int>(ReadDataFailure());
