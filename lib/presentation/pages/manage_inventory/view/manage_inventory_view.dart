@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
+import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
@@ -17,9 +17,11 @@ class ManageInventory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
-        create: (_) =>
-            ManageInventoryCubit(locator<PartRepositoryImplementation>())
-              ..init(),
+        create: (_) => ManageInventoryCubit(
+            scrollController: ScrollController(),
+            getAllPartsUsecase: locator<GetAllPartsUsecase>(),
+            getDatabaseLength: locator<GetDatabaseLength>())
+          ..init(),
         child: BlocBuilder<ManageInventoryCubit, ManageInventoryState>(
           builder: (context, state) {
             if (state.status == ManageInventoryStateStatus.loading) {
