@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/core/util/util.dart';
@@ -13,6 +14,7 @@ Logger serviceLocatorLogger = Logger('service_locator');
 
 //initialize various dependencies
 Future<void> initDependencies() async {
+  WidgetsFlutterBinding.ensureInitialized();
   serviceLocatorLogger = Logger('service_logga');
   await initHive();
   serviceLocatorLogger.finest('initializing service locator');
@@ -55,6 +57,8 @@ Future<void> setupLocator() async {
       GetPartByPartNumberUsecase(locator<PartRepositoryImplementation>()));
   locator.registerFactory<GetPartBySerialNumberUsecase>(() =>
       GetPartBySerialNumberUsecase(locator<PartRepositoryImplementation>()));
+  locator.registerFactory<GetDatabaseLength>(
+      () => GetDatabaseLength(locator<PartRepositoryImplementation>()));
   //!Presentation Layer
 //!Pages
 }
