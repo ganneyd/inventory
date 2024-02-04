@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
+import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_cubit.dart';
@@ -359,14 +358,111 @@ void main() {
       verify(() => quantityController.text).called(1);
       verify(() => partNumberController.text).called(1);
       verify(() => mockLocationController.text).called(1);
+
+      //since the .savePart() contains async calls we expect that the state is emitted after the
+      //async function from the usecase completes
+      await expectLater(
+          sut.stream.map((state) => state.addPartStateStatus),
+          emitsInOrder([
+            AddPartStateStatus.loadedSuccessfully,
+            AddPartStateStatus.createdDataSuccessfully
+            // More states if expected
+          ]));
+
+      //verify that the controllers were cleared
+      await expectLater(verify(() => nsnController.clear()).callCount, 1);
+      await expectLater(
+          verify(() => nomenclatureController.clear()).callCount, 1);
+      await expectLater(
+          verify(() => serialNumberController.clear()).callCount, 1);
+      await expectLater(
+          verify(() => requisitionPointController.clear()).callCount, 1);
+      await expectLater(
+          verify(() => requisitionQuantityController.clear()).callCount, 1);
+      await expectLater(verify(() => quantityController.clear()).callCount, 1);
+      await expectLater(
+          verify(() => partNumberController.clear()).callCount, 1);
+      await expectLater(
+          verify(() => mockLocationController.clear()).callCount, 1);
+    });
+
+    test('Usecase completes with  errors', () async {
+      AddPartParams params = AddPartParams(partEntity: typicalPart);
+      mockUsecaseSetup(params);
+      sut.dropDownMenuHandler(typicalPart.unitOfIssue);
+      when(() => mockAddPartUseCase.call(params)).thenAnswer(
+          (invocation) async => Left<Failure, void>(CreateDataFailure()));
+      sut.savePart();
+
+      verify(() => mockAddPartUseCase.call(params)).called(1);
+      //verify that the controllers were only called once when the .applyPart() was called
+      verify(() => nsnController.text).called(1);
+      verify(() => nomenclatureController.text).called(1);
+      //method gets called twice, once to check if text is empty and if its not called again to get the value
+      verify(() => serialNumberController.text).called(2);
+      verify(() => requisitionPointController.text).called(1);
+      verify(() => requisitionQuantityController.text).called(1);
+      verify(() => quantityController.text).called(1);
+      verify(() => partNumberController.text).called(1);
+      verify(() => mockLocationController.text).called(1);
+
+      //since the .savePart() contains async calls we expect that the state is emitted after the
+      //async function from the usecase completes
       await expectLater(
         sut.stream.map((state) => state.addPartStateStatus),
         emitsInOrder([
-          AddPartStateStatus.loadedSuccessfully,
-          AddPartStateStatus.createdDataSuccessfully
+          AddPartStateStatus.createdDataUnsuccessfully
           // More states if expected
         ]),
       );
+
+      //verify that the controllers were not cleared
+      await expectLater(verifyNever(() => nsnController.clear()).callCount, 0);
+      await expectLater(
+          verifyNever(() => nomenclatureController.clear()).callCount, 0);
+      await expectLater(
+          verifyNever(() => serialNumberController.clear()).callCount, 0);
+      await expectLater(
+          verifyNever(() => requisitionPointController.clear()).callCount, 0);
+      await expectLater(
+          verifyNever(() => requisitionQuantityController.clear()).callCount,
+          0);
+      await expectLater(
+          verifyNever(() => quantityController.clear()).callCount, 0);
+      await expectLater(
+          verifyNever(() => partNumberController.clear()).callCount, 0);
+      await expectLater(
+          verifyNever(() => mockLocationController.clear()).callCount, 0);
+    });
+
+    test('Form was not validated properly and .savePart() called', () {
+      AddPartParams params = AddPartParams(partEntity: typicalPart);
+      mockUsecaseSetup(params);
+      sut.dropDownMenuHandler(typicalPart.unitOfIssue);
+
+      //make it so that the form validation fails
+      when(() => mockFormState.validate()).thenAnswer((invocation) => false);
+
+      //evoke the function
+      sut.savePart();
+      //expectations
+      //isFormValid should be false
+      expect(sut.state.isFormValid, false);
+      //usecase shouldn't be called
+      verifyNever(() => mockAddPartUseCase.call(params));
+      //state should be unsuccessful
+      expect(sut.state.addPartStateStatus,
+          AddPartStateStatus.loadedUnsuccessfully);
+    });
+  });
+
+  group('.dropDownMenuHandler', () {
+    test('Should emit the provided enum value to the state', () {
+      var expectedEnum = UnitOfIssue.FT;
+      sut.dropDownMenuHandler(expectedEnum);
+
+      //the enum provided to the function should be the same as in the state
+      expect(sut.state.unitOfIssue, expectedEnum);
     });
   });
 }
