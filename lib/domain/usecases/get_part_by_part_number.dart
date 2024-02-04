@@ -16,8 +16,7 @@ class GetPartByPartNumberUsecase
       GetAllPartByPartNumberParams params) async {
     Either<Failure, List<PartEntity>> usecase =
         await _partRepository.searchPartsByField(
-            fieldName: PartRepository.partNumberField,
-            queryKey: params.queryKey);
+            fieldName: PartField.partNumber, queryKey: params.queryKey);
 
     return usecase.fold(
         (l) => const Left<Failure, List<PartEntity>>(ReadDataFailure()),

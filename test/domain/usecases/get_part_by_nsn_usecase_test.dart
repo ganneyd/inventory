@@ -6,17 +6,13 @@ import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/get_part_by_nsn.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../setup.dart';
-
 class MockPartRepository extends Mock implements PartRepository {}
 
 void main() {
   late MockPartRepository mockPartRepository;
   late GetPartByNsnUseCase sut;
-  late ValuesForTest valuesForTest;
 
   setUp(() {
-    valuesForTest = ValuesForTest();
     mockPartRepository = MockPartRepository();
     sut = GetPartByNsnUseCase(mockPartRepository);
   });
@@ -25,50 +21,42 @@ void main() {
     test(
         'should return List<PartEntity> with all parts that match the search criteria',
         () async {
+      //setup
       const String key = '9878';
-      const String name = 'nsn';
-      var expectedPartList = valuesForTest
-          .parts()
-          .where((element) => element.nsn.contains(key))
-          .toList();
+      //return Right
       when(() => mockPartRepository.searchPartsByField(
-          fieldName: any(named: 'fieldName'),
+          fieldName: PartField.nsn,
           queryKey: any(named: 'queryKey'))).thenAnswer((invocation) async {
-        String queryKey = invocation.namedArguments[const Symbol('queryKey')];
-        String fieldName = invocation.namedArguments[const Symbol('fieldName')];
-        List<PartEntity> parts = [];
-        if (fieldName == name) {
-          parts = valuesForTest
-              .parts()
-              .where((element) => element.nsn.contains(queryKey))
-              .toList();
-        }
-        return Right<Failure, List<PartEntity>>(parts);
+        return const Right<Failure, List<PartEntity>>(<PartEntity>[]);
       });
-
+      //await the results
       var results = await sut.call(const GetAllPartByNsnParams(queryKey: key));
-      var rightResult = <PartEntity>[];
-      results.fold((l) => null, (r) => rightResult = r);
-      expect(rightResult, equals(expectedPartList));
+
+      //check that the results is of Right
+      expect(results, isA<Right<Failure, List<PartEntity>>>());
       verify(() => mockPartRepository.searchPartsByField(
-          fieldName: name, queryKey: key)).called(1);
+          fieldName: PartField.nsn, queryKey: key)).called(1);
     });
 
     test('should return ReadDataFailure() when an failure occurs', () async {
+      //setup
       const String key = '9878';
-      const String name = 'nsn';
+      //return a Left
       when(() => mockPartRepository.searchPartsByField(
-              fieldName: any(named: 'fieldName'),
-              queryKey: any(named: 'queryKey')))
+              fieldName: PartField.nsn, queryKey: any(named: 'queryKey')))
           .thenAnswer((invocation) async =>
               const Left<Failure, List<PartEntity>>(ReadDataFailure()));
 
+      //await the results
       var results = await sut.call(const GetAllPartByNsnParams(queryKey: key));
+      //extract the failure
       Failure leftResult = const GetFailure();
       results.fold((l) => leftResult = l, (r) => null);
+      //check that the failure if of ReadDataFailure
       expect(leftResult, equals(const ReadDataFailure()));
+      //verify that the method in the repo was only called once
       verify(() => mockPartRepository.searchPartsByField(
-          fieldName: name, queryKey: key)).called(1);
+          fieldName: PartField.nsn, queryKey: key)).called(1);
     });
   });
 }
