@@ -35,6 +35,7 @@ void main() {
         partNumber: typicalPart.partNumber);
     mockDatasource = MockDatasource();
     sut = PartRepositoryImplementation(mockDatasource);
+    registerFallbackValue(typicalPartEntity);
   });
 
   ///Test the .create() method
@@ -42,9 +43,12 @@ void main() {
   group('.create()', () {
     //setup mock calls for the test
     void mockSetup() {
-      when(() =>
-              mockDatasource.putAt(typicalPartEntity.index, typicalPartEntity))
-          .thenAnswer((invocation) async {});
+      when(() => mockDatasource.isEmpty).thenAnswer((_) => false);
+      when(() => mockDatasource.length)
+          .thenAnswer((_) => valuesForTest.parts().length);
+
+      when(() => mockDatasource.add(any(that: isA<PartEntity>())))
+          .thenAnswer((_) async => 0);
     }
 
     test('Should return a Right<Failure,void> on success', () async {
@@ -53,37 +57,36 @@ void main() {
       //check tha† the return value matches the instance we expect
       expect(results, isA<Right<Failure, void>>());
       //verify that the datasource method was called only once
-      verify(() =>
-              mockDatasource.putAt(typicalPartEntity.index, typicalPartEntity))
-          .called(1);
+      verify(() => mockDatasource.isEmpty).called(1);
+      verify(() => mockDatasource.length).called(1);
+      verify(() => mockDatasource.add(any())).called(1);
     });
 
     test('should return CreateDataFailure() on createDataException', () async {
+      mockSetup();
       //throw an exception when the method is called
-      when(() =>
-              mockDatasource.putAt(typicalPartEntity.index, typicalPartEntity))
+      when(() => mockDatasource.add(any(that: isA<PartEntity>())))
           .thenAnswer((invocation) async => throw CreateDataException());
       var results = await sut.createPart(typicalPartEntity);
       //check tha† the return value matches the instance we expect
       expect(results, isA<Left<Failure, void>>());
-      //verify that the datasource method was called only once
-      verify(() =>
-              mockDatasource.putAt(typicalPartEntity.index, typicalPartEntity))
-          .called(1);
+      verify(() => mockDatasource.isEmpty).called(1);
+      verify(() => mockDatasource.length).called(1);
+      verify(() => mockDatasource.add(any())).called(1);
     });
 
     test('should return CreateDataFailure() on Exception', () async {
+      mockSetup();
       //throw an exception when the method is called
-      when(() =>
-              mockDatasource.putAt(typicalPartEntity.index, typicalPartEntity))
+      when(() => mockDatasource.add(any(that: isA<PartEntity>())))
           .thenAnswer((invocation) async => throw Exception());
       var results = await sut.createPart(typicalPartEntity);
       //check tha† the return value matches the instance we expect
       expect(results, isA<Left<Failure, void>>());
       //verify that the datasource method was called only once
-      verify(() =>
-              mockDatasource.putAt(typicalPartEntity.index, typicalPartEntity))
-          .called(1);
+      verify(() => mockDatasource.isEmpty).called(1);
+      verify(() => mockDatasource.length).called(1);
+      verify(() => mockDatasource.add(any())).called(1);
     });
   });
 
