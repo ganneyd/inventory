@@ -6,6 +6,7 @@ import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_chec
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/route_generator.dart';
 import 'package:inventory_v1/service_locator.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 class App extends StatelessWidget {
   const App() : super(key: const Key('app-view'));
@@ -16,7 +17,9 @@ class App extends StatelessWidget {
       title: 'Inventory',
       home: BlocProvider<DependencyCheckCubit>(
         create: (_) => DependencyCheckCubit(
-            isHiveInitialized: Hive.isBoxOpen(boxName), sl: locator),
+            pathProviderPlatform: PathProviderPlatform.instance,
+            isHiveInitialized: Hive.isBoxOpen(boxName),
+            sl: locator),
         child: BlocBuilder<DependencyCheckCubit, DependencyCheckState>(
           builder: (context, state) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
