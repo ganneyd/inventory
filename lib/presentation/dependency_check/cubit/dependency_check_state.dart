@@ -12,7 +12,11 @@ enum DependencyCheckStateStatus {
 @freezed
 class DependencyCheckState with _$DependencyCheckState {
   factory DependencyCheckState({
-    String? error,
+    @Default(false) bool isHiveOpen,
+    @Default(false) bool isServiceLocatorOpen,
+    @Default(false) bool isPathAccessible,
+    @Default(false) bool isPartRepoInit,
+    @Default(false) bool isUsecasesInit,
     @Default(DependencyCheckStateStatus.loading)
     DependencyCheckStateStatus dependencyCheckStateStatus,
   }) = _DependencyCheckState;

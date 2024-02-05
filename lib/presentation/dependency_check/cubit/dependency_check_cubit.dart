@@ -1,109 +1,110 @@
-// ignore_for_file: unused_local_variable
-
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
+import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_state.dart';
-import 'package:inventory_v1/service_locator.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DependencyCheckCubit extends Cubit<DependencyCheckState> {
-  DependencyCheckCubit()
-      : _dependencyCubitLogger = Logger('dependency cubit'),
+  DependencyCheckCubit({
+    required this.isHiveInitialized,
+    required this.sl,
+  })  : _dependencyCubitLogger = Logger('dependency cubit'),
         super(DependencyCheckState()) {
     checkDependencies();
   }
+  final bool isHiveInitialized;
   final Logger _dependencyCubitLogger;
+  final GetIt sl;
   Logger getLogger() => _dependencyCubitLogger;
 
   ///Attempts to either retrieve/create or check that dependencies exists or can be accessed
   Future<void> checkDependencies() async {
     await Future.delayed(const Duration(seconds: 1));
     _dependencyCubitLogger.finest('checking if dependencies are good');
-    String errorMsg = 'These dependencies were not initialized properly ';
+
     bool isInit = await _isPathAccessible();
 
-    if (!isInit) {
-      errorMsg += 'Service Locator Or Path not Accessible, ';
+    if (isInit) {
+      emit(state.copyWith(isPathAccessible: true));
+    } else {
+      _dependencyCubitLogger.warning('path  is not accessible');
     }
     //perform checks for Hive initialization
-    bool isHiveInitialized = Hive.isBoxOpen(boxName);
-    if (!isHiveInitialized) {
+
+    if (isHiveInitialized) {
+      emit(state.copyWith(isHiveOpen: true));
+    } else {
       _dependencyCubitLogger.warning('hive is a no go $isHiveInitialized');
-      errorMsg += 'Hive, ';
     }
 
     //Perform checks to for Part Repository initialization
-    bool isPartRepositoryInitialized = _isPartRepositoryInitialized();
 
-    if (!isPartRepositoryInitialized) {
+    if (_isPartRepositoryInitialized()) {
+      emit(state.copyWith(isPartRepoInit: true));
+    } else {
       _dependencyCubitLogger.warning('part repo is a no go');
-      errorMsg += 'Part Repository, ';
     }
 
-    bool isUsecasesInitialized = _isUsecasesInitialized();
     //Perform checks for Usecases
-    if (!_isUsecasesInitialized()) {
+    if (_isUsecasesInitialized()) {
+      emit(state.copyWith(isUsecasesInit: true));
+    } else {
       _dependencyCubitLogger.warning('usecases is a no go');
-      errorMsg += 'One or More Usecases, ';
     }
-
-    if (!isUsecasesInitialized ||
-        !isHiveInitialized ||
-        !isPartRepositoryInitialized) {
+//check if one or more dependency was able to be accessed or opened and emit the proper state
+    if (state.isPathAccessible ||
+        !state.isHiveOpen ||
+        !state.isPartRepoInit ||
+        !state.isUsecasesInit) {
       emit(DependencyCheckState(
-          error: errorMsg,
           dependencyCheckStateStatus:
               DependencyCheckStateStatus.loadedUnsuccessfully));
     } else {
       _dependencyCubitLogger.finest('success loading dependencies');
       emit(DependencyCheckState(
-          error: '',
           dependencyCheckStateStatus:
               DependencyCheckStateStatus.loadedSuccessfully));
     }
   }
-}
 
-bool _isPartRepositoryInitialized() {
-  try {
-    PartRepositoryImplementation partRepository =
-        locator<PartRepositoryImplementation>();
+  bool _isPartRepositoryInitialized() {
+    try {
+      sl<PartRepositoryImplementation>();
 
-    return true;
-  } catch (e) {
-    return false;
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-bool _isUsecasesInitialized() {
-  try {
-    AddPartUsecase usecase = locator<AddPartUsecase>();
-    DeletePartUsecase usecase1 = locator<DeletePartUsecase>();
-    EditPartUsecase usecase2 = locator<EditPartUsecase>();
-    GetAllPartsUsecase usecase3 = locator<GetAllPartsUsecase>();
-    GetPartByNameUseCase usecase4 = locator<GetPartByNameUseCase>();
-    GetPartByNameUseCase usecase5 = locator<GetPartByNameUseCase>();
-    GetPartByNsnUseCase usecase6 = locator<GetPartByNsnUseCase>();
-    GetPartByPartNumberUsecase usecase7 = locator<GetPartByPartNumberUsecase>();
-    GetPartBySerialNumberUsecase usecase8 =
-        locator<GetPartBySerialNumberUsecase>();
-    return true;
-  } catch (e) {
-    return false;
+  bool _isUsecasesInitialized() {
+    try {
+      sl<AddPartUsecase>();
+      sl<DeletePartUsecase>();
+      sl<EditPartUsecase>();
+      sl<GetAllPartsUsecase>();
+      sl<GetPartByNameUseCase>();
+      sl<GetPartByNameUseCase>();
+      sl<GetPartByNsnUseCase>();
+      sl<GetPartByPartNumberUsecase>();
+      sl<GetPartBySerialNumberUsecase>();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-Future<bool> _isPathAccessible() async {
-  try {
-    Directory appDocumentDirectory = await getApplicationDocumentsDirectory();
-    String path = appDocumentDirectory.path;
-    return true;
-  } catch (e) {
-    return false;
+  Future<bool> _isPathAccessible() async {
+    try {
+      Directory appDocumentDirectory = await getApplicationDocumentsDirectory();
+      String path = appDocumentDirectory.path;
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

@@ -16,7 +16,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$DependencyCheckState {
-  String? get error => throw _privateConstructorUsedError;
+  bool get isHiveOpen => throw _privateConstructorUsedError;
+  bool get isServiceLocatorOpen => throw _privateConstructorUsedError;
+  bool get isPathAccessible => throw _privateConstructorUsedError;
+  bool get isPartRepoInit => throw _privateConstructorUsedError;
+  bool get isUsecasesInit => throw _privateConstructorUsedError;
   DependencyCheckStateStatus get dependencyCheckStateStatus =>
       throw _privateConstructorUsedError;
 
@@ -32,7 +36,12 @@ abstract class $DependencyCheckStateCopyWith<$Res> {
       _$DependencyCheckStateCopyWithImpl<$Res, DependencyCheckState>;
   @useResult
   $Res call(
-      {String? error, DependencyCheckStateStatus dependencyCheckStateStatus});
+      {bool isHiveOpen,
+      bool isServiceLocatorOpen,
+      bool isPathAccessible,
+      bool isPartRepoInit,
+      bool isUsecasesInit,
+      DependencyCheckStateStatus dependencyCheckStateStatus});
 }
 
 /// @nodoc
@@ -49,14 +58,34 @@ class _$DependencyCheckStateCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = freezed,
+    Object? isHiveOpen = null,
+    Object? isServiceLocatorOpen = null,
+    Object? isPathAccessible = null,
+    Object? isPartRepoInit = null,
+    Object? isUsecasesInit = null,
     Object? dependencyCheckStateStatus = null,
   }) {
     return _then(_value.copyWith(
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
+      isHiveOpen: null == isHiveOpen
+          ? _value.isHiveOpen
+          : isHiveOpen // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isServiceLocatorOpen: null == isServiceLocatorOpen
+          ? _value.isServiceLocatorOpen
+          : isServiceLocatorOpen // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isPathAccessible: null == isPathAccessible
+          ? _value.isPathAccessible
+          : isPathAccessible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isPartRepoInit: null == isPartRepoInit
+          ? _value.isPartRepoInit
+          : isPartRepoInit // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isUsecasesInit: null == isUsecasesInit
+          ? _value.isUsecasesInit
+          : isUsecasesInit // ignore: cast_nullable_to_non_nullable
+              as bool,
       dependencyCheckStateStatus: null == dependencyCheckStateStatus
           ? _value.dependencyCheckStateStatus
           : dependencyCheckStateStatus // ignore: cast_nullable_to_non_nullable
@@ -74,7 +103,12 @@ abstract class _$$DependencyCheckStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? error, DependencyCheckStateStatus dependencyCheckStateStatus});
+      {bool isHiveOpen,
+      bool isServiceLocatorOpen,
+      bool isPathAccessible,
+      bool isPartRepoInit,
+      bool isUsecasesInit,
+      DependencyCheckStateStatus dependencyCheckStateStatus});
 }
 
 /// @nodoc
@@ -88,14 +122,34 @@ class __$$DependencyCheckStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = freezed,
+    Object? isHiveOpen = null,
+    Object? isServiceLocatorOpen = null,
+    Object? isPathAccessible = null,
+    Object? isPartRepoInit = null,
+    Object? isUsecasesInit = null,
     Object? dependencyCheckStateStatus = null,
   }) {
     return _then(_$DependencyCheckStateImpl(
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
+      isHiveOpen: null == isHiveOpen
+          ? _value.isHiveOpen
+          : isHiveOpen // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isServiceLocatorOpen: null == isServiceLocatorOpen
+          ? _value.isServiceLocatorOpen
+          : isServiceLocatorOpen // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isPathAccessible: null == isPathAccessible
+          ? _value.isPathAccessible
+          : isPathAccessible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isPartRepoInit: null == isPartRepoInit
+          ? _value.isPartRepoInit
+          : isPartRepoInit // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isUsecasesInit: null == isUsecasesInit
+          ? _value.isUsecasesInit
+          : isUsecasesInit // ignore: cast_nullable_to_non_nullable
+              as bool,
       dependencyCheckStateStatus: null == dependencyCheckStateStatus
           ? _value.dependencyCheckStateStatus
           : dependencyCheckStateStatus // ignore: cast_nullable_to_non_nullable
@@ -108,18 +162,35 @@ class __$$DependencyCheckStateImplCopyWithImpl<$Res>
 
 class _$DependencyCheckStateImpl implements _DependencyCheckState {
   _$DependencyCheckStateImpl(
-      {this.error,
+      {this.isHiveOpen = false,
+      this.isServiceLocatorOpen = false,
+      this.isPathAccessible = false,
+      this.isPartRepoInit = false,
+      this.isUsecasesInit = false,
       this.dependencyCheckStateStatus = DependencyCheckStateStatus.loading});
 
   @override
-  final String? error;
+  @JsonKey()
+  final bool isHiveOpen;
+  @override
+  @JsonKey()
+  final bool isServiceLocatorOpen;
+  @override
+  @JsonKey()
+  final bool isPathAccessible;
+  @override
+  @JsonKey()
+  final bool isPartRepoInit;
+  @override
+  @JsonKey()
+  final bool isUsecasesInit;
   @override
   @JsonKey()
   final DependencyCheckStateStatus dependencyCheckStateStatus;
 
   @override
   String toString() {
-    return 'DependencyCheckState(error: $error, dependencyCheckStateStatus: $dependencyCheckStateStatus)';
+    return 'DependencyCheckState(isHiveOpen: $isHiveOpen, isServiceLocatorOpen: $isServiceLocatorOpen, isPathAccessible: $isPathAccessible, isPartRepoInit: $isPartRepoInit, isUsecasesInit: $isUsecasesInit, dependencyCheckStateStatus: $dependencyCheckStateStatus)';
   }
 
   @override
@@ -127,7 +198,16 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DependencyCheckStateImpl &&
-            (identical(other.error, error) || other.error == error) &&
+            (identical(other.isHiveOpen, isHiveOpen) ||
+                other.isHiveOpen == isHiveOpen) &&
+            (identical(other.isServiceLocatorOpen, isServiceLocatorOpen) ||
+                other.isServiceLocatorOpen == isServiceLocatorOpen) &&
+            (identical(other.isPathAccessible, isPathAccessible) ||
+                other.isPathAccessible == isPathAccessible) &&
+            (identical(other.isPartRepoInit, isPartRepoInit) ||
+                other.isPartRepoInit == isPartRepoInit) &&
+            (identical(other.isUsecasesInit, isUsecasesInit) ||
+                other.isUsecasesInit == isUsecasesInit) &&
             (identical(other.dependencyCheckStateStatus,
                     dependencyCheckStateStatus) ||
                 other.dependencyCheckStateStatus ==
@@ -135,8 +215,14 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, error, dependencyCheckStateStatus);
+  int get hashCode => Object.hash(
+      runtimeType,
+      isHiveOpen,
+      isServiceLocatorOpen,
+      isPathAccessible,
+      isPartRepoInit,
+      isUsecasesInit,
+      dependencyCheckStateStatus);
 
   @JsonKey(ignore: true)
   @override
@@ -149,12 +235,24 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
 
 abstract class _DependencyCheckState implements DependencyCheckState {
   factory _DependencyCheckState(
-          {final String? error,
+          {final bool isHiveOpen,
+          final bool isServiceLocatorOpen,
+          final bool isPathAccessible,
+          final bool isPartRepoInit,
+          final bool isUsecasesInit,
           final DependencyCheckStateStatus dependencyCheckStateStatus}) =
       _$DependencyCheckStateImpl;
 
   @override
-  String? get error;
+  bool get isHiveOpen;
+  @override
+  bool get isServiceLocatorOpen;
+  @override
+  bool get isPathAccessible;
+  @override
+  bool get isPartRepoInit;
+  @override
+  bool get isUsecasesInit;
   @override
   DependencyCheckStateStatus get dependencyCheckStateStatus;
   @override
