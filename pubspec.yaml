@@ -47,6 +47,7 @@ dependencies:
   logging: ^1.2.0
   path_provider: ^2.1.2
   hive_flutter: ^1.1.0
+  path_provider_platform_interface: ^2.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
