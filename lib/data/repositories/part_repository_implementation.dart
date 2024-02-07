@@ -186,11 +186,6 @@ class PartRepositoryImplementation extends PartRepository {
       return Right<Failure, List<PartEntity>>(parts);
       List<PartEntity> parts = [];
 
-      // if (!_localDataSource.containsKey(fieldName.displayValue)) {
-      //   _logger.warning(
-      //       'error encountered  querying the dataset, does not contain ${fieldName.displayValue}');
-      //   throw ReadDataException();
-      // }
       final String cleanQuery = _cleanKey(queryKey);
       _logger.finest('searching for $queryKey in database');
       parts = _localDataSource.values.where((data) {
