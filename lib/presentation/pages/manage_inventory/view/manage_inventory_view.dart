@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
+import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 import 'package:inventory_v1/service_locator.dart';
@@ -62,23 +64,18 @@ class ManageInventory extends StatelessWidget {
             });
 
             return Scaffold(
-              appBar: AppBar(
-                  title: const Text('Manage Inventory'),
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )),
+              appBar: genericAppBar(context, 'Manage Inventory'),
               body: ListView.builder(
                 controller: state.scrollController,
                 itemCount: state.parts.length,
                 itemBuilder: (context, index) {
                   _logger.finest('Loading part $index into view');
                   return PartCardDisplay(
-                    nsn: state.parts[index].nsn,
-                    checkedOutAmount: index.toString(),
-                    location: state.parts[index].location,
-                    partName: state.parts[index].serialNumber,
-                    unitOfIssue: state.parts[index].unitOfIssue,
+                    left: state.parts[index].nsn,
+                    center: state.parts[index].name,
+                    right: "Location: ${state.parts[index].location}",
+                    bottom:
+                        "Checked out: ${state.parts[index].quantity} ${state.parts[index].unitOfIssue.displayValue}",
                   );
                 },
               ),
