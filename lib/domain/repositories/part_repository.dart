@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/models/part/part_model.dart';
 
 ///Represents the different fields that are searchable in the database
 enum PartField {
@@ -46,4 +47,14 @@ abstract class PartRepository {
 
   ///Deletes a particular [partEntity] from the database
   Future<Either<Failure, void>> deletePart(PartEntity partEntity);
+}
+
+extension PartRepoAdapter on PartRepository {
+  List<Part> toPartList(List<PartEntity> list) {
+    List<Part> partModel = [];
+    for (var part in list) {
+      partModel.add(PartAdapter.fromEntity(part));
+    }
+    return partModel;
+  }
 }
