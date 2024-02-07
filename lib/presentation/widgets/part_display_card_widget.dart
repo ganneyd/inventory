@@ -1,50 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_v1/core/util/util.dart';
 
 class PartCardDisplay extends StatelessWidget {
-  final String nsn;
-  final String partName;
-  final String location;
-  final String checkedOutAmount;
-  final UnitOfIssue unitOfIssue;
-
+  final String left;
+  final String center;
+  final String right;
+  final String bottom;
+  final bool centerBottom;
+  final VoidCallback? callback;
   const PartCardDisplay(
       {super.key,
-      required this.nsn,
-      required this.checkedOutAmount,
-      required this.location,
-      required this.partName,
-      required this.unitOfIssue});
+      this.callback,
+      required this.left,
+      required this.center,
+      required this.right,
+      required this.bottom,
+      this.centerBottom = true});
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-      child: Card(
-          color: Colors.green,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(nsn),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(partName),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text('Location: $location'),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text('Checked out $checkedOutAmount ${unitOfIssue.displayValue}'),
-            ]),
-          )),
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+        child: ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [Text(left), Text(center), Text(right)],
+          ),
+          subtitle: centerBottom ? Text(bottom) : null,
+          trailing: centerBottom ? null : Text(bottom),
+          tileColor: Colors.blueAccent,
+          titleAlignment: ListTileTitleAlignment.center,
+          contentPadding: const EdgeInsets.all(10.0),
+          onTap: callback,
+        ));
   }
 }
