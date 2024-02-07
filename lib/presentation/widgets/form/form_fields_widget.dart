@@ -9,8 +9,10 @@ class CustomTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatter;
   final bool isNumberInput;
   final int? maxLength;
+  final FocusNode? focusNode;
   const CustomTextField(
       {super.key,
+      this.focusNode,
       required this.controller,
       required this.hintText,
       this.validation,
@@ -20,6 +22,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      focusNode: focusNode,
       maxLength: maxLength,
       inputFormatters:
           isNumberInput ? [PositiveNumberInputFormatter()] : inputFormatter,
