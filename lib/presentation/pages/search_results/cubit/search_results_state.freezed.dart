@@ -17,7 +17,12 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$SearchResultsState {
   ScrollController get scrollController => throw _privateConstructorUsedError;
-  List<Part> get parts => throw _privateConstructorUsedError;
+  List<Part> get partsByName => throw _privateConstructorUsedError;
+  List<Part> get partsByNsn => throw _privateConstructorUsedError;
+  List<Part> get partsBySerialNumber => throw _privateConstructorUsedError;
+  List<Part> get partsByPartNumber => throw _privateConstructorUsedError;
+  TextEditingController get searchBarController =>
+      throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
   SearchResultsStateStatus get status => throw _privateConstructorUsedError;
 
@@ -34,7 +39,11 @@ abstract class $SearchResultsStateCopyWith<$Res> {
   @useResult
   $Res call(
       {ScrollController scrollController,
-      List<Part> parts,
+      List<Part> partsByName,
+      List<Part> partsByNsn,
+      List<Part> partsBySerialNumber,
+      List<Part> partsByPartNumber,
+      TextEditingController searchBarController,
       String error,
       SearchResultsStateStatus status});
 }
@@ -53,7 +62,11 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
   @override
   $Res call({
     Object? scrollController = null,
-    Object? parts = null,
+    Object? partsByName = null,
+    Object? partsByNsn = null,
+    Object? partsBySerialNumber = null,
+    Object? partsByPartNumber = null,
+    Object? searchBarController = null,
     Object? error = null,
     Object? status = null,
   }) {
@@ -62,10 +75,26 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
           ? _value.scrollController
           : scrollController // ignore: cast_nullable_to_non_nullable
               as ScrollController,
-      parts: null == parts
-          ? _value.parts
-          : parts // ignore: cast_nullable_to_non_nullable
+      partsByName: null == partsByName
+          ? _value.partsByName
+          : partsByName // ignore: cast_nullable_to_non_nullable
               as List<Part>,
+      partsByNsn: null == partsByNsn
+          ? _value.partsByNsn
+          : partsByNsn // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      partsBySerialNumber: null == partsBySerialNumber
+          ? _value.partsBySerialNumber
+          : partsBySerialNumber // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      partsByPartNumber: null == partsByPartNumber
+          ? _value.partsByPartNumber
+          : partsByPartNumber // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      searchBarController: null == searchBarController
+          ? _value.searchBarController
+          : searchBarController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -88,7 +117,11 @@ abstract class _$$SearchResultsStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {ScrollController scrollController,
-      List<Part> parts,
+      List<Part> partsByName,
+      List<Part> partsByNsn,
+      List<Part> partsBySerialNumber,
+      List<Part> partsByPartNumber,
+      TextEditingController searchBarController,
       String error,
       SearchResultsStateStatus status});
 }
@@ -105,7 +138,11 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? scrollController = null,
-    Object? parts = null,
+    Object? partsByName = null,
+    Object? partsByNsn = null,
+    Object? partsBySerialNumber = null,
+    Object? partsByPartNumber = null,
+    Object? searchBarController = null,
     Object? error = null,
     Object? status = null,
   }) {
@@ -114,10 +151,26 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
           ? _value.scrollController
           : scrollController // ignore: cast_nullable_to_non_nullable
               as ScrollController,
-      parts: null == parts
-          ? _value._parts
-          : parts // ignore: cast_nullable_to_non_nullable
+      partsByName: null == partsByName
+          ? _value._partsByName
+          : partsByName // ignore: cast_nullable_to_non_nullable
               as List<Part>,
+      partsByNsn: null == partsByNsn
+          ? _value._partsByNsn
+          : partsByNsn // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      partsBySerialNumber: null == partsBySerialNumber
+          ? _value._partsBySerialNumber
+          : partsBySerialNumber // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      partsByPartNumber: null == partsByPartNumber
+          ? _value._partsByPartNumber
+          : partsByPartNumber // ignore: cast_nullable_to_non_nullable
+              as List<Part>,
+      searchBarController: null == searchBarController
+          ? _value.searchBarController
+          : searchBarController // ignore: cast_nullable_to_non_nullable
+              as TextEditingController,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -135,22 +188,60 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
 class _$SearchResultsStateImpl implements _SearchResultsState {
   _$SearchResultsStateImpl(
       {required this.scrollController,
-      final List<Part> parts = const <Part>[],
+      final List<Part> partsByName = const <Part>[],
+      final List<Part> partsByNsn = const <Part>[],
+      final List<Part> partsBySerialNumber = const <Part>[],
+      final List<Part> partsByPartNumber = const <Part>[],
+      required this.searchBarController,
       this.error = 'no-error',
       this.status = SearchResultsStateStatus.loading})
-      : _parts = parts;
+      : _partsByName = partsByName,
+        _partsByNsn = partsByNsn,
+        _partsBySerialNumber = partsBySerialNumber,
+        _partsByPartNumber = partsByPartNumber;
 
   @override
   final ScrollController scrollController;
-  final List<Part> _parts;
+  final List<Part> _partsByName;
   @override
   @JsonKey()
-  List<Part> get parts {
-    if (_parts is EqualUnmodifiableListView) return _parts;
+  List<Part> get partsByName {
+    if (_partsByName is EqualUnmodifiableListView) return _partsByName;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_parts);
+    return EqualUnmodifiableListView(_partsByName);
   }
 
+  final List<Part> _partsByNsn;
+  @override
+  @JsonKey()
+  List<Part> get partsByNsn {
+    if (_partsByNsn is EqualUnmodifiableListView) return _partsByNsn;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_partsByNsn);
+  }
+
+  final List<Part> _partsBySerialNumber;
+  @override
+  @JsonKey()
+  List<Part> get partsBySerialNumber {
+    if (_partsBySerialNumber is EqualUnmodifiableListView)
+      return _partsBySerialNumber;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_partsBySerialNumber);
+  }
+
+  final List<Part> _partsByPartNumber;
+  @override
+  @JsonKey()
+  List<Part> get partsByPartNumber {
+    if (_partsByPartNumber is EqualUnmodifiableListView)
+      return _partsByPartNumber;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_partsByPartNumber);
+  }
+
+  @override
+  final TextEditingController searchBarController;
   @override
   @JsonKey()
   final String error;
@@ -160,7 +251,7 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
 
   @override
   String toString() {
-    return 'SearchResultsState(scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
+    return 'SearchResultsState(scrollController: $scrollController, partsByName: $partsByName, partsByNsn: $partsByNsn, partsBySerialNumber: $partsBySerialNumber, partsByPartNumber: $partsByPartNumber, searchBarController: $searchBarController, error: $error, status: $status)';
   }
 
   @override
@@ -170,14 +261,31 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
             other is _$SearchResultsStateImpl &&
             (identical(other.scrollController, scrollController) ||
                 other.scrollController == scrollController) &&
-            const DeepCollectionEquality().equals(other._parts, _parts) &&
+            const DeepCollectionEquality()
+                .equals(other._partsByName, _partsByName) &&
+            const DeepCollectionEquality()
+                .equals(other._partsByNsn, _partsByNsn) &&
+            const DeepCollectionEquality()
+                .equals(other._partsBySerialNumber, _partsBySerialNumber) &&
+            const DeepCollectionEquality()
+                .equals(other._partsByPartNumber, _partsByPartNumber) &&
+            (identical(other.searchBarController, searchBarController) ||
+                other.searchBarController == searchBarController) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, scrollController,
-      const DeepCollectionEquality().hash(_parts), error, status);
+  int get hashCode => Object.hash(
+      runtimeType,
+      scrollController,
+      const DeepCollectionEquality().hash(_partsByName),
+      const DeepCollectionEquality().hash(_partsByNsn),
+      const DeepCollectionEquality().hash(_partsBySerialNumber),
+      const DeepCollectionEquality().hash(_partsByPartNumber),
+      searchBarController,
+      error,
+      status);
 
   @JsonKey(ignore: true)
   @override
@@ -190,14 +298,26 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
 abstract class _SearchResultsState implements SearchResultsState {
   factory _SearchResultsState(
       {required final ScrollController scrollController,
-      final List<Part> parts,
+      final List<Part> partsByName,
+      final List<Part> partsByNsn,
+      final List<Part> partsBySerialNumber,
+      final List<Part> partsByPartNumber,
+      required final TextEditingController searchBarController,
       final String error,
       final SearchResultsStateStatus status}) = _$SearchResultsStateImpl;
 
   @override
   ScrollController get scrollController;
   @override
-  List<Part> get parts;
+  List<Part> get partsByName;
+  @override
+  List<Part> get partsByNsn;
+  @override
+  List<Part> get partsBySerialNumber;
+  @override
+  List<Part> get partsByPartNumber;
+  @override
+  TextEditingController get searchBarController;
   @override
   String get error;
   @override
