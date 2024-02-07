@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
 class CustomSearchBar extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final Key textFieldKey;
   const CustomSearchBar(
-      {required this.textFieldKey,
-      required this.onPressed,
+      {this.focusNode,
+      required this.textFieldKey,
+      this.onPressed,
       required this.controller})
       : super(key: const Key('custom-search-bar'));
 
@@ -19,6 +21,7 @@ class CustomSearchBar extends StatelessWidget {
         children: [
           Expanded(
             child: CustomTextField(
+                focusNode: focusNode,
                 controller: controller,
                 key: textFieldKey,
                 hintText: 'Search by NSN, Part Number, Serial Number'),
