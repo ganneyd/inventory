@@ -6,6 +6,7 @@ import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_cubit.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
 import 'package:inventory_v1/presentation/utils/utils_bucket.dart';
+import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 import 'package:inventory_v1/service_locator.dart';
 
@@ -88,13 +89,7 @@ class AddPartView extends StatelessWidget {
 
           return LayoutBuilder(builder: (builder, constraints) {
             return Scaffold(
-              appBar: AppBar(
-                title: const Text('Add Part'),
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
+              appBar: genericAppBar(context, 'Add Part'),
               body: SizedBox(
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
