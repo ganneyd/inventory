@@ -10,9 +10,14 @@ class HomePageView extends StatelessWidget {
         super(key: const Key('part-home-page'));
   final GlobalKey<ScaffoldState> _scaffoldKey;
 
-  void searchCallback() {}
+  void searchCallback(context) {
+    if (controller.text.isNotEmpty) {
+      Navigator.of(context)
+          .pushNamed('/search_parts', arguments: controller.text);
+    }
+  }
 
-  final TextEditingController controller = TextEditingController(text: '');
+  final TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomePageCubit>(
@@ -27,7 +32,7 @@ class HomePageView extends StatelessWidget {
                   CustomSearchBar(
                     textFieldKey: const Key('home-page-search-bar'),
                     controller: controller,
-                    onPressed: searchCallback,
+                    onPressed: () => searchCallback(context),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
