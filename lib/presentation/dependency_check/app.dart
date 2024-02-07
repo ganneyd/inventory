@@ -19,7 +19,8 @@ class App extends StatelessWidget {
         create: (_) => DependencyCheckCubit(
             pathProviderPlatform: PathProviderPlatform.instance,
             isHiveInitialized: Hive.isBoxOpen(boxName),
-            sl: locator),
+            sl: locator)
+          ..checkDependencies(),
         child: BlocBuilder<DependencyCheckCubit, DependencyCheckState>(
           builder: (context, state) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
