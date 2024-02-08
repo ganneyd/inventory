@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:inventory_v1/core/error/failures.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
-import 'package:inventory_v1/domain/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -324,9 +324,6 @@ void main() {
   });
   group('.searchPartsByField() nsn', () {
     void mockSetUp() {
-      when(() => mockDatasource.containsKey(PartField.nsn))
-          .thenAnswer((invocation) => true);
-
       when(() => mockDatasource.values)
           .thenAnswer((invocation) => valuesForTest.parts());
     }
@@ -350,7 +347,6 @@ void main() {
       expect(resultPartList[2], valuesForTest.parts()[5]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
 
     test('matches the query regardless of letters', () async {
@@ -372,7 +368,6 @@ void main() {
       expect(resultPartList[2], valuesForTest.parts()[5]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
     test('matches the query regardless of special characters ', () async {
       //setup
@@ -392,7 +387,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[2]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
 
     test('no match found', () async {
@@ -411,7 +405,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
 
     test('no match found when query is all letters', () async {
@@ -430,7 +423,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
 
     test('ReadDataException() handling', () async {
@@ -451,7 +443,6 @@ void main() {
       //verify that the appropriate methods from the datasource was used
       //this method shouldn't be called
       verifyNever(() => mockDatasource.values);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
 
     test('Exception() handling', () async {
@@ -471,7 +462,6 @@ void main() {
       expect(resultFailure, const ReadDataFailure());
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.nsn)).called(1);
     });
   });
 
@@ -505,7 +495,6 @@ void main() {
       expect(resultPartList[2], valuesForTest.parts()[8]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
 
     test('matches the query regardless of special characters', () async {
@@ -526,7 +515,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[8]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
 
     test('matches the query regardless of numbers', () async {
@@ -547,7 +535,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[8]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
 
     test('no match found', () async {
@@ -566,7 +553,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
 
     test('no match found when query is all numbers ', () async {
@@ -585,7 +571,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
 
     test('ReadDataException() handling', () async {
@@ -606,7 +591,6 @@ void main() {
       //verify that the appropriate methods from the datasource was used
       //this method shouldn't be called
       verifyNever(() => mockDatasource.values);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
 
     test('Exception() handling', () async {
@@ -626,7 +610,6 @@ void main() {
       expect(resultFailure, const ReadDataFailure());
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.name)).called(1);
     });
   });
 
@@ -659,7 +642,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[2]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
     });
 
     test('matches the query regardless of special characters', () async {
@@ -680,7 +662,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[2]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
     });
 
     test('no match found', () async {
@@ -699,7 +680,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
     });
 
     test('ReadDataException() handling', () async {
@@ -720,7 +700,6 @@ void main() {
       //verify that the appropriate methods from the datasource was used
       //this method shouldn't be called
       verifyNever(() => mockDatasource.values);
-      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
     });
 
     test('Exception() handling', () async {
@@ -740,7 +719,6 @@ void main() {
       expect(resultFailure, const ReadDataFailure());
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.partNumber)).called(1);
     });
   });
 
@@ -773,8 +751,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[5]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.serialNumber))
-          .called(1);
     });
 
     test('matches the query regardless of special characters', () async {
@@ -795,8 +771,6 @@ void main() {
       expect(resultPartList[1], valuesForTest.parts()[5]);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.serialNumber))
-          .called(1);
     });
 
     test('no match found', () async {
@@ -815,8 +789,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.serialNumber))
-          .called(1);
     });
 
     test('ReadDataException() handling', () async {
@@ -837,8 +809,6 @@ void main() {
       //verify that the appropriate methods from the datasource was used
       //this method shouldn't be called
       verifyNever(() => mockDatasource.values);
-      verify(() => mockDatasource.containsKey(PartField.serialNumber))
-          .called(1);
     });
 
     test('Exception() handling', () async {
@@ -858,8 +828,6 @@ void main() {
       expect(resultFailure, const ReadDataFailure());
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-      verify(() => mockDatasource.containsKey(PartField.serialNumber))
-          .called(1);
     });
   });
 }

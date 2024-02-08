@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$CheckoutState {
-  Part? get part => throw _privateConstructorUsedError;
+  PartEntity? get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   CheckoutStateStatus get checkoutStateStatus =>
       throw _privateConstructorUsedError;
@@ -33,9 +33,9 @@ abstract class $CheckoutStateCopyWith<$Res> {
       _$CheckoutStateCopyWithImpl<$Res, CheckoutState>;
   @useResult
   $Res call(
-      {Part? part, String? error, CheckoutStateStatus checkoutStateStatus});
-
-  $PartCopyWith<$Res>? get part;
+      {PartEntity? part,
+      String? error,
+      CheckoutStateStatus checkoutStateStatus});
 }
 
 /// @nodoc
@@ -59,7 +59,7 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -69,18 +69,6 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
           : checkoutStateStatus // ignore: cast_nullable_to_non_nullable
               as CheckoutStateStatus,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PartCopyWith<$Res>? get part {
-    if (_value.part == null) {
-      return null;
-    }
-
-    return $PartCopyWith<$Res>(_value.part!, (value) {
-      return _then(_value.copyWith(part: value) as $Val);
-    });
   }
 }
 
@@ -93,10 +81,9 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Part? part, String? error, CheckoutStateStatus checkoutStateStatus});
-
-  @override
-  $PartCopyWith<$Res>? get part;
+      {PartEntity? part,
+      String? error,
+      CheckoutStateStatus checkoutStateStatus});
 }
 
 /// @nodoc
@@ -118,7 +105,7 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -140,7 +127,7 @@ class _$AddPartStateImpl implements _AddPartState {
       this.checkoutStateStatus = CheckoutStateStatus.loading});
 
   @override
-  final Part? part;
+  final PartEntity? part;
   @override
   final String? error;
   @override
@@ -176,12 +163,12 @@ class _$AddPartStateImpl implements _AddPartState {
 
 abstract class _AddPartState implements CheckoutState {
   factory _AddPartState(
-      {final Part? part,
+      {final PartEntity? part,
       final String? error,
       final CheckoutStateStatus checkoutStateStatus}) = _$AddPartStateImpl;
 
   @override
-  Part? get part;
+  PartEntity? get part;
   @override
   String? get error;
   @override

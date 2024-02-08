@@ -19,13 +19,7 @@ mixin _$ManageInventoryState {
   int get fetchPartAmount => throw _privateConstructorUsedError;
   int get databaseLength => throw _privateConstructorUsedError;
   ScrollController get scrollController => throw _privateConstructorUsedError;
-<<<<<<< HEAD
-  List<Part> get part => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
-  ManageInventoryStateStatus get manageInventoryStateStatus =>
-      throw _privateConstructorUsedError;
-=======
-  List<Part> get parts => throw _privateConstructorUsedError;
+  List<PartEntity> get parts => throw _privateConstructorUsedError;
   dynamic get error => throw _privateConstructorUsedError;
   ManageInventoryStateStatus get status => throw _privateConstructorUsedError;
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -45,7 +39,7 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
       {int fetchPartAmount,
       int databaseLength,
       ScrollController scrollController,
-      List<Part> parts,
+      List<PartEntity> parts,
       dynamic error,
       ManageInventoryStateStatus status});
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -97,8 +91,7 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
       parts: null == parts
           ? _value.parts
           : parts // ignore: cast_nullable_to_non_nullable
->>>>>>> 9594ee4 (added state control to manage inventory page)
-              as List<Part>,
+              as List<PartEntity>,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -123,7 +116,7 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
       {int fetchPartAmount,
       int databaseLength,
       ScrollController scrollController,
-      List<Part> parts,
+      List<PartEntity> parts,
       dynamic error,
       ManageInventoryStateStatus status});
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -180,7 +173,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
       parts: null == parts
           ? _value._parts
           : parts // ignore: cast_nullable_to_non_nullable
-              as List<Part>,
+              as List<PartEntity>,
       error: freezed == error ? _value.error! : error,
       status: null == status
           ? _value.status
@@ -198,7 +191,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
       {this.fetchPartAmount = 20,
       this.databaseLength = 0,
       required this.scrollController,
-      final List<Part> parts = const <Part>[],
+      final List<PartEntity> parts = const <PartEntity>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
       : _parts = parts;
@@ -211,11 +204,10 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   final int databaseLength;
   @override
   final ScrollController scrollController;
-  final List<Part> _parts;
->>>>>>> 9594ee4 (added state control to manage inventory page)
+  final List<PartEntity> _parts;
   @override
   @JsonKey()
-  List<Part> get parts {
+  List<PartEntity> get parts {
     if (_parts is EqualUnmodifiableListView) return _parts;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_parts);
@@ -288,7 +280,7 @@ abstract class _ManageInventoryState implements ManageInventoryState {
       {final int fetchPartAmount,
       final int databaseLength,
       required final ScrollController scrollController,
-      final List<Part> parts,
+      final List<PartEntity> parts,
       final dynamic error,
       final ManageInventoryStateStatus status}) = _$ManageInventoryStateImpl;
 
@@ -300,7 +292,7 @@ abstract class _ManageInventoryState implements ManageInventoryState {
   ScrollController get scrollController;
 >>>>>>> 9594ee4 (added state control to manage inventory page)
   @override
-  List<Part> get parts;
+  List<PartEntity> get parts;
   @override
   dynamic get error;
   @override

@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$HomePageState {
-  Part? get part => throw _privateConstructorUsedError;
+  PartEntity? get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   HomePageStateStatus get addPartStateStatus =>
       throw _privateConstructorUsedError;
@@ -33,9 +33,9 @@ abstract class $HomePageStateCopyWith<$Res> {
       _$HomePageStateCopyWithImpl<$Res, HomePageState>;
   @useResult
   $Res call(
-      {Part? part, String? error, HomePageStateStatus addPartStateStatus});
-
-  $PartCopyWith<$Res>? get part;
+      {PartEntity? part,
+      String? error,
+      HomePageStateStatus addPartStateStatus});
 }
 
 /// @nodoc
@@ -59,7 +59,7 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -69,18 +69,6 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
           : addPartStateStatus // ignore: cast_nullable_to_non_nullable
               as HomePageStateStatus,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PartCopyWith<$Res>? get part {
-    if (_value.part == null) {
-      return null;
-    }
-
-    return $PartCopyWith<$Res>(_value.part!, (value) {
-      return _then(_value.copyWith(part: value) as $Val);
-    });
   }
 }
 
@@ -93,10 +81,9 @@ abstract class _$$HomePageStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Part? part, String? error, HomePageStateStatus addPartStateStatus});
-
-  @override
-  $PartCopyWith<$Res>? get part;
+      {PartEntity? part,
+      String? error,
+      HomePageStateStatus addPartStateStatus});
 }
 
 /// @nodoc
@@ -118,7 +105,7 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -140,7 +127,7 @@ class _$HomePageStateImpl implements _HomePageState {
       this.addPartStateStatus = HomePageStateStatus.loading});
 
   @override
-  final Part? part;
+  final PartEntity? part;
   @override
   final String? error;
   @override
@@ -175,12 +162,12 @@ class _$HomePageStateImpl implements _HomePageState {
 
 abstract class _HomePageState implements HomePageState {
   factory _HomePageState(
-      {final Part? part,
+      {final PartEntity? part,
       final String? error,
       final HomePageStateStatus addPartStateStatus}) = _$HomePageStateImpl;
 
   @override
-  Part? get part;
+  PartEntity? get part;
   @override
   String? get error;
   @override

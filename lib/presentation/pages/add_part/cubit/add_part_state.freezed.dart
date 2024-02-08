@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AddPartState {
-  Part? get part => throw _privateConstructorUsedError;
+  PartEntity? get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   GlobalKey<FormState> get formKey => throw _privateConstructorUsedError;
   bool get isFormValid => throw _privateConstructorUsedError;
@@ -50,7 +50,7 @@ abstract class $AddPartStateCopyWith<$Res> {
       _$AddPartStateCopyWithImpl<$Res, AddPartState>;
   @useResult
   $Res call(
-      {Part? part,
+      {PartEntity? part,
       String? error,
       GlobalKey<FormState> formKey,
       bool isFormValid,
@@ -64,8 +64,6 @@ abstract class $AddPartStateCopyWith<$Res> {
       TextEditingController requisitionPointController,
       TextEditingController requisitionQuantityController,
       dynamic addPartStateStatus});
-
-  $PartCopyWith<$Res>? get part;
 }
 
 /// @nodoc
@@ -100,7 +98,7 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -155,18 +153,6 @@ class _$AddPartStateCopyWithImpl<$Res, $Val extends AddPartState>
               as dynamic,
     ) as $Val);
   }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PartCopyWith<$Res>? get part {
-    if (_value.part == null) {
-      return null;
-    }
-
-    return $PartCopyWith<$Res>(_value.part!, (value) {
-      return _then(_value.copyWith(part: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -178,7 +164,7 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Part? part,
+      {PartEntity? part,
       String? error,
       GlobalKey<FormState> formKey,
       bool isFormValid,
@@ -192,9 +178,6 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
       TextEditingController requisitionPointController,
       TextEditingController requisitionQuantityController,
       dynamic addPartStateStatus});
-
-  @override
-  $PartCopyWith<$Res>? get part;
 }
 
 /// @nodoc
@@ -227,7 +210,7 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -303,7 +286,7 @@ class _$AddPartStateImpl implements _AddPartState {
       this.addPartStateStatus = AddPartStateStatus.loading});
 
   @override
-  final Part? part;
+  final PartEntity? part;
   @override
   final String? error;
   @override
@@ -402,7 +385,7 @@ class _$AddPartStateImpl implements _AddPartState {
 
 abstract class _AddPartState implements AddPartState {
   factory _AddPartState(
-      {final Part? part,
+      {final PartEntity? part,
       final String? error,
       required final GlobalKey<FormState> formKey,
       final bool isFormValid,
@@ -418,7 +401,7 @@ abstract class _AddPartState implements AddPartState {
       final dynamic addPartStateStatus}) = _$AddPartStateImpl;
 
   @override
-  Part? get part;
+  PartEntity? get part;
   @override
   String? get error;
   @override

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:inventory_v1/domain/models/part/part_model.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 
 part 'part_view_state.freezed.dart';
 
@@ -16,7 +16,7 @@ enum PartViewStateStatus {
 @freezed
 class PartViewState with _$PartViewState {
   factory PartViewState({
-    Part? part,
+    PartEntity? part,
     String? error,
     @Default(PartViewStateStatus.loading)
     PartViewStateStatus partViewStateStatuse,

@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$PartViewState {
-  Part? get part => throw _privateConstructorUsedError;
+  PartEntity? get part => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   PartViewStateStatus get partViewStateStatuse =>
       throw _privateConstructorUsedError;
@@ -33,9 +33,9 @@ abstract class $PartViewStateCopyWith<$Res> {
       _$PartViewStateCopyWithImpl<$Res, PartViewState>;
   @useResult
   $Res call(
-      {Part? part, String? error, PartViewStateStatus partViewStateStatuse});
-
-  $PartCopyWith<$Res>? get part;
+      {PartEntity? part,
+      String? error,
+      PartViewStateStatus partViewStateStatuse});
 }
 
 /// @nodoc
@@ -59,7 +59,7 @@ class _$PartViewStateCopyWithImpl<$Res, $Val extends PartViewState>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -69,18 +69,6 @@ class _$PartViewStateCopyWithImpl<$Res, $Val extends PartViewState>
           : partViewStateStatuse // ignore: cast_nullable_to_non_nullable
               as PartViewStateStatus,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PartCopyWith<$Res>? get part {
-    if (_value.part == null) {
-      return null;
-    }
-
-    return $PartCopyWith<$Res>(_value.part!, (value) {
-      return _then(_value.copyWith(part: value) as $Val);
-    });
   }
 }
 
@@ -93,10 +81,9 @@ abstract class _$$PartViewStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Part? part, String? error, PartViewStateStatus partViewStateStatuse});
-
-  @override
-  $PartCopyWith<$Res>? get part;
+      {PartEntity? part,
+      String? error,
+      PartViewStateStatus partViewStateStatuse});
 }
 
 /// @nodoc
@@ -118,7 +105,7 @@ class __$$PartViewStateImplCopyWithImpl<$Res>
       part: freezed == part
           ? _value.part
           : part // ignore: cast_nullable_to_non_nullable
-              as Part?,
+              as PartEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -140,7 +127,7 @@ class _$PartViewStateImpl implements _PartViewState {
       this.partViewStateStatuse = PartViewStateStatus.loading});
 
   @override
-  final Part? part;
+  final PartEntity? part;
   @override
   final String? error;
   @override
@@ -176,12 +163,12 @@ class _$PartViewStateImpl implements _PartViewState {
 
 abstract class _PartViewState implements PartViewState {
   factory _PartViewState(
-      {final Part? part,
+      {final PartEntity? part,
       final String? error,
       final PartViewStateStatus partViewStateStatuse}) = _$PartViewStateImpl;
 
   @override
-  Part? get part;
+  PartEntity? get part;
   @override
   String? get error;
   @override
