@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/domain/models/part/part_model.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 
 part 'add_part_state.freezed.dart';
 
@@ -18,7 +18,7 @@ enum AddPartStateStatus {
 @freezed
 class AddPartState with _$AddPartState {
   factory AddPartState({
-    Part? part,
+    PartEntity? part,
     String? error,
     required GlobalKey<FormState> formKey,
     @Default(false) bool isFormValid,

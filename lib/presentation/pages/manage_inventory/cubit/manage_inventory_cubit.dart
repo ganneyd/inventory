@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
-import 'package:inventory_v1/domain/models/part/part_model.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:logging/logging.dart';
@@ -30,7 +30,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     //retrieve 20 elements at a time
     var pageIndex = startIndex + state.fetchPartAmount;
     //get the current list of parts
-    List<Part> oldList = state.parts.toList();
+    List<PartEntity> oldList = state.parts.toList();
     //!debug
     _logger
         .finest('loading parts, startIndex:$startIndex pageIndex:$pageIndex');

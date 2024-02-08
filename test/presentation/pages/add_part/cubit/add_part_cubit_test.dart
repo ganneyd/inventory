@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/domain/models/part/part_model.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_cubit.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';

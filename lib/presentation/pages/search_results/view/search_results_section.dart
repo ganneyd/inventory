@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/domain/models/part/part_model.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 
-Widget buildSection(String title, List<Part> parts) {
+Widget buildSection(String title, List<PartEntity> parts) {
   //if the list is empty don't  show the section
   if (parts.isEmpty) {
     return Container();
