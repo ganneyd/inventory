@@ -17,7 +17,7 @@ class PartEntityAdapter extends TypeAdapter<PartEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PartEntity(
-      index: fields[0] as dynamic,
+      index: fields[0] as int,
       name: fields[1] as String,
       nsn: fields[2] as String,
       partNumber: fields[3] as String,

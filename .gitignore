@@ -42,3 +42,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .VSCodeCounter/
+lib/data/model_/checked_out_model.g.dart
+lib/data/entities/part/part_entity.g.dart
+lib/data/entities/part/part_entity.g.dart

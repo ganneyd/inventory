@@ -21,7 +21,7 @@ class PartEntity {
 
   ///The document ID of the part as specified by the database
   @HiveField(0)
-  final index;
+  final int index;
 
   ///Name of the part
   @HiveField(1)
