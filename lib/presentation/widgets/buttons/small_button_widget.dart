@@ -11,8 +11,7 @@ class SmallButton extends StatelessWidget {
       this.isDisabled = false});
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 350.0,
+    return Expanded(
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
