@@ -17,6 +17,7 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return CheckedOutModel(
+      indexModel: fields[5] as int,
       checkedOutAmount: fields[1] as int,
       dateTimeModel: fields[2] as DateTime,
       partModel: fields[0] as Part,
@@ -28,7 +29,7 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
   @override
   void write(BinaryWriter writer, CheckedOutModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.partModel)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       ..writeByte(3)
       ..write(obj.isVerifiedModel)
       ..writeByte(4)
-      ..write(obj.verifiedDateModel);
+      ..write(obj.verifiedDateModel)
+      ..writeByte(5)
+      ..write(obj.indexModel);
   }
 
   @override

@@ -8,12 +8,14 @@ part 'checked_out_model.g.dart';
 class CheckedOutModel extends CheckedOutEntity {
   ///Constructor
   CheckedOutModel({
+    required this.indexModel,
     required this.checkedOutAmount,
     required this.dateTimeModel,
     required this.partModel,
     required this.isVerifiedModel,
     required this.verifiedDateModel,
   }) : super(
+            index: indexModel,
             checkedOutQuantity: checkedOutAmount,
             dateTime: dateTimeModel,
             part: partModel,
@@ -37,4 +39,7 @@ class CheckedOutModel extends CheckedOutEntity {
 
   @HiveField(4)
   final DateTime verifiedDateModel;
+
+  @HiveField(5)
+  final int indexModel;
 }
