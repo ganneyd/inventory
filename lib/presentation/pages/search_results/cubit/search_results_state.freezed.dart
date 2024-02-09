@@ -24,6 +24,7 @@ mixin _$SearchResultsState {
   List<PartEntity> get partsByPartNumber => throw _privateConstructorUsedError;
   TextEditingController get searchBarController =>
       throw _privateConstructorUsedError;
+  dynamic get checkedOutParts => throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
   SearchResultsStateStatus get status => throw _privateConstructorUsedError;
 
@@ -45,6 +46,7 @@ abstract class $SearchResultsStateCopyWith<$Res> {
       List<PartEntity> partsBySerialNumber,
       List<PartEntity> partsByPartNumber,
       TextEditingController searchBarController,
+      dynamic checkedOutParts,
       String error,
       SearchResultsStateStatus status});
 }
@@ -68,6 +70,7 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
     Object? partsBySerialNumber = null,
     Object? partsByPartNumber = null,
     Object? searchBarController = null,
+    Object? checkedOutParts = freezed,
     Object? error = null,
     Object? status = null,
   }) {
@@ -96,6 +99,10 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
           ? _value.searchBarController
           : searchBarController // ignore: cast_nullable_to_non_nullable
               as TextEditingController,
+      checkedOutParts: freezed == checkedOutParts
+          ? _value.checkedOutParts
+          : checkedOutParts // ignore: cast_nullable_to_non_nullable
+              as dynamic,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -123,6 +130,7 @@ abstract class _$$SearchResultsStateImplCopyWith<$Res>
       List<PartEntity> partsBySerialNumber,
       List<PartEntity> partsByPartNumber,
       TextEditingController searchBarController,
+      dynamic checkedOutParts,
       String error,
       SearchResultsStateStatus status});
 }
@@ -144,6 +152,7 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
     Object? partsBySerialNumber = null,
     Object? partsByPartNumber = null,
     Object? searchBarController = null,
+    Object? checkedOutParts = freezed,
     Object? error = null,
     Object? status = null,
   }) {
@@ -172,6 +181,9 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
           ? _value.searchBarController
           : searchBarController // ignore: cast_nullable_to_non_nullable
               as TextEditingController,
+      checkedOutParts: freezed == checkedOutParts
+          ? _value.checkedOutParts!
+          : checkedOutParts,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -194,6 +206,7 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
       final List<PartEntity> partsBySerialNumber = const <PartEntity>[],
       final List<PartEntity> partsByPartNumber = const <PartEntity>[],
       required this.searchBarController,
+      this.checkedOutParts = const <CheckedOutEntity>[],
       this.error = 'no-error',
       this.status = SearchResultsStateStatus.loading})
       : _partsByName = partsByName,
@@ -245,6 +258,9 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
   final TextEditingController searchBarController;
   @override
   @JsonKey()
+  final dynamic checkedOutParts;
+  @override
+  @JsonKey()
   final String error;
   @override
   @JsonKey()
@@ -252,7 +268,7 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
 
   @override
   String toString() {
-    return 'SearchResultsState(scrollController: $scrollController, partsByName: $partsByName, partsByNsn: $partsByNsn, partsBySerialNumber: $partsBySerialNumber, partsByPartNumber: $partsByPartNumber, searchBarController: $searchBarController, error: $error, status: $status)';
+    return 'SearchResultsState(scrollController: $scrollController, partsByName: $partsByName, partsByNsn: $partsByNsn, partsBySerialNumber: $partsBySerialNumber, partsByPartNumber: $partsByPartNumber, searchBarController: $searchBarController, checkedOutParts: $checkedOutParts, error: $error, status: $status)';
   }
 
   @override
@@ -272,6 +288,8 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
                 .equals(other._partsByPartNumber, _partsByPartNumber) &&
             (identical(other.searchBarController, searchBarController) ||
                 other.searchBarController == searchBarController) &&
+            const DeepCollectionEquality()
+                .equals(other.checkedOutParts, checkedOutParts) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.status, status) || other.status == status));
   }
@@ -285,6 +303,7 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
       const DeepCollectionEquality().hash(_partsBySerialNumber),
       const DeepCollectionEquality().hash(_partsByPartNumber),
       searchBarController,
+      const DeepCollectionEquality().hash(checkedOutParts),
       error,
       status);
 
@@ -304,6 +323,7 @@ abstract class _SearchResultsState implements SearchResultsState {
       final List<PartEntity> partsBySerialNumber,
       final List<PartEntity> partsByPartNumber,
       required final TextEditingController searchBarController,
+      final dynamic checkedOutParts,
       final String error,
       final SearchResultsStateStatus status}) = _$SearchResultsStateImpl;
 
@@ -319,6 +339,8 @@ abstract class _SearchResultsState implements SearchResultsState {
   List<PartEntity> get partsByPartNumber;
   @override
   TextEditingController get searchBarController;
+  @override
+  dynamic get checkedOutParts;
   @override
   String get error;
   @override

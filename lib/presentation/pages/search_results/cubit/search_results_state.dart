@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
 
 part 'search_results_state.freezed.dart';
@@ -25,6 +26,7 @@ class SearchResultsState with _$SearchResultsState {
     @Default(<PartEntity>[]) List<PartEntity> partsBySerialNumber,
     @Default(<PartEntity>[]) List<PartEntity> partsByPartNumber,
     required TextEditingController searchBarController,
+    @Default(<CheckedOutEntity>[]) checkedOutParts,
     @Default('no-error') String error,
     @Default(SearchResultsStateStatus.loading) SearchResultsStateStatus status,
   }) = _SearchResultsState;
