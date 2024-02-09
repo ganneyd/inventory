@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/search_results/cubit/search_results_state.dart';
 
@@ -106,5 +108,40 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
               'Please enter a NSN,Part Number, Nomenclature or Serial Number',
           status: SearchResultsStateStatus.loadedUnsuccessfully));
     }
+  }
+
+  ///add parts to the checkout list
+  void addPartToCart(PartEntity addPart, int quantity) {
+    List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
+    bool isPartInCart = false;
+
+    for (var partInCart in newCartList) {
+      if (partInCart.part == addPart) {
+        isPartInCart = true;
+      }
+    }
+
+    if (quantity > 0 && !isPartInCart) {
+      var newCartEntry = CheckedOutEntity(
+        checkedOutQuantity: quantity,
+        dateTime: DateTime.now(),
+        part: addPart,
+      );
+      newCartList.add(newCartEntry);
+      emit(state.copyWith(partCheckoutCart: newCartList));
+    }
+  }
+
+  void updateCheckoutQuantity(
+      {required int checkoutPartIndex, required int newQuantity}) {
+    var checkoutPart = state.partCheckoutCart[checkoutPartIndex];
+
+    var newCheckOutPart = CheckedOutEntity(
+        checkedOutQuantity: newQuantity,
+        dateTime: checkoutPart.dateTime,
+        part: checkoutPart.part);
+    List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
+    newCartList[checkoutPartIndex] = newCheckOutPart;
+    emit(state.copyWith(partCheckoutCart: newCartList));
   }
 }
