@@ -76,13 +76,52 @@ class _SearchResultsState extends State<SearchResults> {
           return Scaffold(
             key: _scaffoldKey,
             endDrawer: buildDrawer(
-                parts: state.partsByName,
+                checkedOutParts: state.partCheckoutCart,
                 subtractCallback: () {},
                 addCallback: () {}),
             appBar: CustomAppBar(
               key: const Key('search-results-app-bar'),
               // Directly use AppBar here
               title: 'Search Results',
+              backButtonCallback: () async {
+                if (state.partCheckoutCart.isNotEmpty) {
+                  await showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return AlertDialog(
+                          title: const Text('Cancel Checkout'),
+                          content: SizedBox(
+                            width: 250,
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    'You still got items in your cart, do you still want to continue browsing?',
+                                    softWrap: true,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      SmallButton(
+                                          buttonName: 'No',
+                                          onPressed: () => Navigator.of(context)
+                                              .pushNamed('/home_page')),
+                                      SmallButton(
+                                          buttonName: 'Yes',
+                                          onPressed: () =>
+                                              Navigator.of(dialogContext)
+                                                  .pop()),
+                                    ],
+                                  )
+                                ]),
+                          ),
+                        );
+                      });
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
               actions: [
                 IconButton(
                   onPressed: () => _scaffoldKey.currentState
@@ -112,12 +151,13 @@ class _SearchResultsState extends State<SearchResults> {
                   ? const PartNotFound()
                   : ListView(
                       children: [
-                        buildSection('Parts by NSN', state.partsByNsn),
-                        buildSection('Parts by Name', state.partsByName),
+                        buildSection('Parts by NSN', state.partsByNsn, context),
                         buildSection(
-                            'Parts by Part Number', state.partsByPartNumber),
+                            'Parts by Name', state.partsByName, context),
+                        buildSection('Parts by Part Number',
+                            state.partsByPartNumber, context),
                         buildSection('Parts by Serial Number',
-                            state.partsBySerialNumber),
+                            state.partsBySerialNumber, context),
                       ],
                     ),
             ),
