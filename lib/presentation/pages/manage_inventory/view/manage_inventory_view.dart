@@ -64,7 +64,9 @@ class ManageInventory extends StatelessWidget {
             });
 
             return Scaffold(
-              appBar: genericAppBar(context, 'Manage Inventory'),
+              appBar: const CustomAppBar(
+                  key: Key('manage-inventory-app-bar'),
+                  title: 'Manage Inventory'),
               body: ListView.builder(
                 controller: state.scrollController,
                 itemCount: state.parts.length,
