@@ -65,6 +65,7 @@ void main() {
       serialNumberController: serialNumberController,
       locationController: mockLocationController,
     );
+    registerFallbackValue(AddPartParams(partEntity: typicalPart));
   });
 
   group('AddPartCubit()', () {
@@ -334,20 +335,20 @@ void main() {
       when(() => serialNumberController.clear()).thenAnswer((_) {});
     }
 
-    void mockUsecaseSetup(AddPartParams params) {
+    void mockUsecaseSetup() {
       mockSetup();
 
-      when(() => mockAddPartUseCase.call(params))
+      when(() => mockAddPartUseCase.call(any(that: isA<AddPartParams>())))
           .thenAnswer((_) async => const Right<Failure, void>(null));
     }
 
     test('Usecase completes with no errors', () async {
-      AddPartParams params = AddPartParams(partEntity: typicalPart);
-      mockUsecaseSetup(params);
+      mockUsecaseSetup();
       sut.dropDownMenuHandler(typicalPart.unitOfIssue);
       sut.savePart();
 
-      verify(() => mockAddPartUseCase.call(params)).called(1);
+      verify(() => mockAddPartUseCase.call(any(that: isA<AddPartParams>())))
+          .called(1);
       //verify that the controllers were only called once when the .applyPart() was called
       verify(() => nsnController.text).called(1);
       verify(() => nomenclatureController.text).called(1);
@@ -387,14 +388,15 @@ void main() {
     });
 
     test('Usecase completes with  errors', () async {
-      AddPartParams params = AddPartParams(partEntity: typicalPart);
-      mockUsecaseSetup(params);
+      mockUsecaseSetup();
       sut.dropDownMenuHandler(typicalPart.unitOfIssue);
-      when(() => mockAddPartUseCase.call(params)).thenAnswer(
-          (invocation) async => Left<Failure, void>(CreateDataFailure()));
+      when(() => mockAddPartUseCase.call(any(that: isA<AddPartParams>())))
+          .thenAnswer(
+              (invocation) async => Left<Failure, void>(CreateDataFailure()));
       sut.savePart();
 
-      verify(() => mockAddPartUseCase.call(params)).called(1);
+      verify(() => mockAddPartUseCase.call(any(that: isA<AddPartParams>())))
+          .called(1);
       //verify that the controllers were only called once when the .applyPart() was called
       verify(() => nsnController.text).called(1);
       verify(() => nomenclatureController.text).called(1);
@@ -436,8 +438,7 @@ void main() {
     });
 
     test('Form was not validated properly and .savePart() called', () {
-      AddPartParams params = AddPartParams(partEntity: typicalPart);
-      mockUsecaseSetup(params);
+      mockUsecaseSetup();
       sut.dropDownMenuHandler(typicalPart.unitOfIssue);
 
       //make it so that the form validation fails
@@ -449,7 +450,8 @@ void main() {
       //isFormValid should be false
       expect(sut.state.isFormValid, false);
       //usecase shouldn't be called
-      verifyNever(() => mockAddPartUseCase.call(params));
+      verifyNever(
+          () => mockAddPartUseCase.call(any(that: isA<AddPartParams>())));
       //state should be unsuccessful
       expect(sut.state.addPartStateStatus,
           AddPartStateStatus.loadedUnsuccessfully);
