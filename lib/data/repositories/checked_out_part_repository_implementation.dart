@@ -4,6 +4,7 @@ import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:logging/logging.dart';
 
@@ -14,18 +15,42 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
 
   final Logger _logger;
   final Box<CheckedOutModel> _localDatasource;
+
+  CheckedOutModel _getCheckoutPartWithIndex(
+      CheckedOutEntity checkedOutEntity, int index) {
+    return CheckedOutModel(
+        indexModel: index,
+        checkedOutAmount: checkedOutEntity.checkedOutQuantity,
+        dateTimeModel: checkedOutEntity.dateTime,
+        partModel: PartAdapter.fromEntity(checkedOutEntity.part),
+        isVerifiedModel: checkedOutEntity.isVerified ?? false,
+        verifiedDateModel: checkedOutEntity.verifiedDate ?? DateTime.now());
+  }
+
   @override
   Future<Either<Failure, void>> createCheckOut(
-      CheckedOutEntity checkedOutEntity) {
-    // TODO: implement createCheckOut
-    throw UnimplementedError();
+      CheckedOutEntity checkedOutEntity) async {
+    try {
+      _logger.finest('creating new checked out entry $checkedOutEntity');
+      var index = _localDatasource.isEmpty ? 0 : _localDatasource.length;
+      await _localDatasource
+          .add(_getCheckoutPartWithIndex(checkedOutEntity, index));
+      return const Right<Failure, void>(null);
+    } catch (exception) {
+      return Left<Failure, void>(CreateDataFailure());
+    }
   }
 
   @override
   Future<Either<Failure, void>> deleteCheckedOutItem(
-      CheckedOutEntity checkedOutEntity) {
-    // TODO: implement deleteCheckedOutItem
-    throw UnimplementedError();
+      CheckedOutEntity checkedOutEntity) async {
+    try {
+      _logger.finest('deleting $checkedOutEntity');
+      await _localDatasource.delete(checkedOutEntity.index);
+      return const Right<Failure, void>(null);
+    } catch (exception) {
+      return const Left<Failure, void>(DeleteDataFailure());
+    }
   }
 
   @override
@@ -42,9 +67,41 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
 
   @override
   Future<Either<Failure, List<CheckedOutEntity>>> getCheckedOutItems(
-      int startIndex, int endIndex) {
-    // TODO: implement getCheckedOutItems
-    throw UnimplementedError();
+      int startIndex, int endIndex) async {
+    try {
+      var upperBound = _localDatasource.length;
+      var lowerBound = startIndex < 0 ? 0 : startIndex;
+
+      if (endIndex < upperBound) {
+        upperBound = endIndex + 1;
+      }
+      _logger.finest(
+          'getting all parts lowerBound is $lowerBound and upperBound is $upperBound');
+      if (upperBound < lowerBound) {
+        _logger.severe(
+            'upperBound is less than lowerBound, throwing exception... ');
+        throw IndexOutOfBounds();
+      }
+
+      List<CheckedOutModel> parts = [];
+      for (int i = lowerBound; i < upperBound; i++) {
+        var part = _localDatasource.getAt(i);
+        if (part != null) {
+          parts.add(part);
+        }
+      }
+      _logger.finest('got ${parts.length} parts from database');
+      return Right<Failure, List<CheckedOutEntity>>(parts);
+    } on ReadDataException {
+      _logger.warning('ReadDataFailure() occurred');
+      return const Left<Failure, List<CheckedOutEntity>>(ReadDataFailure());
+    } on IndexOutOfBounds {
+      _logger.warning('ReadDataFailure() occurred');
+      return Left<Failure, List<CheckedOutEntity>>(OutOfBoundsFailure());
+    } catch (e) {
+      _logger.severe('Unknown exception occurred  $e', [e.runtimeType]);
+      return const Left<Failure, List<CheckedOutEntity>>(GetFailure());
+    }
   }
 
   @override
