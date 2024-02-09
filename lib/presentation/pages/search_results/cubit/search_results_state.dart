@@ -26,7 +26,7 @@ class SearchResultsState with _$SearchResultsState {
     @Default(<PartEntity>[]) List<PartEntity> partsBySerialNumber,
     @Default(<PartEntity>[]) List<PartEntity> partsByPartNumber,
     required TextEditingController searchBarController,
-    @Default(<CheckedOutEntity>[]) checkedOutParts,
+    @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> partCheckoutCart,
     @Default('no-error') String error,
     @Default(SearchResultsStateStatus.loading) SearchResultsStateStatus status,
   }) = _SearchResultsState;
