@@ -89,7 +89,8 @@ class AddPartView extends StatelessWidget {
 
           return LayoutBuilder(builder: (builder, constraints) {
             return Scaffold(
-              appBar: genericAppBar(context, 'Add Part'),
+              appBar: const CustomAppBar(
+                  key: Key('add-part-app-bar'), title: 'Add Part'),
               body: SizedBox(
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
