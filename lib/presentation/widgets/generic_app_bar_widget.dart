@@ -4,8 +4,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final PreferredSizeWidget? bottom;
+  final VoidCallback? backButtonCallback;
   const CustomAppBar(
-      {required Key key, required this.title, this.actions, this.bottom})
+      {required Key key,
+      required this.title,
+      this.actions,
+      this.bottom,
+      this.backButtonCallback})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -17,7 +22,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           builder: (BuildContext context) {
             return IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed:
+                  backButtonCallback ?? () => Navigator.of(context).pop(),
             );
           },
         ));
