@@ -46,7 +46,7 @@ void main() {
       when(() => mockPathProviderPlatform.getApplicationDocumentsPath())
           .thenAnswer((invocation) async => 'not_null');
       //part repo mock
-      when(() => mockGetIt<PartRepository>())
+      when(() => mockGetIt<PartRepositoryImplementation>())
           .thenAnswer((invocation) => PartRepositoryImplementation(mockBox));
       //usecases mock
       when(() => mockGetIt<AddPartUsecase>())
@@ -99,7 +99,7 @@ void main() {
       verify(() => mockPathProviderPlatform.getApplicationDocumentsPath())
           .called(1);
       //verify that the service locator was called once for the repo
-      verify(() => mockGetIt<PartRepository>()).called(1);
+      verify(() => mockGetIt<PartRepositoryImplementation>()).called(1);
       //verify that the service locator was only called once per usecase
       verify(() => mockGetIt<AddPartUsecase>()).called(1);
       verify(() => mockGetIt<DeletePartUsecase>()).called(1);
@@ -134,7 +134,7 @@ void main() {
       verify(() => mockPathProviderPlatform.getApplicationDocumentsPath())
           .called(1);
       //verify that the service locator was called once for the repo
-      verify(() => mockGetIt<PartRepository>()).called(1);
+      verify(() => mockGetIt<PartRepositoryImplementation>()).called(1);
       //verify that the service locator was only called once per usecase
       verify(() => mockGetIt<AddPartUsecase>()).called(1);
       verify(() => mockGetIt<DeletePartUsecase>()).called(1);
@@ -212,7 +212,7 @@ void main() {
 
   group('Part Repo', () {
     void mockSetup() {
-      when(() => mockGetIt<PartRepository>())
+      when(() => mockGetIt<PartRepositoryImplementation>())
           .thenAnswer((invocation) => PartRepositoryImplementation(mockBox));
     }
 
@@ -225,7 +225,7 @@ void main() {
       //evoke the function
       await sut.checkDependencies();
       //verify that the service locator was only called once
-      verify(() => mockGetIt<PartRepository>()).called(1);
+      verify(() => mockGetIt<PartRepositoryImplementation>()).called(1);
     });
 
     test('part repo is not open', () async {
@@ -238,7 +238,7 @@ void main() {
       //evoke the function
       await sut.checkDependencies();
       //verify that the service locator was only called once
-      verify(() => mockGetIt<PartRepository>()).called(1);
+      verify(() => mockGetIt<PartRepositoryImplementation>()).called(1);
     });
   });
 
