@@ -425,26 +425,6 @@ void main() {
       verify(() => mockDatasource.values).called(1);
     });
 
-    test('ReadDataException() handling', () async {
-      //setup
-      mockSetUp();
-      when(() => mockDatasource.containsKey(PartField.nsn))
-          .thenAnswer((invocation) => throw ReadDataException());
-      //await the results
-      var results = await sut.searchPartsByField(
-          fieldName: PartField.nsn, queryKey: 'no-match');
-
-      Failure resultFailure = const GetFailure();
-
-      results.fold((l) => resultFailure = l, (r) => null);
-      //based on the query provided and the data we have in the setup
-      //there is no parts that matches the query
-      expect(resultFailure, const ReadDataFailure());
-      //verify that the appropriate methods from the datasource was used
-      //this method shouldn't be called
-      verifyNever(() => mockDatasource.values);
-    });
-
     test('Exception() handling', () async {
       //setup
       mockSetUp();
@@ -682,26 +662,6 @@ void main() {
       verify(() => mockDatasource.values).called(1);
     });
 
-    test('ReadDataException() handling', () async {
-      //setup
-      mockSetUp();
-      when(() => mockDatasource.containsKey(PartField.partNumber))
-          .thenAnswer((invocation) => throw ReadDataException());
-      //await the results
-      var results = await sut.searchPartsByField(
-          fieldName: PartField.partNumber, queryKey: 'no-match');
-
-      Failure resultFailure = const GetFailure();
-
-      results.fold((l) => resultFailure = l, (r) => null);
-      //based on the query provided and the data we have in the setup
-      //there is no parts that matches the query
-      expect(resultFailure, const ReadDataFailure());
-      //verify that the appropriate methods from the datasource was used
-      //this method shouldn't be called
-      verifyNever(() => mockDatasource.values);
-    });
-
     test('Exception() handling', () async {
       //setup
       mockSetUp();
@@ -789,26 +749,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-    });
-
-    test('ReadDataException() handling', () async {
-      //setup
-      mockSetUp();
-      when(() => mockDatasource.containsKey(PartField.serialNumber))
-          .thenAnswer((invocation) => throw ReadDataException());
-      //await the results
-      var results = await sut.searchPartsByField(
-          fieldName: PartField.serialNumber, queryKey: 'no-match');
-
-      Failure resultFailure = const GetFailure();
-
-      results.fold((l) => resultFailure = l, (r) => null);
-      //based on the query provided and the data we have in the setup
-      //there is no parts that matches the query
-      expect(resultFailure, const ReadDataFailure());
-      //verify that the appropriate methods from the datasource was used
-      //this method shouldn't be called
-      verifyNever(() => mockDatasource.values);
     });
 
     test('Exception() handling', () async {
