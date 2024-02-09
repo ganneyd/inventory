@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 
 part 'checkout_state.freezed.dart';
 
@@ -16,8 +16,8 @@ enum CheckoutStateStatus {
 @freezed
 class CheckoutState with _$CheckoutState {
   factory CheckoutState({
-    PartEntity? part,
-    String? error,
+    @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkoutParts,
+    @Default('') String error,
     @Default(CheckoutStateStatus.loading)
     CheckoutStateStatus checkoutStateStatus,
   }) = _AddPartState;
