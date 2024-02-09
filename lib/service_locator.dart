@@ -3,13 +3,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
+import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/usecases/checkout/verify_checkout_part.dart';
 import 'package:logging/logging.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 
-const String boxName = 'newParts';
-
+//name of the Hive.box that the parts data is stored in
+const String boxName = 'parts_json';
+const String checkoutPartBox = 'checkout_parts';
 final GetIt locator = GetIt.instance;
 Logger serviceLocatorLogger = Logger('service_locator');
 
@@ -23,16 +27,15 @@ Future<void> initDependencies() async {
 }
 
 Future<void> initHive() async {
-  try {
-    serviceLocatorLogger.finest('initializing HIVE');
-    await Hive.initFlutter();
-    Hive.registerAdapter(PartEntityAdapter());
-    Hive.registerAdapter(UnitOfIssueAdapter());
-    await Hive.openBox<PartEntity>(boxName);
-    serviceLocatorLogger.finest('initialized hive');
-  } catch (e) {
-    serviceLocatorLogger.severe('Exception occurred initializing hive $e');
-  }
+  serviceLocatorLogger.finest('initializing HIVE');
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(PartEntityAdapter());
+  Hive.registerAdapter(UnitOfIssueAdapter());
+  Hive.registerAdapter(CheckedOutModelAdapter());
+  await Hive.openBox<PartEntity>(boxName);
+  await Hive.openBox<CheckedOutModel>(checkoutPartBox);
+  serviceLocatorLogger.finest('initialized hive');
 }
 
 //Initialize the service locator
@@ -46,10 +49,11 @@ Future<void> setupLocator() async {
 
   //!Data Layer
   //!Repositories
-  locator.registerLazySingleton<LocalDataSourceImplementation>(
-      () => LocalDataSourceImplementation(Hive.box<PartEntity>(boxName)));
-  locator.registerLazySingleton<PartRepositoryImplementation>(() =>
-      PartRepositoryImplementation(locator<LocalDataSourceImplementation>()));
+  locator.registerLazySingleton<PartRepositoryImplementation>(
+      () => PartRepositoryImplementation(Hive.box<PartEntity>(boxName)));
+  locator.registerLazySingleton<CheckedOutPartRepository>(() =>
+      CheckedOutPartRepositoryImplementation(
+          Hive.box<CheckedOutModel>(checkoutPartBox)));
   //!Usecases
   locator.registerFactory<AddPartUsecase>(
       () => AddPartUsecase(locator<PartRepositoryImplementation>()));
@@ -69,6 +73,8 @@ Future<void> setupLocator() async {
       GetPartBySerialNumberUsecase(locator<PartRepositoryImplementation>()));
   locator.registerFactory<GetDatabaseLength>(
       () => GetDatabaseLength(locator<PartRepositoryImplementation>()));
+  locator.registerFactory<VerifyCheckoutPart>(
+      () => VerifyCheckoutPart(locator<CheckedOutPartRepository>()));
   //!Presentation Layer
 //!Pages
 }
