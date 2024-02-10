@@ -1,3 +1,4 @@
+import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 
@@ -129,5 +130,93 @@ class ValuesForTest {
   List<PartEntity> parts() {
     var parts = getPartList().map((e) => Part.fromJson(e)).toList();
     return parts;
+  }
+
+  List<CheckedOutEntity> createCheckedOutList() {
+    return [
+      CheckedOutEntity(
+        index: 1,
+        checkedOutQuantity: 5,
+        dateTime: DateTime.now().subtract(const Duration(days: 2)),
+        part: parts()[0],
+        isVerified: true,
+        verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      CheckedOutEntity(
+        index: 2,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+
+      CheckedOutEntity(
+        index: 3,
+        checkedOutQuantity: 3,
+        dateTime: DateTime.now().subtract(const Duration(days: 7)),
+        part: parts()[0],
+        isVerified: true,
+        verifiedDate: DateTime.now().subtract(const Duration(days: 6)),
+      ),
+      CheckedOutEntity(
+        index: 4,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+      CheckedOutEntity(
+        index: 5,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+      CheckedOutEntity(
+        index: 6,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+      CheckedOutEntity(
+        index: 7,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+      CheckedOutEntity(
+        index: 8,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+      CheckedOutEntity(
+        index: 9,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 4)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+      CheckedOutEntity(
+        index: 10,
+        checkedOutQuantity: 10,
+        dateTime: DateTime.now().subtract(const Duration(days: 10)),
+        part: parts()[0],
+        isVerified: false,
+        verifiedDate: null,
+      ),
+
+      // Add more variations as needed
+    ];
   }
 }
