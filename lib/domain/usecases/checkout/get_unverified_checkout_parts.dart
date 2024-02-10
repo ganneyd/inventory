@@ -21,7 +21,7 @@ class GetUnverifiedCheckoutParts
         .fold((failure) => Left<Failure, List<CheckedOutEntity>>(failure),
             (checkoutParts) {
       for (var item in checkoutParts) {
-        if (item.isVerified ?? false) {
+        if (!(item.isVerified ?? true)) {
           unverifiedCheckoutParts.add(item);
         }
       }
