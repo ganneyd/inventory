@@ -12,8 +12,12 @@ class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
   final CheckedOutPartRepository _checkedOutPartRepository;
   @override
   Future<Either<Failure, void>> call(AddCheckoutPartParams params) async {
+    var newCheckoutPart = CheckedOutEntity(
+        checkedOutQuantity: params.checkedOutEntity.checkedOutQuantity,
+        dateTime: DateTime.now(),
+        part: params.checkedOutEntity.part);
     var results =
-        await _checkedOutPartRepository.createCheckOut(params.checkedOutEntity);
+        await _checkedOutPartRepository.createCheckOut(newCheckoutPart);
     return results.fold((failure) => Left<Failure, void>(failure),
         (r) => const Right<Failure, void>(null));
   }
