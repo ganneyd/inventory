@@ -11,12 +11,18 @@ class VerifyCheckoutPart implements UseCase<void, VerifyCheckoutPartParams> {
   final CheckedOutPartRepository _checkedOutPartRepository;
   @override
   Future<Either<Failure, void>> call(VerifyCheckoutPartParams params) async {
+    var date = DateTime.now();
     var updatedCheckoutPart = CheckedOutEntity(
         checkedOutQuantity: params.checkedOutEntity.checkedOutQuantity,
         dateTime: params.checkedOutEntity.dateTime,
         part: params.checkedOutEntity.part,
         isVerified: true,
-        verifiedDate: DateTime.now());
+        verifiedDate: DateTime(
+          date.year,
+          date.month,
+          date.day,
+          date.hour,
+        ));
 
     var results =
         await _checkedOutPartRepository.editCheckedOutItem(updatedCheckoutPart);
