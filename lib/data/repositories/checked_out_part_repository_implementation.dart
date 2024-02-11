@@ -57,6 +57,12 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
   Future<Either<Failure, void>> editCheckedOutItem(
       CheckedOutEntity checkedOutEntity) async {
     try {
+      if (checkedOutEntity.index == null) {
+        throw IndexError;
+      }
+      var checkoutPartModel = _getCheckoutPartWithIndex(
+          checkedOutEntity, checkedOutEntity.index ?? 0);
+      _localDatasource.putAt(checkoutPartModel.indexModel, checkoutPartModel);
       return const Right<Failure, void>(null);
     } on UpdateDataException {
       return const Left<Failure, void>(UpdateDataFailure());
