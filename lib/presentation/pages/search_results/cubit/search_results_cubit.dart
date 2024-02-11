@@ -38,6 +38,13 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
     searchPart();
   }
 
+  @override
+  Future<void> close() {
+    state.scrollController.dispose();
+    state.searchBarController.dispose();
+    return super.close();
+  }
+
   //method to fetch more parts when the user scrolls to the end of the list
   void _fetchMoreParts() async {
     //check if user is actually at the end
@@ -132,6 +139,14 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
     }
   }
 
+  void removeCheckoutPart(int checkoutPartIndex) {
+    List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
+
+    newCartList.removeAt(checkoutPartIndex);
+
+    emit(state.copyWith(partCheckoutCart: newCartList));
+  }
+
   void updateCheckoutQuantity(
       {required int checkoutPartIndex, required int newQuantity}) {
     var checkoutPart = state.partCheckoutCart[checkoutPartIndex];
@@ -143,5 +158,11 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
     List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
     newCartList[checkoutPartIndex] = newCheckOutPart;
     emit(state.copyWith(partCheckoutCart: newCartList));
+  }
+
+  void checkout() {
+    emit(state.copyWith(
+      partCheckoutCart: [],
+    ));
   }
 }
