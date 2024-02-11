@@ -7,6 +7,7 @@ import 'package:inventory_v1/presentation/pages/search_results/cubit/search_resu
 import 'package:inventory_v1/presentation/pages/search_results/view/cart_drawer.dart';
 import 'package:inventory_v1/presentation/pages/search_results/view/part_not_found.dart';
 import 'package:inventory_v1/presentation/pages/search_results/view/search_results_section.dart';
+import 'package:inventory_v1/presentation/widgets/dialogs/go_to_homeview_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 import 'package:inventory_v1/service_locator.dart';
@@ -76,9 +77,17 @@ class _SearchResultsState extends State<SearchResults> {
           return Scaffold(
             key: _scaffoldKey,
             endDrawer: buildDrawer(
+                context: context,
                 checkedOutParts: state.partCheckoutCart,
-                subtractCallback: () {},
-                addCallback: () {}),
+                subtractCallback: (index, newQuantity) =>
+                    BlocProvider.of<SearchPartCubit>(context)
+                        .updateCheckoutQuantity(
+                            checkoutPartIndex: index, newQuantity: newQuantity),
+                addCallback: (index, newQuantity) {
+                  BlocProvider.of<SearchPartCubit>(context)
+                      .updateCheckoutQuantity(
+                          checkoutPartIndex: index, newQuantity: newQuantity);
+                }),
             appBar: CustomAppBar(
               key: const Key('search-results-app-bar'),
               // Directly use AppBar here
@@ -88,35 +97,11 @@ class _SearchResultsState extends State<SearchResults> {
                   await showDialog(
                       context: context,
                       builder: (BuildContext dialogContext) {
-                        return AlertDialog(
-                          title: const Text('Cancel Checkout'),
-                          content: SizedBox(
-                            width: 250,
-                            child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    'You still got items in your cart, do you still want to continue browsing?',
-                                    softWrap: true,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      SmallButton(
-                                          buttonName: 'No',
-                                          onPressed: () => Navigator.of(context)
-                                              .pushNamed('/home_page')),
-                                      SmallButton(
-                                          buttonName: 'Yes',
-                                          onPressed: () =>
-                                              Navigator.of(dialogContext)
-                                                  .pop()),
-                                    ],
-                                  )
-                                ]),
-                          ),
-                        );
+                        return getBackToHomeDialog(
+                            message:
+                                'You still got items in your cart, do you still want to continue browsing?',
+                            context: context,
+                            dialogContext: dialogContext);
                       });
                 } else {
                   Navigator.of(context).pop();
