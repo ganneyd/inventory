@@ -20,7 +20,7 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       indexModel: fields[5] as int,
       checkedOutAmount: fields[1] as int,
       dateTimeModel: fields[2] as DateTime,
-      partModel: fields[0] as Part,
+      partModel: PartAdapter.fromEntity(fields[0] as PartEntity),
       isVerifiedModel: fields[3] as bool,
       verifiedDateModel: fields[4] as DateTime,
     );
