@@ -73,8 +73,17 @@ Future<void> setupLocator() async {
       GetPartBySerialNumberUsecase(locator<PartRepositoryImplementation>()));
   locator.registerFactory<GetDatabaseLength>(
       () => GetDatabaseLength(locator<PartRepositoryImplementation>()));
+  locator.registerFactory<GetLowQuantityParts>(
+      () => GetLowQuantityParts(locator<PartRepositoryImplementation>()));
   locator.registerFactory<VerifyCheckoutPart>(
       () => VerifyCheckoutPart(locator<CheckedOutPartRepository>()));
+  locator.registerFactory<AddCheckoutPart>(() => AddCheckoutPart(
+      locator<CheckedOutPartRepository>(), locator<EditPartUsecase>()));
+  locator.registerFactory<GetAllCheckoutParts>(
+      () => GetAllCheckoutParts(locator<CheckedOutPartRepository>()));
+  locator.registerFactory<GetUnverifiedCheckoutParts>(
+      () => GetUnverifiedCheckoutParts(locator<CheckedOutPartRepository>()));
+
   //!Presentation Layer
 //!Pages
 }
