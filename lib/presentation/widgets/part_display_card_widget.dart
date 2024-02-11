@@ -7,6 +7,7 @@ class PartCardDisplay extends StatelessWidget {
   final String bottom;
   final bool centerBottom;
   final VoidCallback? callback;
+  final Color? color;
   const PartCardDisplay(
       {super.key,
       this.callback,
@@ -14,7 +15,8 @@ class PartCardDisplay extends StatelessWidget {
       required this.center,
       required this.right,
       required this.bottom,
-      this.centerBottom = true});
+      this.centerBottom = true,
+      this.color});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,11 +24,24 @@ class PartCardDisplay extends StatelessWidget {
         child: ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [Text(left), Text(center), Text(right)],
+            children: [
+              Text(
+                left,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              Text(
+                center,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              Text(
+                right,
+                style: Theme.of(context).textTheme.titleSmall,
+              )
+            ],
           ),
           subtitle: centerBottom ? Text(bottom) : null,
           trailing: centerBottom ? null : Text(bottom),
-          tileColor: Colors.blueAccent,
+          tileColor: color ?? Colors.blueAccent,
           titleAlignment: ListTileTitleAlignment.center,
           contentPadding: const EdgeInsets.all(10.0),
           onTap: callback,
