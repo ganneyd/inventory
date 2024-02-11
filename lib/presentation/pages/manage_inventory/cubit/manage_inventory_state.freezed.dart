@@ -18,8 +18,12 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ManageInventoryState {
   int get fetchPartAmount => throw _privateConstructorUsedError;
   int get databaseLength => throw _privateConstructorUsedError;
-  ScrollController get scrollController => throw _privateConstructorUsedError;
   List<PartEntity> get parts => throw _privateConstructorUsedError;
+  List<PartEntity> get lowQuantityParts => throw _privateConstructorUsedError;
+  List<CheckedOutEntity> get unverifiedParts =>
+      throw _privateConstructorUsedError;
+  List<CheckedOutEntity> get checkedOutParts =>
+      throw _privateConstructorUsedError;
   dynamic get error => throw _privateConstructorUsedError;
   ManageInventoryStateStatus get status => throw _privateConstructorUsedError;
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -38,8 +42,10 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
   $Res call(
       {int fetchPartAmount,
       int databaseLength,
-      ScrollController scrollController,
       List<PartEntity> parts,
+      List<PartEntity> lowQuantityParts,
+      List<CheckedOutEntity> unverifiedParts,
+      List<CheckedOutEntity> checkedOutParts,
       dynamic error,
       ManageInventoryStateStatus status});
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -61,12 +67,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   $Res call({
     Object? fetchPartAmount = null,
     Object? databaseLength = null,
-    Object? scrollController = null,
-<<<<<<< HEAD
-    Object? part = null,
-=======
     Object? parts = null,
->>>>>>> 9594ee4 (added state control to manage inventory page)
+    Object? lowQuantityParts = null,
+    Object? unverifiedParts = null,
+    Object? checkedOutParts = null,
     Object? error = freezed,
     Object? status = null,
   }) {
@@ -79,19 +83,22 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
           ? _value.databaseLength
           : databaseLength // ignore: cast_nullable_to_non_nullable
               as int,
-      scrollController: null == scrollController
-          ? _value.scrollController
-          : scrollController // ignore: cast_nullable_to_non_nullable
-              as ScrollController,
-<<<<<<< HEAD
-      part: null == part
-          ? _value.part
-          : part // ignore: cast_nullable_to_non_nullable
-=======
       parts: null == parts
           ? _value.parts
           : parts // ignore: cast_nullable_to_non_nullable
               as List<PartEntity>,
+      lowQuantityParts: null == lowQuantityParts
+          ? _value.lowQuantityParts
+          : lowQuantityParts // ignore: cast_nullable_to_non_nullable
+              as List<PartEntity>,
+      unverifiedParts: null == unverifiedParts
+          ? _value.unverifiedParts
+          : unverifiedParts // ignore: cast_nullable_to_non_nullable
+              as List<CheckedOutEntity>,
+      checkedOutParts: null == checkedOutParts
+          ? _value.checkedOutParts
+          : checkedOutParts // ignore: cast_nullable_to_non_nullable
+              as List<CheckedOutEntity>,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -115,8 +122,10 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   $Res call(
       {int fetchPartAmount,
       int databaseLength,
-      ScrollController scrollController,
       List<PartEntity> parts,
+      List<PartEntity> lowQuantityParts,
+      List<CheckedOutEntity> unverifiedParts,
+      List<CheckedOutEntity> checkedOutParts,
       dynamic error,
       ManageInventoryStateStatus status});
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -135,12 +144,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   $Res call({
     Object? fetchPartAmount = null,
     Object? databaseLength = null,
-    Object? scrollController = null,
-<<<<<<< HEAD
-    Object? part = null,
-=======
     Object? parts = null,
->>>>>>> 9594ee4 (added state control to manage inventory page)
+    Object? lowQuantityParts = null,
+    Object? unverifiedParts = null,
+    Object? checkedOutParts = null,
     Object? error = freezed,
     Object? status = null,
   }) {
@@ -153,27 +160,22 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
           ? _value.databaseLength
           : databaseLength // ignore: cast_nullable_to_non_nullable
               as int,
-      scrollController: null == scrollController
-          ? _value.scrollController
-          : scrollController // ignore: cast_nullable_to_non_nullable
-              as ScrollController,
-<<<<<<< HEAD
-      part: null == part
-          ? _value._part
-          : part // ignore: cast_nullable_to_non_nullable
-              as List<Part>,
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-      manageInventoryStateStatus: null == manageInventoryStateStatus
-          ? _value.manageInventoryStateStatus
-          : manageInventoryStateStatus // ignore: cast_nullable_to_non_nullable
-=======
       parts: null == parts
           ? _value._parts
           : parts // ignore: cast_nullable_to_non_nullable
               as List<PartEntity>,
+      lowQuantityParts: null == lowQuantityParts
+          ? _value._lowQuantityParts
+          : lowQuantityParts // ignore: cast_nullable_to_non_nullable
+              as List<PartEntity>,
+      unverifiedParts: null == unverifiedParts
+          ? _value._unverifiedParts
+          : unverifiedParts // ignore: cast_nullable_to_non_nullable
+              as List<CheckedOutEntity>,
+      checkedOutParts: null == checkedOutParts
+          ? _value._checkedOutParts
+          : checkedOutParts // ignore: cast_nullable_to_non_nullable
+              as List<CheckedOutEntity>,
       error: freezed == error ? _value.error! : error,
       status: null == status
           ? _value.status
@@ -190,11 +192,16 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
       {this.fetchPartAmount = 20,
       this.databaseLength = 0,
-      required this.scrollController,
       final List<PartEntity> parts = const <PartEntity>[],
+      final List<PartEntity> lowQuantityParts = const <PartEntity>[],
+      final List<CheckedOutEntity> unverifiedParts = const <CheckedOutEntity>[],
+      final List<CheckedOutEntity> checkedOutParts = const <CheckedOutEntity>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
-      : _parts = parts;
+      : _parts = parts,
+        _lowQuantityParts = lowQuantityParts,
+        _unverifiedParts = unverifiedParts,
+        _checkedOutParts = checkedOutParts;
 
   @override
   @JsonKey()
@@ -202,8 +209,6 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   @override
   @JsonKey()
   final int databaseLength;
-  @override
-  final ScrollController scrollController;
   final List<PartEntity> _parts;
   @override
   @JsonKey()
@@ -211,6 +216,34 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
     if (_parts is EqualUnmodifiableListView) return _parts;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_parts);
+  }
+
+  final List<PartEntity> _lowQuantityParts;
+  @override
+  @JsonKey()
+  List<PartEntity> get lowQuantityParts {
+    if (_lowQuantityParts is EqualUnmodifiableListView)
+      return _lowQuantityParts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_lowQuantityParts);
+  }
+
+  final List<CheckedOutEntity> _unverifiedParts;
+  @override
+  @JsonKey()
+  List<CheckedOutEntity> get unverifiedParts {
+    if (_unverifiedParts is EqualUnmodifiableListView) return _unverifiedParts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_unverifiedParts);
+  }
+
+  final List<CheckedOutEntity> _checkedOutParts;
+  @override
+  @JsonKey()
+  List<CheckedOutEntity> get checkedOutParts {
+    if (_checkedOutParts is EqualUnmodifiableListView) return _checkedOutParts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_checkedOutParts);
   }
 
   @override
@@ -222,7 +255,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, databaseLength: $databaseLength, scrollController: $scrollController, parts: $parts, error: $error, status: $status)';
+    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, databaseLength: $databaseLength, parts: $parts, lowQuantityParts: $lowQuantityParts, unverifiedParts: $unverifiedParts, checkedOutParts: $checkedOutParts, error: $error, status: $status)';
   }
 
   @override
@@ -234,17 +267,13 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
                 other.fetchPartAmount == fetchPartAmount) &&
             (identical(other.databaseLength, databaseLength) ||
                 other.databaseLength == databaseLength) &&
-            (identical(other.scrollController, scrollController) ||
-                other.scrollController == scrollController) &&
-<<<<<<< HEAD
-            const DeepCollectionEquality().equals(other._part, _part) &&
-            (identical(other.error, error) || other.error == error) &&
-            (identical(other.manageInventoryStateStatus,
-                    manageInventoryStateStatus) ||
-                other.manageInventoryStateStatus ==
-                    manageInventoryStateStatus));
-=======
             const DeepCollectionEquality().equals(other._parts, _parts) &&
+            const DeepCollectionEquality()
+                .equals(other._lowQuantityParts, _lowQuantityParts) &&
+            const DeepCollectionEquality()
+                .equals(other._unverifiedParts, _unverifiedParts) &&
+            const DeepCollectionEquality()
+                .equals(other._checkedOutParts, _checkedOutParts) &&
             const DeepCollectionEquality().equals(other.error, error) &&
             (identical(other.status, status) || other.status == status));
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -255,13 +284,10 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
       runtimeType,
       fetchPartAmount,
       databaseLength,
-      scrollController,
-<<<<<<< HEAD
-      const DeepCollectionEquality().hash(_part),
-      error,
-      manageInventoryStateStatus);
-=======
       const DeepCollectionEquality().hash(_parts),
+      const DeepCollectionEquality().hash(_lowQuantityParts),
+      const DeepCollectionEquality().hash(_unverifiedParts),
+      const DeepCollectionEquality().hash(_checkedOutParts),
       const DeepCollectionEquality().hash(error),
       status);
 >>>>>>> 9594ee4 (added state control to manage inventory page)
@@ -279,8 +305,10 @@ abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
       {final int fetchPartAmount,
       final int databaseLength,
-      required final ScrollController scrollController,
       final List<PartEntity> parts,
+      final List<PartEntity> lowQuantityParts,
+      final List<CheckedOutEntity> unverifiedParts,
+      final List<CheckedOutEntity> checkedOutParts,
       final dynamic error,
       final ManageInventoryStateStatus status}) = _$ManageInventoryStateImpl;
 
@@ -289,10 +317,13 @@ abstract class _ManageInventoryState implements ManageInventoryState {
   @override
   int get databaseLength;
   @override
-  ScrollController get scrollController;
->>>>>>> 9594ee4 (added state control to manage inventory page)
-  @override
   List<PartEntity> get parts;
+  @override
+  List<PartEntity> get lowQuantityParts;
+  @override
+  List<CheckedOutEntity> get unverifiedParts;
+  @override
+  List<CheckedOutEntity> get checkedOutParts;
   @override
   dynamic get error;
   @override

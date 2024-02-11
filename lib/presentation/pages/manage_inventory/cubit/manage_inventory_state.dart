@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/data/entities/part/part_entity.dart';
 
 part 'manage_inventory_state.freezed.dart';
@@ -12,7 +11,10 @@ enum ManageInventoryStateStatus {
   loadedUnsuccessfully,
   fetchingData,
   fetchedDataSuccessfully,
-  fetchedDataUnsuccessfully
+  fetchedDataUnsuccessfully,
+  verifyingPart,
+  verifiedPartSuccessfully,
+  verifiedPartUnsuccessfully
 }
 
 @freezed
@@ -20,8 +22,10 @@ class ManageInventoryState with _$ManageInventoryState {
   factory ManageInventoryState({
     @Default(20) int fetchPartAmount,
     @Default(0) int databaseLength,
-    required ScrollController scrollController,
     @Default(<PartEntity>[]) List<PartEntity> parts,
+    @Default(<PartEntity>[]) List<PartEntity> lowQuantityParts,
+    @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> unverifiedParts,
+    @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkedOutParts,
     @Default('no error') error,
     @Default(ManageInventoryStateStatus.loading)
     ManageInventoryStateStatus status,
