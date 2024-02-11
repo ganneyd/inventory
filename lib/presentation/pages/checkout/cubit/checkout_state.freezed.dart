@@ -19,8 +19,7 @@ mixin _$CheckoutState {
   List<CheckedOutEntity> get checkoutParts =>
       throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
-  CheckoutStateStatus get checkoutStateStatus =>
-      throw _privateConstructorUsedError;
+  CheckoutStateStatus get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CheckoutStateCopyWith<CheckoutState> get copyWith =>
@@ -36,7 +35,7 @@ abstract class $CheckoutStateCopyWith<$Res> {
   $Res call(
       {List<CheckedOutEntity> checkoutParts,
       String error,
-      CheckoutStateStatus checkoutStateStatus});
+      CheckoutStateStatus status});
 }
 
 /// @nodoc
@@ -54,7 +53,7 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
   $Res call({
     Object? checkoutParts = null,
     Object? error = null,
-    Object? checkoutStateStatus = null,
+    Object? status = null,
   }) {
     return _then(_value.copyWith(
       checkoutParts: null == checkoutParts
@@ -65,9 +64,9 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
-      checkoutStateStatus: null == checkoutStateStatus
-          ? _value.checkoutStateStatus
-          : checkoutStateStatus // ignore: cast_nullable_to_non_nullable
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as CheckoutStateStatus,
     ) as $Val);
   }
@@ -84,7 +83,7 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
   $Res call(
       {List<CheckedOutEntity> checkoutParts,
       String error,
-      CheckoutStateStatus checkoutStateStatus});
+      CheckoutStateStatus status});
 }
 
 /// @nodoc
@@ -100,7 +99,7 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? checkoutParts = null,
     Object? error = null,
-    Object? checkoutStateStatus = null,
+    Object? status = null,
   }) {
     return _then(_$AddPartStateImpl(
       checkoutParts: null == checkoutParts
@@ -111,9 +110,9 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
-      checkoutStateStatus: null == checkoutStateStatus
-          ? _value.checkoutStateStatus
-          : checkoutStateStatus // ignore: cast_nullable_to_non_nullable
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as CheckoutStateStatus,
     ));
   }
@@ -125,7 +124,7 @@ class _$AddPartStateImpl implements _AddPartState {
   _$AddPartStateImpl(
       {final List<CheckedOutEntity> checkoutParts = const <CheckedOutEntity>[],
       this.error = '',
-      this.checkoutStateStatus = CheckoutStateStatus.loading})
+      this.status = CheckoutStateStatus.loading})
       : _checkoutParts = checkoutParts;
 
   final List<CheckedOutEntity> _checkoutParts;
@@ -142,11 +141,11 @@ class _$AddPartStateImpl implements _AddPartState {
   final String error;
   @override
   @JsonKey()
-  final CheckoutStateStatus checkoutStateStatus;
+  final CheckoutStateStatus status;
 
   @override
   String toString() {
-    return 'CheckoutState(checkoutParts: $checkoutParts, error: $error, checkoutStateStatus: $checkoutStateStatus)';
+    return 'CheckoutState(checkoutParts: $checkoutParts, error: $error, status: $status)';
   }
 
   @override
@@ -157,16 +156,12 @@ class _$AddPartStateImpl implements _AddPartState {
             const DeepCollectionEquality()
                 .equals(other._checkoutParts, _checkoutParts) &&
             (identical(other.error, error) || other.error == error) &&
-            (identical(other.checkoutStateStatus, checkoutStateStatus) ||
-                other.checkoutStateStatus == checkoutStateStatus));
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_checkoutParts),
-      error,
-      checkoutStateStatus);
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_checkoutParts), error, status);
 
   @JsonKey(ignore: true)
   @override
@@ -179,14 +174,14 @@ abstract class _AddPartState implements CheckoutState {
   factory _AddPartState(
       {final List<CheckedOutEntity> checkoutParts,
       final String error,
-      final CheckoutStateStatus checkoutStateStatus}) = _$AddPartStateImpl;
+      final CheckoutStateStatus status}) = _$AddPartStateImpl;
 
   @override
   List<CheckedOutEntity> get checkoutParts;
   @override
   String get error;
   @override
-  CheckoutStateStatus get checkoutStateStatus;
+  CheckoutStateStatus get status;
   @override
   @JsonKey(ignore: true)
   _$$AddPartStateImplCopyWith<_$AddPartStateImpl> get copyWith =>
