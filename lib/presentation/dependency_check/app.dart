@@ -6,6 +6,7 @@ import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_chec
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/route_generator.dart';
 import 'package:inventory_v1/service_locator.dart';
+import 'package:inventory_v1/theme.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 class App extends StatelessWidget {
@@ -14,6 +15,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: themeData,
       title: 'Inventory',
       home: BlocProvider<DependencyCheckCubit>(
         create: (_) => DependencyCheckCubit(
