@@ -4,13 +4,15 @@ import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:logging/logging.dart';
 
 class GetUnverifiedCheckoutParts
     implements UseCase<List<CheckedOutEntity>, UnverifiedCheckoutPartsParams> {
-  const GetUnverifiedCheckoutParts(
-      CheckedOutPartRepository checkedOutPartRepository)
-      : _checkedOutPartRepository = checkedOutPartRepository;
+  GetUnverifiedCheckoutParts(CheckedOutPartRepository checkedOutPartRepository)
+      : _checkedOutPartRepository = checkedOutPartRepository,
+        _logger = Logger('get-unverified-checkout-parts');
   final CheckedOutPartRepository _checkedOutPartRepository;
+  final Logger _logger;
   @override
   Future<Either<Failure, List<CheckedOutEntity>>> call(
       UnverifiedCheckoutPartsParams params) async {
@@ -25,6 +27,8 @@ class GetUnverifiedCheckoutParts
           unverifiedCheckoutParts.add(item);
         }
       }
+      _logger.finest(
+          'checkout part length is ${checkoutParts.length} found ${unverifiedCheckoutParts.length} unverified parts');
       return Right<Failure, List<CheckedOutEntity>>(unverifiedCheckoutParts);
     });
   }

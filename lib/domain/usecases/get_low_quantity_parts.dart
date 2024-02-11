@@ -17,6 +17,7 @@ class GetLowQuantityParts
   @override
   Future<Either<Failure, List<PartEntity>>> call(
       GetLowQuantityPartsParams params) async {
+    _logger.finest('i was called ');
     var results =
         await _partRepository.getAllParts(params.startIndex, params.endIndex);
 
@@ -28,8 +29,10 @@ class GetLowQuantityParts
     }
 
     List<PartEntity> lowQuantityParts = [];
+    _logger.finest('parts length is ${parts.length}');
     for (var part in parts) {
       if (part.quantity <= part.requisitionPoint) {
+        _logger.finest('${part.name} matches');
         lowQuantityParts.add(part);
       }
     }
