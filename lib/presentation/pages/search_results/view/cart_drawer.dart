@@ -6,8 +6,9 @@ import 'package:inventory_v1/presentation/widgets/buttons/small_button_widget.da
 
 Widget buildDrawer(
     {required List<CheckedOutEntity> checkedOutParts,
-    required VoidCallback addCallback,
-    required VoidCallback subtractCallback}) {
+    required void Function(int index, int newQuantity) addCallback,
+    required void Function(int index, int newQuantity) subtractCallback,
+    required BuildContext context}) {
   return Drawer(
     child: Column(
       children: <Widget>[
@@ -57,20 +58,24 @@ Widget buildDrawer(
                             children: <Widget>[
                               IconButton(
                                 icon: const Icon(Icons.remove),
-                                onPressed: () =>
-                                    BlocProvider.of<SearchPartCubit>(context)
-                                        .updateCheckoutQuantity(
-                                            checkoutPartIndex: index,
-                                            newQuantity: checkoutQuantity - 1),
+                                onPressed: () => checkoutQuantity > 1
+                                    ? subtractCallback(
+                                        index, checkoutQuantity - 1)
+                                    : null,
                               ),
                               Text(checkoutQuantity.toString()),
                               IconButton(
                                 icon: const Icon(Icons.add),
+                                onPressed: () => checkoutQuantity <
+                                        checkedOutPart.part.quantity
+                                    ? addCallback(index, checkoutQuantity + 1)
+                                    : null,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.cancel_rounded),
                                 onPressed: () =>
                                     BlocProvider.of<SearchPartCubit>(context)
-                                        .updateCheckoutQuantity(
-                                            checkoutPartIndex: index,
-                                            newQuantity: checkoutQuantity + 1),
+                                        .removeCheckoutPart(index),
                               ),
                             ],
                           ),
@@ -83,7 +88,13 @@ Widget buildDrawer(
             : SizedBox(
                 width: 350,
                 height: 60,
-                child: SmallButton(buttonName: 'Checkout', onPressed: () {})),
+                child: SmallButton(
+                    buttonName: 'Checkout',
+                    onPressed: () {
+                      BlocProvider.of<SearchPartCubit>(context).checkout();
+                      Navigator.of(context)
+                          .pushNamed('/checkout', arguments: checkedOutParts);
+                    })),
       ],
     ),
   );
