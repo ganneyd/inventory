@@ -4,6 +4,7 @@ import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/usecases/checkout/add_checkout_parts.dart';
+import 'package:inventory_v1/domain/usecases/edit_part.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../setup.dart';
@@ -11,14 +12,18 @@ import '../../../setup.dart';
 class MockCheckoutPartRepository extends Mock
     implements CheckedOutPartRepository {}
 
+class MockEditPartUsecase extends Mock implements EditPartUsecase {}
+
 void main() {
   late AddCheckoutPart sut;
   late MockCheckoutPartRepository mockCheckoutPartRepository;
+  late MockEditPartUsecase mockEditPartUsecase;
   late CheckedOutEntity checkedOutEntity;
 
   setUp(() {
     mockCheckoutPartRepository = MockCheckoutPartRepository();
-    sut = AddCheckoutPart(mockCheckoutPartRepository);
+    mockEditPartUsecase = MockEditPartUsecase();
+    sut = AddCheckoutPart(mockCheckoutPartRepository, mockEditPartUsecase);
     checkedOutEntity = CheckedOutEntity(
       index: 2,
       checkedOutQuantity: 10,
@@ -33,20 +38,30 @@ void main() {
 
   group('.call()', () {
     test('should return right ', () async {
-      AddCheckoutPartParams params =
-          AddCheckoutPartParams(checkedOutEntity: checkedOutEntity);
+      AddCheckoutPartParams params = AddCheckoutPartParams(
+          checkoutParts: ValuesForTest().createCheckedOutList());
       when(() => mockCheckoutPartRepository
               .createCheckOut(any(that: isA<CheckedOutEntity>())))
           .thenAnswer((invocation) async => const Right<Failure, void>(null));
       var results = await sut.call(params);
       expect(results, isA<Right<Failure, void>>());
       verify(() => mockCheckoutPartRepository
-          .createCheckOut(any(that: isA<CheckedOutEntity>()))).called(1);
+          .createCheckOut(any(that: isA<CheckedOutEntity>()))).called(10);
     });
-
+    test('should return right when list is null ', () async {
+      AddCheckoutPartParams params =
+          const AddCheckoutPartParams(checkoutParts: []);
+      when(() => mockCheckoutPartRepository
+              .createCheckOut(any(that: isA<CheckedOutEntity>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
+      var results = await sut.call(params);
+      expect(results, isA<Right<Failure, void>>());
+      verifyNever(() => mockCheckoutPartRepository
+          .createCheckOut(any(that: isA<CheckedOutEntity>())));
+    });
     test('should return a Failure', () async {
       AddCheckoutPartParams params =
-          AddCheckoutPartParams(checkedOutEntity: checkedOutEntity);
+          AddCheckoutPartParams(checkoutParts: [checkedOutEntity]);
       when(() => mockCheckoutPartRepository
               .createCheckOut(any(that: isA<CheckedOutEntity>())))
           .thenAnswer(

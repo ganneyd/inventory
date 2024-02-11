@@ -15,13 +15,26 @@ class MockGetAllPartUsecase extends Mock implements GetAllPartsUsecase {}
 
 class MockGetDatabaseLength extends Mock implements GetDatabaseLength {}
 
+class MockGetLowQuantityParts extends Mock implements GetLowQuantityParts {}
+
+class MockVerifyCheckOutPart extends Mock implements VerifyCheckoutPart {}
+
+class MockGetUnverifiedParts extends Mock
+    implements GetUnverifiedCheckoutParts {}
+
+class MockGetAllCheckoutParts extends Mock implements GetAllCheckoutParts {}
+
 class MockScrollController extends Mock implements ScrollController {}
 
 class MockScrollPosition extends Mock implements ScrollPosition {}
 
 void main() {
+  late MockVerifyCheckOutPart mockVerifyCheckOutPart;
   late MockGetAllPartUsecase mockGetAllPartUsecase;
   late MockGetDatabaseLength mockGetDatabaseLength;
+  late MockGetLowQuantityParts mockGetLowQuantityParts;
+  late MockGetUnverifiedParts mockGetUnverifiedParts;
+  late MockGetAllCheckoutParts mockGetAllCheckoutParts;
   late MockScrollController mockScrollController;
   late MockScrollPosition mockScrollPosition;
   late ValuesForTest valuesForTest;
@@ -29,11 +42,19 @@ void main() {
 
   setUp(() {
     valuesForTest = ValuesForTest();
+    mockVerifyCheckOutPart = MockVerifyCheckOutPart();
     mockGetAllPartUsecase = MockGetAllPartUsecase();
     mockGetDatabaseLength = MockGetDatabaseLength();
+    mockGetLowQuantityParts = MockGetLowQuantityParts();
+    mockGetUnverifiedParts = MockGetUnverifiedParts();
+    mockGetAllCheckoutParts = MockGetAllCheckoutParts();
     mockScrollController = MockScrollController();
     mockScrollPosition = MockScrollPosition();
     sut = ManageInventoryCubit(
+        verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
+        getAllCheckoutParts: mockGetAllCheckoutParts,
+        getLowQuantityParts: mockGetLowQuantityParts,
+        getUnverifiedCheckoutParts: mockGetUnverifiedParts,
         fetchPartAmount: 2,
         scrollController: mockScrollController,
         getAllPartsUsecase: mockGetAllPartUsecase,
@@ -50,7 +71,6 @@ void main() {
       expect(sut.state.databaseLength, 0);
       expect(sut.state.error, 'no error');
       expect(sut.state.parts, <Part>[]);
-      expect(sut.state.scrollController, isA<MockScrollController>());
       expect(sut.state.status, ManageInventoryStateStatus.loading);
     });
   });
@@ -346,6 +366,10 @@ void main() {
       //will ensure that all parts be loaded from the database
       sut.close();
       sut = ManageInventoryCubit(
+          verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
+          getAllCheckoutParts: mockGetAllCheckoutParts,
+          getLowQuantityParts: mockGetLowQuantityParts,
+          getUnverifiedCheckoutParts: mockGetUnverifiedParts,
           fetchPartAmount: valuesForTest.parts().length,
           scrollController: mockScrollController,
           getAllPartsUsecase: mockGetAllPartUsecase,
