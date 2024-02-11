@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/check_out_part_page_view.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/part_page_view.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
-import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 import 'package:inventory_v1/service_locator.dart';
-import 'package:logging/logging.dart';
 
 class ManageInventory extends StatelessWidget {
   ManageInventory()
-      : _logger = Logger('manage-inv-logger'),
+      : _pageController = PageController(),
         super(key: const Key('manage-inventory-view'));
-  final Logger _logger;
+  final PageController _pageController;
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+            verifyCheckoutPartUsecase: locator<VerifyCheckoutPart>(),
+            getLowQuantityParts: locator<GetLowQuantityParts>(),
+            getAllCheckoutParts: locator<GetAllCheckoutParts>(),
+            getUnverifiedCheckoutParts: locator<GetUnverifiedCheckoutParts>(),
             scrollController: ScrollController(),
             getAllPartsUsecase: locator<GetAllPartsUsecase>(),
             getDatabaseLength: locator<GetDatabaseLength>())
@@ -44,6 +47,7 @@ class ManageInventory extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     )));
               }
+
               if (state.status ==
                   ManageInventoryStateStatus.fetchedDataSuccessfully) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -51,6 +55,30 @@ class ManageInventory extends StatelessWidget {
                   duration: Duration(milliseconds: 10),
                   content: SizedBox(
                     height: 5,
+                  ),
+                ));
+              }
+              if (state.status ==
+                  ManageInventoryStateStatus.verifiedPartSuccessfully) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.purple,
+                  duration: Duration(milliseconds: 10),
+                  content: SizedBox(
+                    height: 5,
+                    child: Text('Verified part'),
+                  ),
+                ));
+              }
+              if (state.status ==
+                  ManageInventoryStateStatus.verifiedPartUnsuccessfully) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.pink,
+                  duration: Duration(milliseconds: 10),
+                  content: SizedBox(
+                    height: 5,
+                    child: Center(
+                      child: Text('Could not verify part'),
+                    ),
                   ),
                 ));
               }
@@ -64,24 +92,39 @@ class ManageInventory extends StatelessWidget {
             });
 
             return Scaffold(
-              appBar: const CustomAppBar(
-                  key: Key('manage-inventory-app-bar'),
-                  title: 'Manage Inventory'),
-              body: ListView.builder(
-                controller: state.scrollController,
-                itemCount: state.parts.length,
-                itemBuilder: (context, index) {
-                  _logger.finest('Loading part $index into view');
-                  return PartCardDisplay(
-                    left: state.parts[index].nsn,
-                    center: state.parts[index].name,
-                    right: "Location: ${state.parts[index].location}",
-                    bottom:
-                        "Checked out: ${state.parts[index].quantity} ${state.parts[index].unitOfIssue.displayValue}",
-                  );
-                },
-              ),
-            );
+                appBar: CustomAppBar(
+                  key: const Key('manage-inventory-app-bar'),
+                  title: 'Manage Inventory',
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          BlocProvider.of<ManageInventoryCubit>(context)
+                              .loadParts();
+                          _pageController.jumpToPage(0);
+                        },
+                        child: const Text("All Parts")),
+                    TextButton(
+                        onPressed: () {
+                          BlocProvider.of<ManageInventoryCubit>(context)
+                              .loadParts();
+                          _pageController.jumpToPage(1);
+                        },
+                        child: const Text('Checked Out Parts')),
+                  ],
+                ),
+                body: PageView(
+                  controller: _pageController,
+                  children: [
+                    PartsPageView(
+                        allParts: state.parts,
+                        lowQuantityParts: state.lowQuantityParts,
+                        cubit: BlocProvider.of<ManageInventoryCubit>(context)),
+                    CheckoutPartPageView(
+                        allCheckedOutParts: state.checkedOutParts,
+                        allUnverifiedCheckedOutParts: state.unverifiedParts,
+                        cubit: BlocProvider.of<ManageInventoryCubit>(context)),
+                  ],
+                ));
           },
         ));
   }
