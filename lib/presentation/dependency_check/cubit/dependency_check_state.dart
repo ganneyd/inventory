@@ -17,6 +17,7 @@ class DependencyCheckState with _$DependencyCheckState {
     @Default(false) bool isPathAccessible,
     @Default(false) bool isPartRepoInit,
     @Default(false) bool isUsecasesInit,
+    @Default(false) bool isCheckoutPartRepoInit,
     @Default(DependencyCheckStateStatus.loading)
     DependencyCheckStateStatus dependencyCheckStateStatus,
   }) = _DependencyCheckState;
