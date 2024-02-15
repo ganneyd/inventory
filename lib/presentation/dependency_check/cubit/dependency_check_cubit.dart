@@ -30,17 +30,18 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
     _dependencyCubitLogger.finest('checking if dependencies are good');
 
     bool isInit = await _isPathAccessible();
-
-    if (isInit) {
-      emit(state.copyWith(isPathAccessible: isInit));
-    } else {
+    bool isHiveInit = false,
+        isPartRepoInit = false,
+        isCheckoutPartRepoInit = false,
+        isUsecasesInit = false;
+    if (!isInit) {
       //!debug
       _dependencyCubitLogger.warning('path  is not accessible');
     }
 
     //perform checks for Hive initialization
     if (isHiveInitialized) {
-      emit(state.copyWith(isHiveOpen: isHiveInitialized));
+      isHiveInit = true;
     } else {
       //!debug
       _dependencyCubitLogger.warning('hive is a no go $isHiveInitialized');
@@ -49,31 +50,51 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
     //Perform checks to for Part Repository initialization
 
     if (_isPartRepositoryInitialized()) {
-      emit(state.copyWith(isPartRepoInit: true));
+      isPartRepoInit = true;
     } else {
       //!debug
       _dependencyCubitLogger.warning('part repo is a no go');
     }
 
+    //Perform checks for Checkout Part Repo
+
+    if (_isCheckoutPartRepositoryInitialized()) {
+      isCheckoutPartRepoInit = true;
+    } else {
+      //!debug
+      _dependencyCubitLogger.warning('checkout-part repo is a no go');
+    }
+
     //Perform checks for Usecases
     if (_isUsecasesInitialized()) {
-      emit(state.copyWith(isUsecasesInit: true));
+      isUsecasesInit = true;
     } else {
       //!debug
       _dependencyCubitLogger.warning('usecases is a no go');
     }
 //check if one or more dependency was able to be accessed or opened and emit the proper state
-    if (!state.isPathAccessible ||
-        !state.isHiveOpen ||
-        !state.isPartRepoInit ||
-        !state.isUsecasesInit) {
+    if (!isInit ||
+        !isHiveInit ||
+        !isPartRepoInit ||
+        !isUsecasesInit ||
+        !isCheckoutPartRepoInit) {
       emit(state.copyWith(
+          isHiveOpen: isHiveInit,
+          isPartRepoInit: isPartRepoInit,
+          isPathAccessible: isInit,
+          isUsecasesInit: isUsecasesInit,
+          isCheckoutPartRepoInit: isCheckoutPartRepoInit,
           dependencyCheckStateStatus:
               DependencyCheckStateStatus.loadedUnsuccessfully));
     } else {
       //!debug
       _dependencyCubitLogger.finest('success loading dependencies');
       emit(state.copyWith(
+          isHiveOpen: isHiveInit,
+          isPartRepoInit: isPartRepoInit,
+          isPathAccessible: isInit,
+          isUsecasesInit: isUsecasesInit,
+          isCheckoutPartRepoInit: isCheckoutPartRepoInit,
           dependencyCheckStateStatus:
               DependencyCheckStateStatus.loadedSuccessfully));
     }
@@ -82,6 +103,15 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
   bool _isPartRepositoryInitialized() {
     try {
       sl<PartRepositoryImplementation>();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  bool _isCheckoutPartRepositoryInitialized() {
+    try {
       sl<CheckedOutPartRepository>();
       return true;
     } catch (e) {
