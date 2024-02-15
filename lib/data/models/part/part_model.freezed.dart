@@ -14,50 +14,64 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-Part _$PartFromJson(Map<String, dynamic> json) {
+PartModel _$PartModelFromJson(Map<String, dynamic> json) {
   return _PartModel.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Part {
+mixin _$PartModel {
+  @HiveField(0)
   int get index => throw _privateConstructorUsedError;
+  @HiveField(1)
   String get name => throw _privateConstructorUsedError;
+  @HiveField(2)
   String get nsn => throw _privateConstructorUsedError;
+  @HiveField(3)
   String get partNumber => throw _privateConstructorUsedError;
+  @HiveField(4)
   String get location => throw _privateConstructorUsedError;
+  @HiveField(5)
   int get quantity => throw _privateConstructorUsedError;
+  @HiveField(6)
   int get requisitionPoint => throw _privateConstructorUsedError;
+  @HiveField(7)
   int get requisitionQuantity => throw _privateConstructorUsedError;
+  @HiveField(8)
   String get serialNumber => throw _privateConstructorUsedError;
+  @HiveField(9)
   UnitOfIssue get unitOfIssue => throw _privateConstructorUsedError;
+  @HiveField(10)
+  int get checksum => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $PartCopyWith<Part> get copyWith => throw _privateConstructorUsedError;
+  $PartModelCopyWith<PartModel> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $PartCopyWith<$Res> {
-  factory $PartCopyWith(Part value, $Res Function(Part) then) =
-      _$PartCopyWithImpl<$Res, Part>;
+abstract class $PartModelCopyWith<$Res> {
+  factory $PartModelCopyWith(PartModel value, $Res Function(PartModel) then) =
+      _$PartModelCopyWithImpl<$Res, PartModel>;
   @useResult
   $Res call(
-      {int index,
-      String name,
-      String nsn,
-      String partNumber,
-      String location,
-      int quantity,
-      int requisitionPoint,
-      int requisitionQuantity,
-      String serialNumber,
-      UnitOfIssue unitOfIssue});
+      {@HiveField(0) int index,
+      @HiveField(1) String name,
+      @HiveField(2) String nsn,
+      @HiveField(3) String partNumber,
+      @HiveField(4) String location,
+      @HiveField(5) int quantity,
+      @HiveField(6) int requisitionPoint,
+      @HiveField(7) int requisitionQuantity,
+      @HiveField(8) String serialNumber,
+      @HiveField(9) UnitOfIssue unitOfIssue,
+      @HiveField(10) int checksum});
 }
 
 /// @nodoc
-class _$PartCopyWithImpl<$Res, $Val extends Part>
-    implements $PartCopyWith<$Res> {
-  _$PartCopyWithImpl(this._value, this._then);
+class _$PartModelCopyWithImpl<$Res, $Val extends PartModel>
+    implements $PartModelCopyWith<$Res> {
+  _$PartModelCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -77,6 +91,7 @@ class _$PartCopyWithImpl<$Res, $Val extends Part>
     Object? requisitionQuantity = null,
     Object? serialNumber = null,
     Object? unitOfIssue = null,
+    Object? checksum = null,
   }) {
     return _then(_value.copyWith(
       index: null == index
@@ -119,33 +134,39 @@ class _$PartCopyWithImpl<$Res, $Val extends Part>
           ? _value.unitOfIssue
           : unitOfIssue // ignore: cast_nullable_to_non_nullable
               as UnitOfIssue,
+      checksum: null == checksum
+          ? _value.checksum
+          : checksum // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$PartModelImplCopyWith<$Res> implements $PartCopyWith<$Res> {
+abstract class _$$PartModelImplCopyWith<$Res>
+    implements $PartModelCopyWith<$Res> {
   factory _$$PartModelImplCopyWith(
           _$PartModelImpl value, $Res Function(_$PartModelImpl) then) =
       __$$PartModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {int index,
-      String name,
-      String nsn,
-      String partNumber,
-      String location,
-      int quantity,
-      int requisitionPoint,
-      int requisitionQuantity,
-      String serialNumber,
-      UnitOfIssue unitOfIssue});
+      {@HiveField(0) int index,
+      @HiveField(1) String name,
+      @HiveField(2) String nsn,
+      @HiveField(3) String partNumber,
+      @HiveField(4) String location,
+      @HiveField(5) int quantity,
+      @HiveField(6) int requisitionPoint,
+      @HiveField(7) int requisitionQuantity,
+      @HiveField(8) String serialNumber,
+      @HiveField(9) UnitOfIssue unitOfIssue,
+      @HiveField(10) int checksum});
 }
 
 /// @nodoc
 class __$$PartModelImplCopyWithImpl<$Res>
-    extends _$PartCopyWithImpl<$Res, _$PartModelImpl>
+    extends _$PartModelCopyWithImpl<$Res, _$PartModelImpl>
     implements _$$PartModelImplCopyWith<$Res> {
   __$$PartModelImplCopyWithImpl(
       _$PartModelImpl _value, $Res Function(_$PartModelImpl) _then)
@@ -164,6 +185,7 @@ class __$$PartModelImplCopyWithImpl<$Res>
     Object? requisitionQuantity = null,
     Object? serialNumber = null,
     Object? unitOfIssue = null,
+    Object? checksum = null,
   }) {
     return _then(_$PartModelImpl(
       index: null == index
@@ -206,6 +228,10 @@ class __$$PartModelImplCopyWithImpl<$Res>
           ? _value.unitOfIssue
           : unitOfIssue // ignore: cast_nullable_to_non_nullable
               as UnitOfIssue,
+      checksum: null == checksum
+          ? _value.checksum
+          : checksum // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -214,54 +240,69 @@ class __$$PartModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PartModelImpl implements _PartModel {
   _$PartModelImpl(
-      {this.index = 0,
-      this.name = 'unknown_part',
-      this.nsn = 'unknown_part',
-      this.partNumber = 'unknown_part',
-      this.location = 'unknown_part',
-      this.quantity = -1,
-      this.requisitionPoint = -1,
-      this.requisitionQuantity = -1,
-      this.serialNumber = 'N/A',
-      this.unitOfIssue = UnitOfIssue.NOT_SPECIFIED});
+      {@HiveField(0) this.index = 0,
+      @HiveField(1) this.name = 'unknown_part',
+      @HiveField(2) this.nsn = 'unknown_part',
+      @HiveField(3) this.partNumber = 'unknown_part',
+      @HiveField(4) this.location = 'unknown_part',
+      @HiveField(5) this.quantity = -1,
+      @HiveField(6) this.requisitionPoint = -1,
+      @HiveField(7) this.requisitionQuantity = -1,
+      @HiveField(8) this.serialNumber = 'N/A',
+      @HiveField(9) this.unitOfIssue = UnitOfIssue.NOT_SPECIFIED,
+      @HiveField(10) this.checksum = 0});
 
   factory _$PartModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PartModelImplFromJson(json);
 
   @override
   @JsonKey()
+  @HiveField(0)
   final int index;
   @override
   @JsonKey()
+  @HiveField(1)
   final String name;
   @override
   @JsonKey()
+  @HiveField(2)
   final String nsn;
   @override
   @JsonKey()
+  @HiveField(3)
   final String partNumber;
   @override
   @JsonKey()
+  @HiveField(4)
   final String location;
   @override
   @JsonKey()
+  @HiveField(5)
   final int quantity;
   @override
   @JsonKey()
+  @HiveField(6)
   final int requisitionPoint;
   @override
   @JsonKey()
+  @HiveField(7)
   final int requisitionQuantity;
   @override
   @JsonKey()
+  @HiveField(8)
   final String serialNumber;
   @override
   @JsonKey()
+  @HiveField(9)
   final UnitOfIssue unitOfIssue;
+  @override
+  @JsonKey()
+  @HiveField(10)
+  final int checksum;
 
   @override
   String toString() {
-    return 'Part(index: $index, name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue)';
+    return 'PartModel(index: $index, name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue, checksum: $checksum)';
   }
 
   @override
@@ -285,7 +326,9 @@ class _$PartModelImpl implements _PartModel {
             (identical(other.serialNumber, serialNumber) ||
                 other.serialNumber == serialNumber) &&
             (identical(other.unitOfIssue, unitOfIssue) ||
-                other.unitOfIssue == unitOfIssue));
+                other.unitOfIssue == unitOfIssue) &&
+            (identical(other.checksum, checksum) ||
+                other.checksum == checksum));
   }
 
   @JsonKey(ignore: true)
@@ -301,7 +344,8 @@ class _$PartModelImpl implements _PartModel {
       requisitionPoint,
       requisitionQuantity,
       serialNumber,
-      unitOfIssue);
+      unitOfIssue,
+      checksum);
 
   @JsonKey(ignore: true)
   @override
@@ -317,42 +361,56 @@ class _$PartModelImpl implements _PartModel {
   }
 }
 
-abstract class _PartModel implements Part {
+abstract class _PartModel implements PartModel {
   factory _PartModel(
-      {final int index,
-      final String name,
-      final String nsn,
-      final String partNumber,
-      final String location,
-      final int quantity,
-      final int requisitionPoint,
-      final int requisitionQuantity,
-      final String serialNumber,
-      final UnitOfIssue unitOfIssue}) = _$PartModelImpl;
+      {@HiveField(0) final int index,
+      @HiveField(1) final String name,
+      @HiveField(2) final String nsn,
+      @HiveField(3) final String partNumber,
+      @HiveField(4) final String location,
+      @HiveField(5) final int quantity,
+      @HiveField(6) final int requisitionPoint,
+      @HiveField(7) final int requisitionQuantity,
+      @HiveField(8) final String serialNumber,
+      @HiveField(9) final UnitOfIssue unitOfIssue,
+      @HiveField(10) final int checksum}) = _$PartModelImpl;
 
   factory _PartModel.fromJson(Map<String, dynamic> json) =
       _$PartModelImpl.fromJson;
 
   @override
+  @HiveField(0)
   int get index;
   @override
+  @HiveField(1)
   String get name;
   @override
+  @HiveField(2)
   String get nsn;
   @override
+  @HiveField(3)
   String get partNumber;
   @override
+  @HiveField(4)
   String get location;
   @override
+  @HiveField(5)
   int get quantity;
   @override
+  @HiveField(6)
   int get requisitionPoint;
   @override
+  @HiveField(7)
   int get requisitionQuantity;
   @override
+  @HiveField(8)
   String get serialNumber;
   @override
+  @HiveField(9)
   UnitOfIssue get unitOfIssue;
+  @override
+  @HiveField(10)
+  int get checksum;
   @override
   @JsonKey(ignore: true)
   _$$PartModelImplCopyWith<_$PartModelImpl> get copyWith =>
