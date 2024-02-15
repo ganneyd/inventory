@@ -131,20 +131,25 @@ class _SearchResultsState extends State<SearchResults> {
                 ),
               ),
             ),
-            body: Expanded(
-              child: state.status == SearchResultsStateStatus.searchNotFound
-                  ? const PartNotFound()
-                  : ListView(
-                      children: [
-                        buildSection('Parts by NSN', state.partsByNsn, context),
-                        buildSection(
-                            'Parts by Name', state.partsByName, context),
-                        buildSection('Parts by Part Number',
-                            state.partsByPartNumber, context),
-                        buildSection('Parts by Serial Number',
-                            state.partsBySerialNumber, context),
-                      ],
-                    ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: state.status == SearchResultsStateStatus.searchNotFound
+                      ? const PartNotFound()
+                      : ListView(
+                          children: [
+                            buildSection(
+                                'Parts by NSN', state.partsByNsn, context),
+                            buildSection(
+                                'Parts by Name', state.partsByName, context),
+                            buildSection('Parts by Part Number',
+                                state.partsByPartNumber, context),
+                            buildSection('Parts by Serial Number',
+                                state.partsBySerialNumber, context),
+                          ],
+                        ),
+                ),
+              ],
             ),
           );
         },
