@@ -37,6 +37,7 @@ class PartModel extends PartEntity with _$PartModel {
     @HiveField(8) @Default('N/A') String serialNumber,
     @HiveField(9) @Default(UnitOfIssue.NOT_SPECIFIED) UnitOfIssue unitOfIssue,
     @HiveField(10) @Default(0) int checksum,
+    @HiveField(11) @Default(false) bool isDiscontinued,
   }) = _PartModel;
 
   factory PartModel.fromJson(Map<String, dynamic> json) =>
