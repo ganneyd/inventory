@@ -44,7 +44,7 @@ void main() {
 
     test('should return Failure upon creating the part successfully', () async {
       when(() => mockPartRepository.createPart(typicalPartEntity)).thenAnswer(
-          (invocation) async => Left<Failure, void>(CreateDataFailure()));
+          (invocation) async => const Left<Failure, void>(CreateDataFailure()));
 
       var results =
           await sut.call(AddPartParams(partEntity: typicalPartEntity));

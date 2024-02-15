@@ -16,7 +16,7 @@ class RouteGenerator {
       case '/home_page':
         return MaterialPageRoute(builder: (_) => HomePageView());
       case '/add_part':
-        return getRoute(AddPartView());
+        return getRoute(const AddPartView());
       case '/manage_inventory':
         return getRoute(ManageInventory());
       case '/search_parts':

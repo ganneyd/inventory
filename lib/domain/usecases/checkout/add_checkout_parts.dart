@@ -33,7 +33,7 @@ class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
       var updatePartResults = await _editPartUsecase(
           EditPartParams(partEntity: newPart.updateChecksum()));
       if (updatePartResults.isLeft()) {
-        return Left<Failure, void>(CreateDataFailure());
+        return const Left<Failure, void>(CreateDataFailure());
       }
 
       var results = await _checkedOutPartRepository.createCheckOut(
@@ -42,7 +42,7 @@ class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
               partEntity: newPart,
               checkedOutQuantity: checkoutPart.checkedOutQuantity));
       if (results.isLeft()) {
-        return Left<Failure, void>(CreateDataFailure());
+        return const Left<Failure, void>(CreateDataFailure());
       }
     }
     return const Right<Failure, void>(null);

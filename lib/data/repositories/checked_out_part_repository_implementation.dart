@@ -37,7 +37,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       await _localDatasource.add(_toCheckoutPartModel(checkedOutEntity));
       return const Right<Failure, void>(null);
     } catch (exception) {
-      return Left<Failure, void>(CreateDataFailure());
+      return const Left<Failure, void>(CreateDataFailure());
     }
   }
 
@@ -103,7 +103,8 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       return const Left<Failure, List<CheckedOutEntity>>(ReadDataFailure());
     } on IndexOutOfBounds {
       _logger.warning('ReadDataFailure() occurred');
-      return Left<Failure, List<CheckedOutEntity>>(IndexOutOfBoundsFailure());
+      return const Left<Failure, List<CheckedOutEntity>>(
+          IndexOutOfBoundsFailure());
     } catch (e) {
       _logger.severe('Unknown exception occurred  $e', [e.runtimeType]);
       return const Left<Failure, List<CheckedOutEntity>>(GetFailure());

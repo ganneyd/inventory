@@ -33,8 +33,9 @@ void main() {
       isVerified: false,
       verifiedDate: null,
     );
-
+    EditPartParams params = EditPartParams(partEntity: checkedOutEntity.part);
     registerFallbackValue(checkedOutEntity);
+    registerFallbackValue(params);
   });
 
   group('.call()', () {
@@ -44,10 +45,13 @@ void main() {
       when(() => mockCheckoutPartRepository
               .createCheckOut(any(that: isA<CheckedOutEntity>())))
           .thenAnswer((invocation) async => const Right<Failure, void>(null));
+      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
       var results = await sut.call(params);
       expect(results, isA<Right<Failure, void>>());
       verify(() => mockCheckoutPartRepository
-          .createCheckOut(any(that: isA<CheckedOutEntity>()))).called(10);
+              .createCheckOut(any(that: isA<CheckedOutEntity>())))
+          .called(ValuesForTest().createCheckedOutList().length);
     });
     test('should return right when list is null ', () async {
       AddCheckoutPartParams params =
@@ -63,16 +67,17 @@ void main() {
     test('should return a Failure', () async {
       AddCheckoutPartParams params =
           AddCheckoutPartParams(checkoutParts: [checkedOutEntity]);
-      when(() => mockCheckoutPartRepository
-              .createCheckOut(any(that: isA<CheckedOutEntity>())))
-          .thenAnswer(
-              (invocation) async => Left<Failure, void>(CreateDataFailure()));
-
+      when(() =>
+          mockCheckoutPartRepository
+              .createCheckOut(any(that: isA<CheckedOutEntity>()))).thenAnswer(
+          (invocation) async => const Left<Failure, void>(CreateDataFailure()));
+      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
       var results = await sut.call(params);
       Failure failure = const GetFailure();
       results.fold((fail) => failure = fail, (right) => null);
       expect(results, isA<Left<Failure, void>>());
-      expect(failure, CreateDataFailure());
+      expect(failure, const CreateDataFailure());
       verify(() => mockCheckoutPartRepository
           .createCheckOut(any(that: isA<CheckedOutEntity>()))).called(1);
     });

@@ -28,7 +28,7 @@ class PartRepositoryImplementation extends PartRepository {
       _logger.finest('index set');
       return const Right<Failure, void>(null);
     } on CreateDataException {
-      return Left<Failure, void>(CreateDataFailure());
+      return const Left<Failure, void>(CreateDataFailure());
     } catch (e) {
       return Left<Failure, void>(CreateDataFailure(errMsg: e.toString()));
     }
@@ -92,7 +92,7 @@ class PartRepositoryImplementation extends PartRepository {
       return const Left<Failure, List<PartEntity>>(ReadDataFailure());
     } on IndexOutOfBounds {
       _logger.warning('ReadDataFailure() occurred');
-      return Left<Failure, List<PartEntity>>(IndexOutOfBoundsFailure());
+      return const Left<Failure, List<PartEntity>>(IndexOutOfBoundsFailure());
     } catch (e) {
       _logger.severe('Unknown exception occurred  $e', [e.runtimeType]);
       return const Left<Failure, List<PartEntity>>(GetFailure());
@@ -187,7 +187,7 @@ class PartRepositoryImplementation extends PartRepository {
       var result = _localDataSource.getAt(index);
       return Right<Failure, PartEntity>(result!);
     } on IndexOutOfBounds {
-      return Left<Failure, PartEntity>(IndexOutOfBoundsFailure());
+      return const Left<Failure, PartEntity>(IndexOutOfBoundsFailure());
     } catch (e) {
       return const Left<Failure, PartEntity>(ReadDataFailure());
     }

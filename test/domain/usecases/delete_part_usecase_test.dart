@@ -44,7 +44,7 @@ void main() {
 
     test('should return Failure upon error deleting the part', () async {
       when(() => mockPartRepository.deletePart(typicalPartEntity)).thenAnswer(
-          (invocation) async => Left<Failure, void>(CreateDataFailure()));
+          (invocation) async => const Left<Failure, void>(CreateDataFailure()));
 
       var results =
           await sut.call(DeletePartParams(partEntity: typicalPartEntity));
