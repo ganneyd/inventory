@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_state.dart';
 import 'package:logging/logging.dart';
@@ -50,10 +50,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       {required int checkoutPartIndex, required int newQuantity}) {
     var checkoutPart = state.checkoutParts[checkoutPartIndex];
 
-    var newCheckOutPart = CheckedOutEntity(
-        checkedOutQuantity: newQuantity,
-        dateTime: checkoutPart.dateTime,
-        part: checkoutPart.part);
+    var newCheckOutPart =
+        checkoutPart.copyWith(checkedOutQuantity: newQuantity);
     List<CheckedOutEntity> newCartList = state.checkoutParts.toList();
     newCartList[checkoutPartIndex] = newCheckOutPart;
     emit(state.copyWith(checkoutParts: newCartList));
