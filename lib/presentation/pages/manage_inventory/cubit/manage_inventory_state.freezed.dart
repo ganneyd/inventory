@@ -22,6 +22,8 @@ mixin _$ManageInventoryState {
   List<PartEntity> get lowQuantityParts => throw _privateConstructorUsedError;
   List<CheckedOutEntity> get unverifiedParts =>
       throw _privateConstructorUsedError;
+  List<CheckedOutEntity> get newlyVerifiedParts =>
+      throw _privateConstructorUsedError;
   List<CheckedOutEntity> get checkedOutParts =>
       throw _privateConstructorUsedError;
   dynamic get error => throw _privateConstructorUsedError;
@@ -45,6 +47,7 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
       List<PartEntity> parts,
       List<PartEntity> lowQuantityParts,
       List<CheckedOutEntity> unverifiedParts,
+      List<CheckedOutEntity> newlyVerifiedParts,
       List<CheckedOutEntity> checkedOutParts,
       dynamic error,
       ManageInventoryStateStatus status});
@@ -70,6 +73,7 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
     Object? parts = null,
     Object? lowQuantityParts = null,
     Object? unverifiedParts = null,
+    Object? newlyVerifiedParts = null,
     Object? checkedOutParts = null,
     Object? error = freezed,
     Object? status = null,
@@ -94,6 +98,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
       unverifiedParts: null == unverifiedParts
           ? _value.unverifiedParts
           : unverifiedParts // ignore: cast_nullable_to_non_nullable
+              as List<CheckedOutEntity>,
+      newlyVerifiedParts: null == newlyVerifiedParts
+          ? _value.newlyVerifiedParts
+          : newlyVerifiedParts // ignore: cast_nullable_to_non_nullable
               as List<CheckedOutEntity>,
       checkedOutParts: null == checkedOutParts
           ? _value.checkedOutParts
@@ -125,6 +133,7 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
       List<PartEntity> parts,
       List<PartEntity> lowQuantityParts,
       List<CheckedOutEntity> unverifiedParts,
+      List<CheckedOutEntity> newlyVerifiedParts,
       List<CheckedOutEntity> checkedOutParts,
       dynamic error,
       ManageInventoryStateStatus status});
@@ -147,6 +156,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
     Object? parts = null,
     Object? lowQuantityParts = null,
     Object? unverifiedParts = null,
+    Object? newlyVerifiedParts = null,
     Object? checkedOutParts = null,
     Object? error = freezed,
     Object? status = null,
@@ -172,6 +182,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
           ? _value._unverifiedParts
           : unverifiedParts // ignore: cast_nullable_to_non_nullable
               as List<CheckedOutEntity>,
+      newlyVerifiedParts: null == newlyVerifiedParts
+          ? _value._newlyVerifiedParts
+          : newlyVerifiedParts // ignore: cast_nullable_to_non_nullable
+              as List<CheckedOutEntity>,
       checkedOutParts: null == checkedOutParts
           ? _value._checkedOutParts
           : checkedOutParts // ignore: cast_nullable_to_non_nullable
@@ -195,12 +209,15 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
       final List<PartEntity> parts = const <PartEntity>[],
       final List<PartEntity> lowQuantityParts = const <PartEntity>[],
       final List<CheckedOutEntity> unverifiedParts = const <CheckedOutEntity>[],
+      final List<CheckedOutEntity> newlyVerifiedParts =
+          const <CheckedOutEntity>[],
       final List<CheckedOutEntity> checkedOutParts = const <CheckedOutEntity>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
       : _parts = parts,
         _lowQuantityParts = lowQuantityParts,
         _unverifiedParts = unverifiedParts,
+        _newlyVerifiedParts = newlyVerifiedParts,
         _checkedOutParts = checkedOutParts;
 
   @override
@@ -237,6 +254,16 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
     return EqualUnmodifiableListView(_unverifiedParts);
   }
 
+  final List<CheckedOutEntity> _newlyVerifiedParts;
+  @override
+  @JsonKey()
+  List<CheckedOutEntity> get newlyVerifiedParts {
+    if (_newlyVerifiedParts is EqualUnmodifiableListView)
+      return _newlyVerifiedParts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_newlyVerifiedParts);
+  }
+
   final List<CheckedOutEntity> _checkedOutParts;
   @override
   @JsonKey()
@@ -255,7 +282,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, databaseLength: $databaseLength, parts: $parts, lowQuantityParts: $lowQuantityParts, unverifiedParts: $unverifiedParts, checkedOutParts: $checkedOutParts, error: $error, status: $status)';
+    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, databaseLength: $databaseLength, parts: $parts, lowQuantityParts: $lowQuantityParts, unverifiedParts: $unverifiedParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, error: $error, status: $status)';
   }
 
   @override
@@ -273,6 +300,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
             const DeepCollectionEquality()
                 .equals(other._unverifiedParts, _unverifiedParts) &&
             const DeepCollectionEquality()
+                .equals(other._newlyVerifiedParts, _newlyVerifiedParts) &&
+            const DeepCollectionEquality()
                 .equals(other._checkedOutParts, _checkedOutParts) &&
             const DeepCollectionEquality().equals(other.error, error) &&
             (identical(other.status, status) || other.status == status));
@@ -287,6 +316,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
       const DeepCollectionEquality().hash(_parts),
       const DeepCollectionEquality().hash(_lowQuantityParts),
       const DeepCollectionEquality().hash(_unverifiedParts),
+      const DeepCollectionEquality().hash(_newlyVerifiedParts),
       const DeepCollectionEquality().hash(_checkedOutParts),
       const DeepCollectionEquality().hash(error),
       status);
@@ -308,6 +338,7 @@ abstract class _ManageInventoryState implements ManageInventoryState {
       final List<PartEntity> parts,
       final List<PartEntity> lowQuantityParts,
       final List<CheckedOutEntity> unverifiedParts,
+      final List<CheckedOutEntity> newlyVerifiedParts,
       final List<CheckedOutEntity> checkedOutParts,
       final dynamic error,
       final ManageInventoryStateStatus status}) = _$ManageInventoryStateImpl;
@@ -322,6 +353,8 @@ abstract class _ManageInventoryState implements ManageInventoryState {
   List<PartEntity> get lowQuantityParts;
   @override
   List<CheckedOutEntity> get unverifiedParts;
+  @override
+  List<CheckedOutEntity> get newlyVerifiedParts;
   @override
   List<CheckedOutEntity> get checkedOutParts;
   @override

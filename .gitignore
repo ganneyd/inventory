@@ -45,3 +45,4 @@ app.*.map.json
 lib/data/model_/checked_out_model.g.dart
 lib/data/entities/part/part_entity.g.dart
 lib/data/entities/part/part_entity.g.dart
+lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.freezed.dart
