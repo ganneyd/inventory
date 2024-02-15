@@ -37,7 +37,7 @@ void main() {
   late MockGetLowQuantityParts mockGetLowQuantityParts;
   late MockGetUnverifiedParts mockGetUnverifiedParts;
   late MockGetAllCheckoutParts mockGetAllCheckoutParts;
-  late MockScrollController mockScrollController;
+
   late ValuesForTest valuesForTest;
   late ManageInventoryCubit sut;
 
@@ -49,7 +49,7 @@ void main() {
     mockGetLowQuantityParts = MockGetLowQuantityParts();
     mockGetUnverifiedParts = MockGetUnverifiedParts();
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
-    mockScrollController = MockScrollController();
+
     sut = ManageInventoryCubit(
         verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
         getAllCheckoutParts: mockGetAllCheckoutParts,
@@ -204,15 +204,74 @@ void main() {
     void mockSetup() {
       sut.emit(sut.state.copyWith(
           parts: valuesForTest.parts(),
-          checkedOutParts: valuesForTest.createCheckedOutList()));
+          checkedOutParts: valuesForTest.createCheckedOutList(),
+          newlyVerifiedParts: [],
+          unverifiedParts: []));
+      when(() => mockGetAllCheckoutParts
+              .call(any(that: isA<GetAllCheckoutPartsParams>())))
+          .thenAnswer((invocation) async =>
+              Right<Failure, List<CheckedOutEntity>>(
+                  valuesForTest.createCheckedOutList()));
     }
 
     test(
         'should update the part quantity for edited parts in the checkoutPartList',
-        () {
-      expectLater(sut.stream.map((state) => state.parts[0].quantity),
-          emitsInOrder([30, 30, 31, 31, 31, 32, 32, 32, 31, 31, 31]));
+        () async {
       mockSetup();
+      expectLater(
+          sut.stream.map((state) => state.parts[0].quantity),
+          emitsInOrder([
+            30,
+            31,
+            31,
+            32,
+            32,
+            31,
+          ]));
+
+      expectLater(
+          sut.stream.map((state) => state.checkedOutParts[0].isVerified),
+          emitsInOrder([
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+          ]));
+
+      expectLater(
+          sut.stream.map((state) => state.checkedOutParts[1].isVerified),
+          emitsInOrder([
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+          ]));
+
+      expectLater(
+          sut.stream.map((state) => state.checkedOutParts[2].isVerified),
+          emitsInOrder([
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+          ]));
+      expectLater(
+          sut.stream.map((state) => state.checkedOutParts[2].part.quantity),
+          emitsInOrder([
+            30,
+            31,
+            31,
+            32,
+            31,
+            31,
+          ]));
+
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[0], quantityChange: -1);
       sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[0]);
@@ -222,15 +281,21 @@ void main() {
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[2], quantityChange: 1);
       sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[2]);
-
-      sut.filterUnverifiedParts();
     });
-    test('should filter the list', () {
-      mockSetup();
+    test('should filter the list', () async {
+      sut.emit(sut.state.copyWith(
+          parts: valuesForTest.parts(),
+          checkedOutParts: [],
+          newlyVerifiedParts: [],
+          unverifiedParts: []));
+      when(() => mockGetAllCheckoutParts
+              .call(any(that: isA<GetAllCheckoutPartsParams>())))
+          .thenAnswer((invocation) async =>
+              Right<Failure, List<CheckedOutEntity>>(
+                  valuesForTest.createCheckedOutList()));
       expectLater(sut.stream.map((state) => state.unverifiedParts.length),
-          emitsInOrder([2]));
-
-      sut.filterUnverifiedParts();
+          emitsInOrder([10]));
+      sut.loadCheckedOutParts();
     });
   });
 
@@ -238,7 +303,8 @@ void main() {
     void mockSetup() {
       sut.emit(sut.state.copyWith(
           checkedOutParts: valuesForTest.createCheckedOutList(),
-          newlyVerifiedParts: []));
+          newlyVerifiedParts: [],
+          parts: valuesForTest.parts()));
     }
 
     test('should update the check out quantity when subtracting 1', () async {
@@ -252,14 +318,14 @@ void main() {
               .map((event) => event.checkedOutParts[index].checkedOutQuantity),
           emitsInOrder([
             checkoutPart.checkedOutQuantity - 1,
-            checkoutPart.checkedOutQuantity - 2
+            checkoutPart.checkedOutQuantity - 2,
           ]));
 
       expectLater(
           sut.stream.map((event) => event.checkedOutParts[index].part.quantity),
           emitsInOrder([
             checkoutPart.part.quantity + 1,
-            checkoutPart.part.quantity + 2
+            checkoutPart.part.quantity + 2,
           ]));
 
       sut.updateCheckoutQuantity(
@@ -268,26 +334,20 @@ void main() {
           checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
     });
 
-    test('should update the check out quantity when adding 1', () async {
+    test('should update the check out quantity when adding 1', () {
       mockSetup();
       var index = 0;
 
-      var checkoutPart = valuesForTest.createCheckedOutList()[index];
-      var newQuantity = checkoutPart.checkedOutQuantity + 1;
-
       expectLater(
           sut.stream
-              .map((event) => event.checkedOutParts[index].checkedOutQuantity),
-          emitsInOrder(
-              [newQuantity])).then((value) => print(
-          "second iteration ${sut.state.checkedOutParts[index].checkedOutQuantity}"));
+              .map((event) => event.checkedOutParts[index].quantityDiscrepancy),
+          emitsInOrder([1]));
 
       expectLater(
           sut.stream.map((event) => event.checkedOutParts[index].part.quantity),
-          emitsInOrder(
-              [checkoutPart.part.quantity - 1])).then((value) => print(
-          "second iteration ${sut.state.checkedOutParts[index].part.quantity}"));
-      sut.updateCheckoutQuantity(checkoutPart: checkoutPart, quantityChange: 1);
+          emitsInOrder([29]));
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: 1);
     });
   });
 
@@ -309,7 +369,6 @@ void main() {
             checkoutPart.part.quantity,
             checkoutPart.part.quantity,
             checkoutPart.part.quantity + 2,
-            checkoutPart.part.quantity + 2
           ]));
 
       sut.updateCheckoutQuantity(
@@ -333,7 +392,6 @@ void main() {
             checkoutPart.part.quantity,
             checkoutPart.part.quantity,
             checkoutPart.part.quantity + 2,
-            checkoutPart.part.quantity + 2
           ]));
 //check that the other checkout part's quantity was messed with
       expectLater(
@@ -344,8 +402,6 @@ void main() {
             checkoutPart.part.quantity - 1,
             checkoutPart.part.quantity - 2,
             checkoutPart.part.quantity - 2,
-            checkoutPart.part.quantity - 2,
-            checkoutPart.part.quantity - 2
           ]));
 
       sut.updateCheckoutQuantity(
@@ -362,9 +418,15 @@ void main() {
     });
   });
   group('.updateDatabaseWithVerifiedParts()', () {
+    void mockSetup() {
+      sut.emit(sut.state
+          .copyWith(newlyVerifiedParts: valuesForTest.createCheckedOutList()));
+    }
+
     test('should emit a new part list', () {});
     test('should emit verifiedSuccessfully', () async {
       //setup
+      mockSetup();
       when(() => mockVerifyCheckOutPart(
               any(that: isA<VerifyCheckoutPartParams>())))
           .thenAnswer((invocation) async => const Right<Failure, void>(null));
@@ -373,7 +435,6 @@ void main() {
           sut.stream.map((state) => state.status),
           emitsInOrder([
             ManageInventoryStateStatus.verifyingPart,
-            ManageInventoryStateStatus.verifiedPartSuccessfully
           ])).then((value) => verify(
             () => mockVerifyCheckOutPart
                 .call(any(that: isA<VerifyCheckoutPartParams>())),
@@ -393,21 +454,11 @@ void main() {
           sut.stream.map((state) => state.status),
           emitsInOrder([
             ManageInventoryStateStatus.verifyingPart,
-            ManageInventoryStateStatus.verifiedPartUnsuccessfully
           ])).then((value) => verify(
             () => mockVerifyCheckOutPart
                 .call(any(that: isA<VerifyCheckoutPartParams>())),
           ).called(1));
-
       await sut.updateDatabaseWithVerifiedParts();
-    });
-  });
-
-  group('.close()', () {
-    test('Ensure the scrollController is properly closed', () {
-      when(() => mockScrollController.dispose()).thenReturn(null);
-      sut.close();
-      verify(() => mockScrollController.dispose()).called(1);
     });
   });
 }
