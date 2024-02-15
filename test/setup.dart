@@ -1,5 +1,5 @@
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 
 class ValuesForTest {
@@ -128,23 +128,40 @@ class ValuesForTest {
   }
 
   List<PartEntity> parts() {
-    var parts = getPartList().map((e) => Part.fromJson(e)).toList();
+    var parts = getPartList().map((e) => PartModel.fromJson(e)).toList();
     return parts;
+  }
+
+  List<PartModel> partModels() {
+    return parts().map((element) {
+      return PartEntityToModelAdapter.fromEntity(element);
+    }).toList();
   }
 
   List<CheckedOutEntity> createCheckedOutList() {
     return [
       CheckedOutEntity(
-        index: 1,
-        checkedOutQuantity: 5,
+        index: 0,
+        checkedOutQuantity: 2,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 2)),
         part: parts()[0],
-        isVerified: true,
+        isVerified: false,
+        verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      CheckedOutEntity(
+        index: 1,
+        checkedOutQuantity: 3,
+        quantityDiscrepancy: 0,
+        dateTime: DateTime.now().subtract(const Duration(days: 2)),
+        part: parts()[0],
+        isVerified: false,
         verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
       ),
       CheckedOutEntity(
         index: 2,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -154,6 +171,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 3,
         checkedOutQuantity: 3,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 7)),
         part: parts()[0],
         isVerified: true,
@@ -162,6 +180,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 4,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -170,6 +189,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 5,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -178,6 +198,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 6,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -186,6 +207,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 7,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -194,6 +216,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 8,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -202,6 +225,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 9,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
         part: parts()[0],
         isVerified: false,
@@ -210,6 +234,7 @@ class ValuesForTest {
       CheckedOutEntity(
         index: 10,
         checkedOutQuantity: 10,
+        quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 10)),
         part: parts()[0],
         isVerified: false,
