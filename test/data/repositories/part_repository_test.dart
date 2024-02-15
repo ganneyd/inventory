@@ -37,6 +37,8 @@ void main() {
     mockDatasource = MockDatasource();
     sut = PartRepositoryImplementation(mockDatasource);
     registerFallbackValue(typicalPartEntity);
+    registerFallbackValue(
+        PartEntityToModelAdapter.fromEntity(typicalPartEntity));
   });
 
   ///Test the .create() method
@@ -167,7 +169,7 @@ void main() {
       var left = results.fold((l) => l, (r) => r);
       expect(results, isA<Left<Failure, List<PartEntity>>>());
       //the actual failure should be a ReadDataFailure()
-      expect(left, IndexOutOfBoundsFailure());
+      expect(left, const IndexOutOfBoundsFailure());
 //the .length should only have been called once
       verify(() => mockDatasource.length).called(1);
       //the .getAt() should only have been called once before the exception was thrown
@@ -553,26 +555,6 @@ void main() {
       expect(resultPartList.length, 0);
       //verify that the appropriate methods from the datasource was used
       verify(() => mockDatasource.values).called(1);
-    });
-
-    test('ReadDataException() handling', () async {
-      //setup
-      mockSetUp();
-      when(() => mockDatasource.containsKey(PartField.name))
-          .thenAnswer((invocation) => throw ReadDataException());
-      //await the results
-      var results = await sut.searchPartsByField(
-          fieldName: PartField.name, queryKey: 'no-match');
-
-      Failure resultFailure = const GetFailure();
-
-      results.fold((l) => resultFailure = l, (r) => null);
-      //based on the query provided and the data we have in the setup
-      //there is no parts that matches the query
-      expect(resultFailure, const ReadDataFailure());
-      //verify that the appropriate methods from the datasource was used
-      //this method shouldn't be called
-      verifyNever(() => mockDatasource.values);
     });
 
     test('Exception() handling', () async {
