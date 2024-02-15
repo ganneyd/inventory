@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 
 part 'manage_inventory_state.freezed.dart';
 
@@ -25,6 +25,7 @@ class ManageInventoryState with _$ManageInventoryState {
     @Default(<PartEntity>[]) List<PartEntity> parts,
     @Default(<PartEntity>[]) List<PartEntity> lowQuantityParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> unverifiedParts,
+    @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> newlyVerifiedParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkedOutParts,
     @Default('no error') error,
     @Default(ManageInventoryStateStatus.loading)
