@@ -21,6 +21,7 @@ mixin _$DependencyCheckState {
   bool get isPathAccessible => throw _privateConstructorUsedError;
   bool get isPartRepoInit => throw _privateConstructorUsedError;
   bool get isUsecasesInit => throw _privateConstructorUsedError;
+  bool get isCheckoutPartRepoInit => throw _privateConstructorUsedError;
   DependencyCheckStateStatus get dependencyCheckStateStatus =>
       throw _privateConstructorUsedError;
 
@@ -41,6 +42,7 @@ abstract class $DependencyCheckStateCopyWith<$Res> {
       bool isPathAccessible,
       bool isPartRepoInit,
       bool isUsecasesInit,
+      bool isCheckoutPartRepoInit,
       DependencyCheckStateStatus dependencyCheckStateStatus});
 }
 
@@ -63,6 +65,7 @@ class _$DependencyCheckStateCopyWithImpl<$Res,
     Object? isPathAccessible = null,
     Object? isPartRepoInit = null,
     Object? isUsecasesInit = null,
+    Object? isCheckoutPartRepoInit = null,
     Object? dependencyCheckStateStatus = null,
   }) {
     return _then(_value.copyWith(
@@ -86,6 +89,10 @@ class _$DependencyCheckStateCopyWithImpl<$Res,
           ? _value.isUsecasesInit
           : isUsecasesInit // ignore: cast_nullable_to_non_nullable
               as bool,
+      isCheckoutPartRepoInit: null == isCheckoutPartRepoInit
+          ? _value.isCheckoutPartRepoInit
+          : isCheckoutPartRepoInit // ignore: cast_nullable_to_non_nullable
+              as bool,
       dependencyCheckStateStatus: null == dependencyCheckStateStatus
           ? _value.dependencyCheckStateStatus
           : dependencyCheckStateStatus // ignore: cast_nullable_to_non_nullable
@@ -108,6 +115,7 @@ abstract class _$$DependencyCheckStateImplCopyWith<$Res>
       bool isPathAccessible,
       bool isPartRepoInit,
       bool isUsecasesInit,
+      bool isCheckoutPartRepoInit,
       DependencyCheckStateStatus dependencyCheckStateStatus});
 }
 
@@ -127,6 +135,7 @@ class __$$DependencyCheckStateImplCopyWithImpl<$Res>
     Object? isPathAccessible = null,
     Object? isPartRepoInit = null,
     Object? isUsecasesInit = null,
+    Object? isCheckoutPartRepoInit = null,
     Object? dependencyCheckStateStatus = null,
   }) {
     return _then(_$DependencyCheckStateImpl(
@@ -150,6 +159,10 @@ class __$$DependencyCheckStateImplCopyWithImpl<$Res>
           ? _value.isUsecasesInit
           : isUsecasesInit // ignore: cast_nullable_to_non_nullable
               as bool,
+      isCheckoutPartRepoInit: null == isCheckoutPartRepoInit
+          ? _value.isCheckoutPartRepoInit
+          : isCheckoutPartRepoInit // ignore: cast_nullable_to_non_nullable
+              as bool,
       dependencyCheckStateStatus: null == dependencyCheckStateStatus
           ? _value.dependencyCheckStateStatus
           : dependencyCheckStateStatus // ignore: cast_nullable_to_non_nullable
@@ -167,6 +180,7 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
       this.isPathAccessible = false,
       this.isPartRepoInit = false,
       this.isUsecasesInit = false,
+      this.isCheckoutPartRepoInit = false,
       this.dependencyCheckStateStatus = DependencyCheckStateStatus.loading});
 
   @override
@@ -186,11 +200,14 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
   final bool isUsecasesInit;
   @override
   @JsonKey()
+  final bool isCheckoutPartRepoInit;
+  @override
+  @JsonKey()
   final DependencyCheckStateStatus dependencyCheckStateStatus;
 
   @override
   String toString() {
-    return 'DependencyCheckState(isHiveOpen: $isHiveOpen, isServiceLocatorOpen: $isServiceLocatorOpen, isPathAccessible: $isPathAccessible, isPartRepoInit: $isPartRepoInit, isUsecasesInit: $isUsecasesInit, dependencyCheckStateStatus: $dependencyCheckStateStatus)';
+    return 'DependencyCheckState(isHiveOpen: $isHiveOpen, isServiceLocatorOpen: $isServiceLocatorOpen, isPathAccessible: $isPathAccessible, isPartRepoInit: $isPartRepoInit, isUsecasesInit: $isUsecasesInit, isCheckoutPartRepoInit: $isCheckoutPartRepoInit, dependencyCheckStateStatus: $dependencyCheckStateStatus)';
   }
 
   @override
@@ -208,6 +225,8 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
                 other.isPartRepoInit == isPartRepoInit) &&
             (identical(other.isUsecasesInit, isUsecasesInit) ||
                 other.isUsecasesInit == isUsecasesInit) &&
+            (identical(other.isCheckoutPartRepoInit, isCheckoutPartRepoInit) ||
+                other.isCheckoutPartRepoInit == isCheckoutPartRepoInit) &&
             (identical(other.dependencyCheckStateStatus,
                     dependencyCheckStateStatus) ||
                 other.dependencyCheckStateStatus ==
@@ -222,6 +241,7 @@ class _$DependencyCheckStateImpl implements _DependencyCheckState {
       isPathAccessible,
       isPartRepoInit,
       isUsecasesInit,
+      isCheckoutPartRepoInit,
       dependencyCheckStateStatus);
 
   @JsonKey(ignore: true)
@@ -240,6 +260,7 @@ abstract class _DependencyCheckState implements DependencyCheckState {
           final bool isPathAccessible,
           final bool isPartRepoInit,
           final bool isUsecasesInit,
+          final bool isCheckoutPartRepoInit,
           final DependencyCheckStateStatus dependencyCheckStateStatus}) =
       _$DependencyCheckStateImpl;
 
@@ -253,6 +274,8 @@ abstract class _DependencyCheckState implements DependencyCheckState {
   bool get isPartRepoInit;
   @override
   bool get isUsecasesInit;
+  @override
+  bool get isCheckoutPartRepoInit;
   @override
   DependencyCheckStateStatus get dependencyCheckStateStatus;
   @override
