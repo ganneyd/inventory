@@ -28,13 +28,14 @@ class PartModelAdapter extends TypeAdapter<PartModel> {
       serialNumber: fields[8] as String,
       unitOfIssue: fields[9] as UnitOfIssue,
       checksum: fields[10] as int,
+      isDiscontinued: fields[11] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, PartModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.index)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class PartModelAdapter extends TypeAdapter<PartModel> {
       ..writeByte(6)
       ..write(obj.requisitionPoint)
       ..writeByte(10)
-      ..write(obj.checksum);
+      ..write(obj.checksum)
+      ..writeByte(11)
+      ..write(obj.isDiscontinued);
   }
 
   @override
@@ -89,6 +92,7 @@ _$PartModelImpl _$$PartModelImplFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(_$UnitOfIssueEnumMap, json['unitOfIssue']) ??
               UnitOfIssue.NOT_SPECIFIED,
       checksum: json['checksum'] as int? ?? 0,
+      isDiscontinued: json['isDiscontinued'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$PartModelImplToJson(_$PartModelImpl instance) =>
@@ -104,6 +108,7 @@ Map<String, dynamic> _$$PartModelImplToJson(_$PartModelImpl instance) =>
       'serialNumber': instance.serialNumber,
       'unitOfIssue': _$UnitOfIssueEnumMap[instance.unitOfIssue]!,
       'checksum': instance.checksum,
+      'isDiscontinued': instance.isDiscontinued,
     };
 
 const _$UnitOfIssueEnumMap = {

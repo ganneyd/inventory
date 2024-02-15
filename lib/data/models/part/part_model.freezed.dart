@@ -42,6 +42,8 @@ mixin _$PartModel {
   UnitOfIssue get unitOfIssue => throw _privateConstructorUsedError;
   @HiveField(10)
   int get checksum => throw _privateConstructorUsedError;
+  @HiveField(11)
+  bool get isDiscontinued => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -65,7 +67,8 @@ abstract class $PartModelCopyWith<$Res> {
       @HiveField(7) int requisitionQuantity,
       @HiveField(8) String serialNumber,
       @HiveField(9) UnitOfIssue unitOfIssue,
-      @HiveField(10) int checksum});
+      @HiveField(10) int checksum,
+      @HiveField(11) bool isDiscontinued});
 }
 
 /// @nodoc
@@ -92,6 +95,7 @@ class _$PartModelCopyWithImpl<$Res, $Val extends PartModel>
     Object? serialNumber = null,
     Object? unitOfIssue = null,
     Object? checksum = null,
+    Object? isDiscontinued = null,
   }) {
     return _then(_value.copyWith(
       index: null == index
@@ -138,6 +142,10 @@ class _$PartModelCopyWithImpl<$Res, $Val extends PartModel>
           ? _value.checksum
           : checksum // ignore: cast_nullable_to_non_nullable
               as int,
+      isDiscontinued: null == isDiscontinued
+          ? _value.isDiscontinued
+          : isDiscontinued // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -161,7 +169,8 @@ abstract class _$$PartModelImplCopyWith<$Res>
       @HiveField(7) int requisitionQuantity,
       @HiveField(8) String serialNumber,
       @HiveField(9) UnitOfIssue unitOfIssue,
-      @HiveField(10) int checksum});
+      @HiveField(10) int checksum,
+      @HiveField(11) bool isDiscontinued});
 }
 
 /// @nodoc
@@ -186,6 +195,7 @@ class __$$PartModelImplCopyWithImpl<$Res>
     Object? serialNumber = null,
     Object? unitOfIssue = null,
     Object? checksum = null,
+    Object? isDiscontinued = null,
   }) {
     return _then(_$PartModelImpl(
       index: null == index
@@ -232,6 +242,10 @@ class __$$PartModelImplCopyWithImpl<$Res>
           ? _value.checksum
           : checksum // ignore: cast_nullable_to_non_nullable
               as int,
+      isDiscontinued: null == isDiscontinued
+          ? _value.isDiscontinued
+          : isDiscontinued // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -250,7 +264,8 @@ class _$PartModelImpl implements _PartModel {
       @HiveField(7) this.requisitionQuantity = -1,
       @HiveField(8) this.serialNumber = 'N/A',
       @HiveField(9) this.unitOfIssue = UnitOfIssue.NOT_SPECIFIED,
-      @HiveField(10) this.checksum = 0});
+      @HiveField(10) this.checksum = 0,
+      @HiveField(11) this.isDiscontinued = false});
 
   factory _$PartModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PartModelImplFromJson(json);
@@ -299,10 +314,14 @@ class _$PartModelImpl implements _PartModel {
   @JsonKey()
   @HiveField(10)
   final int checksum;
+  @override
+  @JsonKey()
+  @HiveField(11)
+  final bool isDiscontinued;
 
   @override
   String toString() {
-    return 'PartModel(index: $index, name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue, checksum: $checksum)';
+    return 'PartModel(index: $index, name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue, checksum: $checksum, isDiscontinued: $isDiscontinued)';
   }
 
   @override
@@ -328,7 +347,9 @@ class _$PartModelImpl implements _PartModel {
             (identical(other.unitOfIssue, unitOfIssue) ||
                 other.unitOfIssue == unitOfIssue) &&
             (identical(other.checksum, checksum) ||
-                other.checksum == checksum));
+                other.checksum == checksum) &&
+            (identical(other.isDiscontinued, isDiscontinued) ||
+                other.isDiscontinued == isDiscontinued));
   }
 
   @JsonKey(ignore: true)
@@ -345,7 +366,8 @@ class _$PartModelImpl implements _PartModel {
       requisitionQuantity,
       serialNumber,
       unitOfIssue,
-      checksum);
+      checksum,
+      isDiscontinued);
 
   @JsonKey(ignore: true)
   @override
@@ -373,7 +395,8 @@ abstract class _PartModel implements PartModel {
       @HiveField(7) final int requisitionQuantity,
       @HiveField(8) final String serialNumber,
       @HiveField(9) final UnitOfIssue unitOfIssue,
-      @HiveField(10) final int checksum}) = _$PartModelImpl;
+      @HiveField(10) final int checksum,
+      @HiveField(11) final bool isDiscontinued}) = _$PartModelImpl;
 
   factory _PartModel.fromJson(Map<String, dynamic> json) =
       _$PartModelImpl.fromJson;
@@ -411,6 +434,9 @@ abstract class _PartModel implements PartModel {
   @override
   @HiveField(10)
   int get checksum;
+  @override
+  @HiveField(11)
+  bool get isDiscontinued;
   @override
   @JsonKey(ignore: true)
   _$$PartModelImplCopyWith<_$PartModelImpl> get copyWith =>
