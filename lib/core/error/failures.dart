@@ -13,7 +13,7 @@ abstract class Failure extends Equatable {
 
 ///General failures that may occur during runtime
 
-///Returned when an error is encounterd while getting data from the database
+///Returned when an error is encountered while getting data from the database
 ///
 class ReadDataFailure extends Failure {
   ///Takes a error message that is then passed to the super class
@@ -31,7 +31,7 @@ class CreateDataFailure extends Failure {
   ///Takes an error message that is then passed to the super class
   ///by default the error message is
   ///[Unable to store your info in the database, please try again later.]
-  CreateDataFailure(
+  const CreateDataFailure(
       {String errMsg =
           'Unable to store your info in the database, please try again later.'})
       : super(errorMessage: errMsg);
@@ -78,7 +78,7 @@ class GetFailure extends Failure {
 ///Returned when a variable is out of bounds of a specified constraint
 class IndexOutOfBoundsFailure extends Failure {
   ///
-  IndexOutOfBoundsFailure(
+  const IndexOutOfBoundsFailure(
       {String errMsg = 'The value was out of the constraint bounds'})
       : super(errorMessage: errMsg);
 }
