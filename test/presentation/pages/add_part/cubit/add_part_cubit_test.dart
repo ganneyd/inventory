@@ -391,8 +391,8 @@ void main() {
       mockUsecaseSetup();
       sut.dropDownMenuHandler(typicalPart.unitOfIssue);
       when(() => mockAddPartUseCase.call(any(that: isA<AddPartParams>())))
-          .thenAnswer(
-              (invocation) async => Left<Failure, void>(CreateDataFailure()));
+          .thenAnswer((invocation) async =>
+              const Left<Failure, void>(CreateDataFailure()));
       sut.savePart();
 
       verify(() => mockAddPartUseCase.call(any(that: isA<AddPartParams>())))

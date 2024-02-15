@@ -33,7 +33,7 @@ void main() {
     var results = await sut.call(params);
     List<CheckedOutEntity> expectedList = [];
     results.fold((l) => null, (list) => expectedList = list);
-    expect(expectedList.length, 8);
+    expect(expectedList.length, 10);
     expect(results, isA<Right<Failure, List<CheckedOutEntity>>>());
     verify(
       () => mockCheckoutPartRepository.getCheckedOutItems(

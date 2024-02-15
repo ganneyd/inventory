@@ -44,7 +44,7 @@ void main() {
 
     test('should return Failure upon error editing the part', () async {
       when(() => mockPartRepository.editPart(typicalPartEntity)).thenAnswer(
-          (invocation) async => Left<Failure, void>(CreateDataFailure()));
+          (invocation) async => const Left<Failure, void>(CreateDataFailure()));
 
       var results =
           await sut.call(EditPartParams(partEntity: typicalPartEntity));
