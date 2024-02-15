@@ -154,15 +154,19 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
       children: [
         IconButton(
             icon: const Icon(Icons.remove),
-            onPressed: () => widget.cubit.updateCheckoutQuantity(
-                checkoutPart: checkedOutEntity, quantityChange: -1)),
+            onPressed: checkedOutEntity.checkedOutQuantity - 1 >= 0
+                ? () => widget.cubit.updateCheckoutQuantity(
+                    checkoutPart: checkedOutEntity, quantityChange: -1)
+                : null),
         const SizedBox(
           width: 10,
         ),
         IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => widget.cubit.updateCheckoutQuantity(
-                checkoutPart: checkedOutEntity, quantityChange: 1)),
+            onPressed: checkedOutEntity.part.quantity - 1 >= 0
+                ? () => widget.cubit.updateCheckoutQuantity(
+                    checkoutPart: checkedOutEntity, quantityChange: 1)
+                : null),
       ],
     );
   }
