@@ -28,7 +28,7 @@ class PartModelAdapter extends TypeAdapter<PartModel> {
       serialNumber: fields[8] as String,
       unitOfIssue: fields[9] as UnitOfIssue,
       checksum: fields[10] as int,
-      isDiscontinued: fields[11] as bool,
+      isDiscontinued: false,
     );
   }
 

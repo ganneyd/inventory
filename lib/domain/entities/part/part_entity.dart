@@ -3,19 +3,19 @@ import 'package:inventory_v1/core/util/util.dart';
 ///Part entity represents a part and its relevant info that is stored in
 ///the database
 class PartEntity {
-  PartEntity({
-    required this.index,
-    required this.name,
-    required this.nsn,
-    required this.partNumber,
-    required this.location,
-    required this.quantity,
-    required this.requisitionPoint,
-    required this.requisitionQuantity,
-    required this.serialNumber,
-    required this.unitOfIssue,
-    required this.checksum,
-  });
+  PartEntity(
+      {required this.index,
+      required this.name,
+      required this.nsn,
+      required this.partNumber,
+      required this.location,
+      required this.quantity,
+      required this.requisitionPoint,
+      required this.requisitionQuantity,
+      required this.serialNumber,
+      required this.unitOfIssue,
+      required this.checksum,
+      this.isDiscontinued = false});
 
   ///The document ID of the part as specified by the database
   final int index;
@@ -49,20 +49,23 @@ class PartEntity {
 
   ///tracks the version of the part
   final int checksum;
+
+  //tracks if the part is discontinued or not
+  final bool isDiscontinued;
 }
 
 extension PartEntityExtension on PartEntity {
-  PartEntity copyWith({
-    String? name,
-    String? nsn,
-    String? location,
-    String? partNumber,
-    String? serialNumber,
-    UnitOfIssue? unitOfIssue,
-    int? quantity,
-    int? requisitionQuantity,
-    int? requisitionPoint,
-  }) {
+  PartEntity copyWith(
+      {String? name,
+      String? nsn,
+      String? location,
+      String? partNumber,
+      String? serialNumber,
+      UnitOfIssue? unitOfIssue,
+      int? quantity,
+      int? requisitionQuantity,
+      int? requisitionPoint,
+      bool? isDiscontinued}) {
     return PartEntity(
         index: index,
         name: name ?? this.name,
@@ -74,7 +77,8 @@ extension PartEntityExtension on PartEntity {
         requisitionQuantity: requisitionQuantity ?? this.requisitionQuantity,
         serialNumber: serialNumber ?? this.serialNumber,
         unitOfIssue: unitOfIssue ?? this.unitOfIssue,
-        checksum: checksum);
+        checksum: checksum,
+        isDiscontinued: isDiscontinued ?? this.isDiscontinued);
   }
 
   PartEntity updateChecksum() {
