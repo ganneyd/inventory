@@ -5,11 +5,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final PreferredSizeWidget? bottom;
   final VoidCallback? backButtonCallback;
+  final bool showBackButton;
   const CustomAppBar(
       {required Key key,
       required this.title,
       this.actions,
       this.bottom,
+      this.showBackButton = true,
       this.backButtonCallback})
       : super(key: key);
   @override
@@ -18,15 +20,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         bottom: bottom,
         title: Center(child: Text(title)),
         actions: actions,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed:
-                  backButtonCallback ?? () => Navigator.of(context).pop(),
-            );
-          },
-        ));
+        leading: showBackButton
+            ? Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed:
+                        backButtonCallback ?? () => Navigator.of(context).pop(),
+                  );
+                },
+              )
+            : Container());
   }
 
   @override
