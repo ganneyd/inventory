@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 
 ///Represents the different fields that are searchable in the database
 enum PartField {
@@ -30,6 +30,8 @@ abstract class PartRepository {
 
   ///Creates a part in the inventory database using the [partEntity] passed
   Future<Either<Failure, void>> createPart(PartEntity partEntity);
+
+  Future<Either<Failure, PartEntity>> getSpecificPart(int index);
 
   ///Retrieves the entire part inventory
   Future<Either<Failure, List<PartEntity>>> getAllParts(
