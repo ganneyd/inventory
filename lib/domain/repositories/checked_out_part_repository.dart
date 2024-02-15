@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 
 ///Deals with all the [CheckedOutModel] related calls to the local database
 abstract class CheckedOutPartRepository {

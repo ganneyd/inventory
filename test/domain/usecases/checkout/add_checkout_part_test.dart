@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/usecases/checkout/add_checkout_parts.dart';
 import 'package:inventory_v1/domain/usecases/edit_part.dart';
@@ -27,6 +27,7 @@ void main() {
     checkedOutEntity = CheckedOutEntity(
       index: 2,
       checkedOutQuantity: 10,
+      quantityDiscrepancy: 0,
       dateTime: DateTime.now().subtract(const Duration(days: 4)),
       part: ValuesForTest().parts()[0],
       isVerified: false,
