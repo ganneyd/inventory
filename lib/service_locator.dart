@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
@@ -30,11 +30,15 @@ Future<void> initHive() async {
   serviceLocatorLogger.finest('initializing HIVE');
 
   await Hive.initFlutter();
-  Hive.registerAdapter(PartEntityAdapter());
+  Hive.registerAdapter(PartModelAdapter());
   Hive.registerAdapter(UnitOfIssueAdapter());
   Hive.registerAdapter(CheckedOutModelAdapter());
-  await Hive.openBox<PartEntity>(boxName);
+  await Hive.openBox<PartModel>(boxName);
   await Hive.openBox<CheckedOutModel>(checkoutPartBox);
+
+  // Hive.box<PartModel>(boxName).clear();
+  // Hive.box<CheckedOutModel>(checkoutPartBox).clear();
+
   serviceLocatorLogger.finest('initialized hive');
 }
 
@@ -50,7 +54,7 @@ Future<void> setupLocator() async {
   //!Data Layer
   //!Repositories
   locator.registerLazySingleton<PartRepositoryImplementation>(
-      () => PartRepositoryImplementation(Hive.box<PartEntity>(boxName)));
+      () => PartRepositoryImplementation(Hive.box<PartModel>(boxName)));
   locator.registerLazySingleton<CheckedOutPartRepository>(() =>
       CheckedOutPartRepositoryImplementation(
           Hive.box<CheckedOutModel>(checkoutPartBox)));
@@ -75,8 +79,8 @@ Future<void> setupLocator() async {
       () => GetDatabaseLength(locator<PartRepositoryImplementation>()));
   locator.registerFactory<GetLowQuantityParts>(
       () => GetLowQuantityParts(locator<PartRepositoryImplementation>()));
-  locator.registerFactory<VerifyCheckoutPart>(
-      () => VerifyCheckoutPart(locator<CheckedOutPartRepository>()));
+  locator.registerFactory<VerifyCheckoutPart>(() => VerifyCheckoutPart(
+      locator<CheckedOutPartRepository>(), locator<EditPartUsecase>()));
   locator.registerFactory<AddCheckoutPart>(() => AddCheckoutPart(
       locator<CheckedOutPartRepository>(), locator<EditPartUsecase>()));
   locator.registerFactory<GetAllCheckoutParts>(
