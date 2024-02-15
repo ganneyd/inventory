@@ -219,6 +219,12 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         .map((checkoutPart) => checkoutPart.isVerified ?? false
             ? checkoutPart
             : checkoutPart.copyWith(
+                checkedOutQuantity: checkoutPart.part.index == part.index
+                    ? checkoutPart.checkedOutQuantity -
+                        checkoutPart.quantityDiscrepancy
+                    : null,
+                quantityDiscrepancy:
+                    checkoutPart.part.index == part.index ? 0 : null,
                 partEntity: checkoutPart.part.index == part.index
                     ? part
                     : checkoutPart.part))
