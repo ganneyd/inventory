@@ -9,6 +9,8 @@ import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_state.da
 import 'package:inventory_v1/presentation/widgets/dialogs/go_to_homeview_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
+import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
+import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 import 'package:inventory_v1/service_locator.dart';
 
 class CheckOutView extends StatelessWidget {
@@ -41,7 +43,7 @@ class CheckOutView extends StatelessWidget {
               ),
             );
           }
-          if (state.status == CheckoutStateStatus.checkedOutSuccessfully) {
+          if (state.status == CheckoutStateStatus.completed) {
             Navigator.of(context).pushNamed('/home_page');
           }
         });
@@ -54,7 +56,8 @@ class CheckOutView extends StatelessWidget {
           appBar: CustomAppBar(
             key: const Key('search-results-app-bar'),
             // Directly use AppBar here
-            title: 'Search Results',
+            title: 'Checkout Parts',
+            showBackButton: !state.isCheckoutCompleted,
             backButtonCallback: () async {
               if (state.checkoutParts.isNotEmpty) {
                 await showDialog(
@@ -66,7 +69,7 @@ class CheckOutView extends StatelessWidget {
                           context: context,
                           dialogContext: dialogContext);
                     });
-              } else {
+              } else if (!state.isCheckoutCompleted) {
                 Navigator.of(context).pop();
               }
             },
@@ -84,50 +87,75 @@ class CheckOutView extends StatelessWidget {
                         return ExpansionTile(
                           expandedAlignment: Alignment.center,
                           expandedCrossAxisAlignment: CrossAxisAlignment.center,
-                          title: Center(
-                              child: Text('${part.nsn}  - ${part.name}')),
-                          subtitle: Center(
-                              child: Text(
-                                  "Checkout : ${state.checkoutParts[index].checkedOutQuantity} ${part.unitOfIssue.displayValue}")),
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove),
-                                  onPressed: () => checkoutQuantity > 1
-                                      ? BlocProvider.of<CheckoutCubit>(context)
-                                          .updateCheckoutQuantity(
-                                              checkoutPartIndex: index,
-                                              newQuantity: checkoutQuantity - 1)
-                                      : null,
-                                ),
-                                Text(checkoutQuantity.toString()),
-                                IconButton(
-                                  icon: const Icon(Icons.add),
-                                  onPressed: () => checkoutQuantity <
-                                          part.quantity
-                                      ? BlocProvider.of<CheckoutCubit>(context)
-                                          .updateCheckoutQuantity(
-                                              checkoutPartIndex: index,
-                                              newQuantity: checkoutQuantity + 1)
-                                      : null,
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.cancel_rounded),
-                                  onPressed: () =>
-                                      BlocProvider.of<CheckoutCubit>(context)
-                                          .removeCheckoutPart(index),
-                                ),
-                              ],
-                            ),
-                          ],
+                          title: PartCardDisplay(
+                            left: part.nsn,
+                            center: part.name,
+                            right: state.isCheckoutCompleted
+                                ? 'Location: ${part.location}'
+                                : part.partNumber,
+                            bottom:
+                                ' ${state.isCheckoutCompleted ? 'Checked out' : 'Checking out'}: $checkoutQuantity ${part.unitOfIssue.displayValue}',
+                          ),
+                          children: state.isCheckoutCompleted
+                              ? []
+                              : <Widget>[
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.remove),
+                                        onPressed: () => checkoutQuantity > 1
+                                            ? BlocProvider.of<CheckoutCubit>(
+                                                    context)
+                                                .updateCheckoutQuantity(
+                                                    checkoutPartIndex: index,
+                                                    newQuantity:
+                                                        checkoutQuantity - 1)
+                                            : null,
+                                      ),
+                                      Text(checkoutQuantity.toString()),
+                                      IconButton(
+                                        icon: const Icon(Icons.add),
+                                        onPressed: () => checkoutQuantity <
+                                                part.quantity
+                                            ? BlocProvider.of<CheckoutCubit>(
+                                                    context)
+                                                .updateCheckoutQuantity(
+                                                    checkoutPartIndex: index,
+                                                    newQuantity:
+                                                        checkoutQuantity + 1)
+                                            : null,
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.cancel_rounded),
+                                        onPressed: () =>
+                                            BlocProvider.of<CheckoutCubit>(
+                                                    context)
+                                                .removeCheckoutPart(index),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                         );
                       })),
-              FloatingActionButton(
-                  child: const Text('Checkout'),
-                  onPressed: () =>
-                      BlocProvider.of<CheckoutCubit>(context).checkoutCart()),
+              Flex(
+                direction: Axis.horizontal,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  state.isCheckoutCompleted
+                      ? SmallButton(
+                          buttonName: 'Retrieved All My Parts',
+                          onPressed: () =>
+                              BlocProvider.of<CheckoutCubit>(context)
+                                  .partRetrievalCompleted())
+                      : SmallButton(
+                          buttonName: 'Checkout',
+                          onPressed: () =>
+                              BlocProvider.of<CheckoutCubit>(context)
+                                  .checkoutCart())
+                ],
+              ),
             ],
           ),
         );
