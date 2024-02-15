@@ -76,9 +76,9 @@ class GetFailure extends Failure {
 }
 
 ///Returned when a variable is out of bounds of a specified constraint
-class OutOfBoundsFailure extends Failure {
+class IndexOutOfBoundsFailure extends Failure {
   ///
-  OutOfBoundsFailure(
+  IndexOutOfBoundsFailure(
       {String errMsg = 'The value was out of the constraint bounds'})
       : super(errorMessage: errMsg);
 }
