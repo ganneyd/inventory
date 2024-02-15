@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
@@ -16,13 +16,13 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
   final Logger _logger;
   final Box<CheckedOutModel> _localDatasource;
 
-  CheckedOutModel _getCheckoutPartWithIndex(
-      CheckedOutEntity checkedOutEntity, int index) {
+  CheckedOutModel _toCheckoutPartModel(CheckedOutEntity checkedOutEntity) {
     return CheckedOutModel(
-        indexModel: index,
+        quantityDiscrepancyModel: checkedOutEntity.quantityDiscrepancy,
+        indexModel: checkedOutEntity.index,
         checkedOutAmount: checkedOutEntity.checkedOutQuantity,
         dateTimeModel: checkedOutEntity.dateTime,
-        partModel: PartAdapter.fromEntity(checkedOutEntity.part),
+        partModel: PartEntityToModelAdapter.fromEntity(checkedOutEntity.part),
         isVerifiedModel: checkedOutEntity.isVerified ?? false,
         verifiedDateModel: checkedOutEntity.verifiedDate ?? DateTime.now());
   }
@@ -33,8 +33,8 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
     try {
       _logger.finest('creating new checked out entry $checkedOutEntity');
       var index = _localDatasource.isEmpty ? 0 : _localDatasource.length;
-      await _localDatasource
-          .add(_getCheckoutPartWithIndex(checkedOutEntity, index));
+      checkedOutEntity = checkedOutEntity.copyWith(index: index);
+      await _localDatasource.add(_toCheckoutPartModel(checkedOutEntity));
       return const Right<Failure, void>(null);
     } catch (exception) {
       return Left<Failure, void>(CreateDataFailure());
@@ -57,12 +57,12 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
   Future<Either<Failure, void>> editCheckedOutItem(
       CheckedOutEntity checkedOutEntity) async {
     try {
-      if (checkedOutEntity.index == null) {
+      if (checkedOutEntity.index < 0) {
         throw IndexError;
       }
-      var checkoutPartModel = _getCheckoutPartWithIndex(
-          checkedOutEntity, checkedOutEntity.index ?? 0);
-      _localDatasource.putAt(checkoutPartModel.indexModel, checkoutPartModel);
+
+      _localDatasource.putAt(
+          checkedOutEntity.index, _toCheckoutPartModel(checkedOutEntity));
       return const Right<Failure, void>(null);
     } on UpdateDataException {
       return const Left<Failure, void>(UpdateDataFailure());
@@ -103,7 +103,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       return const Left<Failure, List<CheckedOutEntity>>(ReadDataFailure());
     } on IndexOutOfBounds {
       _logger.warning('ReadDataFailure() occurred');
-      return Left<Failure, List<CheckedOutEntity>>(OutOfBoundsFailure());
+      return Left<Failure, List<CheckedOutEntity>>(IndexOutOfBoundsFailure());
     } catch (e) {
       _logger.severe('Unknown exception occurred  $e', [e.runtimeType]);
       return const Left<Failure, List<CheckedOutEntity>>(GetFailure());
