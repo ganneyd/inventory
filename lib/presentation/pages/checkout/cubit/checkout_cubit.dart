@@ -34,8 +34,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
             status: CheckoutStateStatus.checkedOutUnsuccessfully,
             error: failure.errorMessage)),
         (_) => emit(state.copyWith(
-            checkoutParts: [],
+            isCheckoutCompleted: true,
             status: CheckoutStateStatus.checkedOutSuccessfully)));
+  }
+
+  void partRetrievalCompleted() {
+    emit(state.copyWith(
+        checkoutParts: [],
+        isCheckoutCompleted: true,
+        status: CheckoutStateStatus.completed));
   }
 
   void removeCheckoutPart(int checkoutPartIndex) {

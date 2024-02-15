@@ -19,6 +19,7 @@ mixin _$CheckoutState {
   List<CheckedOutEntity> get checkoutParts =>
       throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
+  bool get isCheckoutCompleted => throw _privateConstructorUsedError;
   CheckoutStateStatus get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -35,6 +36,7 @@ abstract class $CheckoutStateCopyWith<$Res> {
   $Res call(
       {List<CheckedOutEntity> checkoutParts,
       String error,
+      bool isCheckoutCompleted,
       CheckoutStateStatus status});
 }
 
@@ -53,6 +55,7 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
   $Res call({
     Object? checkoutParts = null,
     Object? error = null,
+    Object? isCheckoutCompleted = null,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
@@ -64,6 +67,10 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
+      isCheckoutCompleted: null == isCheckoutCompleted
+          ? _value.isCheckoutCompleted
+          : isCheckoutCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -83,6 +90,7 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
   $Res call(
       {List<CheckedOutEntity> checkoutParts,
       String error,
+      bool isCheckoutCompleted,
       CheckoutStateStatus status});
 }
 
@@ -99,6 +107,7 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? checkoutParts = null,
     Object? error = null,
+    Object? isCheckoutCompleted = null,
     Object? status = null,
   }) {
     return _then(_$AddPartStateImpl(
@@ -110,6 +119,10 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
+      isCheckoutCompleted: null == isCheckoutCompleted
+          ? _value.isCheckoutCompleted
+          : isCheckoutCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -124,6 +137,7 @@ class _$AddPartStateImpl implements _AddPartState {
   _$AddPartStateImpl(
       {final List<CheckedOutEntity> checkoutParts = const <CheckedOutEntity>[],
       this.error = '',
+      this.isCheckoutCompleted = false,
       this.status = CheckoutStateStatus.loading})
       : _checkoutParts = checkoutParts;
 
@@ -141,11 +155,14 @@ class _$AddPartStateImpl implements _AddPartState {
   final String error;
   @override
   @JsonKey()
+  final bool isCheckoutCompleted;
+  @override
+  @JsonKey()
   final CheckoutStateStatus status;
 
   @override
   String toString() {
-    return 'CheckoutState(checkoutParts: $checkoutParts, error: $error, status: $status)';
+    return 'CheckoutState(checkoutParts: $checkoutParts, error: $error, isCheckoutCompleted: $isCheckoutCompleted, status: $status)';
   }
 
   @override
@@ -156,12 +173,18 @@ class _$AddPartStateImpl implements _AddPartState {
             const DeepCollectionEquality()
                 .equals(other._checkoutParts, _checkoutParts) &&
             (identical(other.error, error) || other.error == error) &&
+            (identical(other.isCheckoutCompleted, isCheckoutCompleted) ||
+                other.isCheckoutCompleted == isCheckoutCompleted) &&
             (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_checkoutParts), error, status);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_checkoutParts),
+      error,
+      isCheckoutCompleted,
+      status);
 
   @JsonKey(ignore: true)
   @override
@@ -174,12 +197,15 @@ abstract class _AddPartState implements CheckoutState {
   factory _AddPartState(
       {final List<CheckedOutEntity> checkoutParts,
       final String error,
+      final bool isCheckoutCompleted,
       final CheckoutStateStatus status}) = _$AddPartStateImpl;
 
   @override
   List<CheckedOutEntity> get checkoutParts;
   @override
   String get error;
+  @override
+  bool get isCheckoutCompleted;
   @override
   CheckoutStateStatus get status;
   @override

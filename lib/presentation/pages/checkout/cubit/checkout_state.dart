@@ -10,7 +10,8 @@ enum CheckoutStateStatus {
   loadedUnsuccessfully,
   checkingOut,
   checkedOutSuccessfully,
-  checkedOutUnsuccessfully
+  checkedOutUnsuccessfully,
+  completed
 }
 
 @freezed
@@ -18,6 +19,7 @@ class CheckoutState with _$CheckoutState {
   factory CheckoutState({
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkoutParts,
     @Default('') String error,
+    @Default(false) bool isCheckoutCompleted,
     @Default(CheckoutStateStatus.loading) CheckoutStateStatus status,
   }) = _AddPartState;
 }
