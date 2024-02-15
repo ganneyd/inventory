@@ -85,16 +85,15 @@ Widget buildDrawer(
                   )),
         checkedOutParts.isEmpty
             ? Container()
-            : SizedBox(
-                width: 350,
-                height: 60,
-                child: SmallButton(
+            : Flex(direction: Axis.horizontal, children: [
+                SmallButton(
                     buttonName: 'Checkout',
                     onPressed: () {
                       BlocProvider.of<SearchPartCubit>(context).checkout();
                       Navigator.of(context)
                           .pushNamed('/checkout', arguments: checkedOutParts);
-                    })),
+                    })
+              ]),
       ],
     ),
   );
