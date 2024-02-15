@@ -11,7 +11,7 @@ import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 import 'package:inventory_v1/service_locator.dart';
 
 class AddPartView extends StatelessWidget {
-  AddPartView() : super(key: const Key('add-part-view-constructor'));
+  const AddPartView() : super(key: const Key('add-part-view-constructor'));
 
   final double paddingValue = 200.0;
 //method to return the text fields wrapped in a padding along with a sized box
