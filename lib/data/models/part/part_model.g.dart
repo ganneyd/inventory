@@ -3,6 +3,74 @@
 part of 'part_model.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class PartModelAdapter extends TypeAdapter<PartModel> {
+  @override
+  final int typeId = 1;
+
+  @override
+  PartModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PartModel(
+      index: fields[0] as int,
+      name: fields[1] as String,
+      nsn: fields[2] as String,
+      partNumber: fields[3] as String,
+      location: fields[4] as String,
+      quantity: fields[5] as int,
+      requisitionPoint: fields[6] as int,
+      requisitionQuantity: fields[7] as int,
+      serialNumber: fields[8] as String,
+      unitOfIssue: fields[9] as UnitOfIssue,
+      checksum: fields[10] as int,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PartModel obj) {
+    writer
+      ..writeByte(11)
+      ..writeByte(0)
+      ..write(obj.index)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.nsn)
+      ..writeByte(3)
+      ..write(obj.partNumber)
+      ..writeByte(4)
+      ..write(obj.location)
+      ..writeByte(8)
+      ..write(obj.serialNumber)
+      ..writeByte(9)
+      ..write(obj.unitOfIssue)
+      ..writeByte(5)
+      ..write(obj.quantity)
+      ..writeByte(7)
+      ..write(obj.requisitionQuantity)
+      ..writeByte(6)
+      ..write(obj.requisitionPoint)
+      ..writeByte(10)
+      ..write(obj.checksum);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PartModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
@@ -20,6 +88,7 @@ _$PartModelImpl _$$PartModelImplFromJson(Map<String, dynamic> json) =>
       unitOfIssue:
           $enumDecodeNullable(_$UnitOfIssueEnumMap, json['unitOfIssue']) ??
               UnitOfIssue.NOT_SPECIFIED,
+      checksum: json['checksum'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$$PartModelImplToJson(_$PartModelImpl instance) =>
@@ -34,6 +103,7 @@ Map<String, dynamic> _$$PartModelImplToJson(_$PartModelImpl instance) =>
       'requisitionQuantity': instance.requisitionQuantity,
       'serialNumber': instance.serialNumber,
       'unitOfIssue': _$UnitOfIssueEnumMap[instance.unitOfIssue]!,
+      'checksum': instance.checksum,
     };
 
 const _$UnitOfIssueEnumMap = {
