@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/delete_part.dart';
@@ -26,7 +26,7 @@ void main() {
   setUp(() async {
     //initialize all the variables
     valuesForTest = ValuesForTest();
-    typicalPartEntity = Part.fromJson(valuesForTest.getPartList()[0]);
+    typicalPartEntity = PartModel.fromJson(valuesForTest.getPartList()[0]);
     mockPartRepository = MockPartRepository();
     sut = DeletePartUsecase(mockPartRepository);
   });

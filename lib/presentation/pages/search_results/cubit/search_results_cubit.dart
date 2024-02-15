@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/search_results/cubit/search_results_state.dart';
 
@@ -130,10 +130,11 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
 
     if (quantity > 0 && !isPartInCart) {
       var newCartEntry = CheckedOutEntity(
-        checkedOutQuantity: quantity,
-        dateTime: DateTime.now(),
-        part: addPart,
-      );
+          index: -1,
+          checkedOutQuantity: quantity,
+          dateTime: DateTime.now(),
+          part: addPart,
+          quantityDiscrepancy: 0);
       newCartList.add(newCartEntry);
       emit(state.copyWith(partCheckoutCart: newCartList));
     }
@@ -151,10 +152,8 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
       {required int checkoutPartIndex, required int newQuantity}) {
     var checkoutPart = state.partCheckoutCart[checkoutPartIndex];
 
-    var newCheckOutPart = CheckedOutEntity(
-        checkedOutQuantity: newQuantity,
-        dateTime: checkoutPart.dateTime,
-        part: checkoutPart.part);
+    var newCheckOutPart =
+        checkoutPart.copyWith(checkedOutQuantity: newQuantity);
     List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
     newCartList[checkoutPartIndex] = newCheckOutPart;
     emit(state.copyWith(partCheckoutCart: newCartList));

@@ -27,7 +27,7 @@ class MockTextEditingController extends Mock implements TextEditingController {}
 void main() {
   late AddPartCubit sut;
   late ValuesForTest valuesForTest;
-  late Part typicalPart;
+  late PartModel typicalPart;
   late MockAddPartUseCase mockAddPartUseCase;
   late MockFormState mockFormState;
   late MockGlobalKey mockGlobalKey;
@@ -41,7 +41,7 @@ void main() {
   late MockTextEditingController mockLocationController;
   setUp(() {
     valuesForTest = ValuesForTest();
-    typicalPart = PartAdapter.fromEntity(valuesForTest.parts()[0]);
+    typicalPart = PartEntityToModelAdapter.fromEntity(valuesForTest.parts()[0]);
     mockFormState = MockFormState();
     mockGlobalKey = MockGlobalKey();
     nsnController = MockTextEditingController();

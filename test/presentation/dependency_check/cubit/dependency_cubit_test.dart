@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
@@ -16,7 +16,7 @@ class MockPathProviderPlatform extends Mock implements PathProviderPlatform {}
 
 class MockPartRepo extends Mock implements PartRepository {}
 
-class MockBox extends Mock implements Box<PartEntity> {}
+class MockBox extends Mock implements Box<PartModel> {}
 
 void main() {
   late DependencyCheckCubit sut;
@@ -79,7 +79,7 @@ void main() {
           DependencyCheckStateStatus.loading);
     });
 
-    test('All dependencies are initialize', () async {
+    test('All dependencies are initialized', () async {
       //setup
       mockSetup();
       //expectations

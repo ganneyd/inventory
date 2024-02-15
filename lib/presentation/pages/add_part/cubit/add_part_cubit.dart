@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
 
@@ -106,6 +106,7 @@ class AddPartCubit extends Cubit<AddPartState> {
 //method to extrapolate part from form
   PartEntity _getPart() {
     return PartEntity(
+        checksum: 0,
         name: state.nomenclatureController.text,
         serialNumber: state.serialNumberController.text.isEmpty
             ? 'N/A'

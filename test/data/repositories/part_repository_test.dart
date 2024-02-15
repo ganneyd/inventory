@@ -5,24 +5,25 @@ import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../setup.dart';
 
-class MockDatasource extends Mock implements Box<PartEntity> {}
+class MockDatasource extends Mock implements Box<PartModel> {}
 
 void main() {
   late PartRepository sut;
   late MockDatasource mockDatasource;
   late PartEntity typicalPartEntity;
-  late Part typicalPart;
+  late PartModel typicalPart;
   late ValuesForTest valuesForTest;
   setUp(() {
     valuesForTest = ValuesForTest();
-    typicalPart = Part.fromJson(valuesForTest.getPartList()[0]);
+    typicalPart = PartModel.fromJson(valuesForTest.getPartList()[0]);
     typicalPartEntity = PartEntity(
+        checksum: 0,
         index: typicalPart.index,
         nsn: typicalPart.nsn,
         name: typicalPart.name,
@@ -96,7 +97,8 @@ void main() {
       when(() => mockDatasource.length)
           .thenAnswer((invocation) => valuesForTest.parts().length);
       when(() => mockDatasource.getAt(any())).thenAnswer((invocation) {
-        return valuesForTest.parts()[invocation.positionalArguments[0]];
+        return PartEntityToModelAdapter.fromEntity(
+            valuesForTest.parts()[invocation.positionalArguments[0]]);
       });
     }
 
@@ -165,7 +167,7 @@ void main() {
       var left = results.fold((l) => l, (r) => r);
       expect(results, isA<Left<Failure, List<PartEntity>>>());
       //the actual failure should be a ReadDataFailure()
-      expect(left, OutOfBoundsFailure());
+      expect(left, IndexOutOfBoundsFailure());
 //the .length should only have been called once
       verify(() => mockDatasource.length).called(1);
       //the .getAt() should only have been called once before the exception was thrown
@@ -325,7 +327,7 @@ void main() {
   group('.searchPartsByField() nsn', () {
     void mockSetUp() {
       when(() => mockDatasource.values)
-          .thenAnswer((invocation) => valuesForTest.parts());
+          .thenAnswer((invocation) => valuesForTest.partModels());
     }
 
     test('matches the query nsn 9878', () async {
@@ -451,7 +453,7 @@ void main() {
           .thenAnswer((invocation) => true);
 
       when(() => mockDatasource.values)
-          .thenAnswer((invocation) => valuesForTest.parts());
+          .thenAnswer((invocation) => valuesForTest.partModels());
     }
 
     test('matches the query regardless of case name ScRew', () async {
@@ -599,7 +601,7 @@ void main() {
           .thenAnswer((invocation) => true);
 
       when(() => mockDatasource.values)
-          .thenAnswer((invocation) => valuesForTest.parts());
+          .thenAnswer((invocation) => valuesForTest.partModels());
     }
 
     test('matches the query regardless of case', () async {
@@ -688,7 +690,7 @@ void main() {
           .thenAnswer((invocation) => true);
 
       when(() => mockDatasource.values)
-          .thenAnswer((invocation) => valuesForTest.parts());
+          .thenAnswer((invocation) => valuesForTest.partModels());
     }
 
     test('matches the query regardless of case', () async {

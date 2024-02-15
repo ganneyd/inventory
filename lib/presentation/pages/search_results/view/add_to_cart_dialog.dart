@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/utils/number_input_formatter.dart';
 
 class AddToCartDialog extends StatelessWidget {
