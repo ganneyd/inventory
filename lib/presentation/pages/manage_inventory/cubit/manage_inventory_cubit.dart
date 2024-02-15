@@ -1,23 +1,21 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:logging/logging.dart';
 
 class ManageInventoryCubit extends Cubit<ManageInventoryState> {
-  ManageInventoryCubit(
-      {int fetchPartAmount = 20,
-      required this.getAllPartsUsecase,
-      required this.getDatabaseLength,
-      required this.getUnverifiedCheckoutParts,
-      required this.getAllCheckoutParts,
-      required this.getLowQuantityParts,
-      required this.verifyCheckoutPartUsecase,
-      required ScrollController scrollController})
-      : _logger = Logger('manage-inv-cubit'),
+  ManageInventoryCubit({
+    int fetchPartAmount = 20,
+    required this.getAllPartsUsecase,
+    required this.getDatabaseLength,
+    required this.getUnverifiedCheckoutParts,
+    required this.getAllCheckoutParts,
+    required this.getLowQuantityParts,
+    required this.verifyCheckoutPartUsecase,
+  })  : _logger = Logger('manage-inv-cubit'),
         super(ManageInventoryState(fetchPartAmount: fetchPartAmount));
 
   //usecase init
@@ -78,14 +76,19 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     loadCheckedOutParts();
   }
 
-  Future<void> loadCheckedOutParts() async {
+  void loadCheckedOutParts() async {
     // Indicate loading state, especially useful for UI indicators
     emit(state.copyWith(status: ManageInventoryStateStatus.loading));
 
     var startIndex = state.checkedOutParts.length;
     var endIndex = startIndex + state.fetchPartAmount;
     List<CheckedOutEntity> oldCheckoutPartList = state.checkedOutParts.toList();
-
+    oldCheckoutPartList = oldCheckoutPartList
+        .map((checkoutPart) => checkoutPart.isVerified ?? false
+            ? checkoutPart
+            : checkoutPart.copyWith(
+                partEntity: _getAccuratePart(checkoutPart.part)))
+        .toList();
     _logger.finest(
         'loading checked out parts, startIndex:$startIndex endIndex:$endIndex');
 
@@ -99,6 +102,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
           status: ManageInventoryStateStatus.fetchedDataUnsuccessfully));
     }, (newParts) {
       _logger.finest('retrieved all checked out parts: ${newParts.length}');
+
       oldCheckoutPartList.addAll(newParts); // Use addAll for efficiency
 
       emit(state.copyWith(
@@ -109,51 +113,103 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     });
   }
 
-  void loadUnverifiedParts({bool verifiedPartSuccessfully = false}) async {
-    // Assuming loadCheckedOutParts() updates state.checkedOutParts correctly
-    await loadCheckedOutParts();
-
-    // Efficiently filter out unverified parts
-    var newUnverifiedList = state.checkedOutParts
-        .where((part) => !(part.isVerified ?? true))
+  void filterLowQuantityParts() async {
+    List<PartEntity> newLowQuantityList = state.parts
+        .where((part) => part.quantity <= part.requisitionPoint)
         .toList();
 
-    emit(state.copyWith(
-      unverifiedParts: newUnverifiedList,
-      // Update the status only if verification was successful
-      status: verifiedPartSuccessfully
-          ? ManageInventoryStateStatus.verifiedPartSuccessfully
-          : state.status,
-    ));
-
-    _logger
-        .finest('state has ${state.unverifiedParts.length} unverified parts');
-  }
-
-  void loadLowQuantityParts() async {
-    loadParts();
-    List<PartEntity> newLowQuantityList = [];
-    for (var part in state.parts) {
-      if (part.quantity <= part.requisitionPoint) {
-        newLowQuantityList.add(part);
-      }
-    }
     emit(state.copyWith(lowQuantityParts: newLowQuantityList));
   }
 
-  void verifyCheckoutPart(CheckedOutEntity checkoutPart) async {
+  Future<void> updateDatabaseWithVerifiedParts() async {
+    _logger.finest('placing verified parts in the database');
     emit(state.copyWith(status: ManageInventoryStateStatus.verifyingPart));
 
-    var results = await verifyCheckoutPartUsecase
-        .call(VerifyCheckoutPartParams(checkedOutEntity: checkoutPart));
+    await verifyCheckoutPartUsecase.call(VerifyCheckoutPartParams(
+        checkedOutEntityList: state.newlyVerifiedParts));
+  }
 
-    results.fold(
-        (fail) => emit(state.copyWith(
-            error: fail.errorMessage,
-            status: ManageInventoryStateStatus.verifiedPartUnsuccessfully)),
-        (_) {
-      // Directly move to loading unverified parts without clearing the lists
-      loadUnverifiedParts(verifiedPartSuccessfully: true);
-    });
+  void updateCheckoutQuantity({
+    required CheckedOutEntity checkoutPart,
+    required int quantityChange,
+  }) {
+    List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
+    var accuratePart = _getAccuratePart(checkoutPart.part);
+    var newPart = accuratePart.copyWith(
+        quantity: checkoutPart.part.quantity - quantityChange);
+    var newCheckoutPart = checkoutPart.copyWith(
+        checkedOutQuantity: checkoutPart.checkedOutQuantity + quantityChange,
+        quantityDiscrepancy: checkoutPart.quantityDiscrepancy + quantityChange,
+        partEntity: newPart);
+
+    newCheckoutPartList[checkoutPart.index] = newCheckoutPart;
+    emit(state.copyWith(
+      checkedOutParts: newCheckoutPartList,
+    ));
+    filterUnverifiedParts();
+  }
+
+  PartEntity _getAccuratePart(PartEntity part) {
+    var accuratePart = part;
+    _logger.finest(
+        'checksum ${part.checksum} state part: ${state.parts[part.index].checksum} failed ${part.name}  ${part.quantity}ea');
+    if (state.parts[part.index].checksum != part.checksum) {
+      _logger.finest(
+          'checksum ${part.checksum} does not match ${state.parts[part.index].checksum} failed ${part.name}  ${part.quantity}ea');
+      accuratePart = state.parts[part.index];
+    }
+    return accuratePart;
+  }
+
+  void verifyPart({required CheckedOutEntity checkedOutEntity}) {
+    List<CheckedOutEntity> newVerifiedList = state.newlyVerifiedParts.toList();
+    List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
+    List<PartEntity> newPartEntityList = state.parts.toList();
+
+    var newCheckoutPart = checkedOutEntity.copyWith(
+        isVerified: true, verifiedDate: DateTime.now());
+    var updatedPart = checkedOutEntity.part;
+    _logger.finest(
+        'updated part has ${updatedPart.quantity}ea and the discrepancy is ${checkedOutEntity.quantityDiscrepancy}');
+    updatedPart = updatedPart.updateChecksum();
+    newCheckoutPart = newCheckoutPart.copyWith(partEntity: updatedPart);
+    newCheckoutPartList[checkedOutEntity.index] = newCheckoutPart;
+    newCheckoutPartList = newCheckoutPartList
+        .map((checkoutPart) => checkoutPart.isVerified ?? false
+            ? checkoutPart
+            : checkoutPart.copyWith(
+                partEntity: _getAccuratePart(checkoutPart.part)))
+        .toList();
+    newPartEntityList[checkedOutEntity.part.index] = updatedPart;
+    newVerifiedList.add(newCheckoutPart);
+    emit(state.copyWith(
+        newlyVerifiedParts: newVerifiedList,
+        checkedOutParts: newCheckoutPartList,
+        parts: newPartEntityList));
+
+    filterUnverifiedParts();
+  }
+
+  void filterUnverifiedParts() {
+    List<CheckedOutEntity> unverifiedList =
+        state.checkedOutParts.where((checkoutPart) {
+      return !(checkoutPart.isVerified ?? false);
+    }).toList();
+
+    unverifiedList = unverifiedList.map((checkoutPart) {
+      var newCheckoutPart = checkoutPart.copyWith(
+          partEntity: _getAccuratePart(checkoutPart.part));
+      return newCheckoutPart;
+    }).toList();
+
+    emit(state.copyWith(
+      unverifiedParts: unverifiedList,
+    ));
+  }
+
+  @override
+  Future<void> close() async {
+    await updateDatabaseWithVerifiedParts();
+    super.close();
   }
 }
