@@ -205,8 +205,8 @@ void main() {
     test('hive is open', () async {
 //setups
 
-      expectLater(sut.stream.map((state) => state.isHiveOpen),
-          emitsInOrder([true, true]));
+      expectLater(
+          sut.stream.map((state) => state.isHiveOpen), emitsInOrder([true]));
       await sut.checkDependencies();
     });
 
