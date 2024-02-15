@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
@@ -26,12 +26,12 @@ class _PartsPageViewState extends State<PartsPageView> {
   final ScrollController controller = ScrollController();
   @override
   void initState() {
-    widget.cubit.loadLowQuantityParts();
+    widget.cubit.filterLowQuantityParts();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
         showAllParts
             ? widget.cubit.loadParts()
-            : widget.cubit.loadLowQuantityParts();
+            : widget.cubit.filterLowQuantityParts();
       }
     });
     super.initState();
