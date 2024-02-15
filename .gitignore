@@ -46,3 +46,8 @@ lib/data/model_/checked_out_model.g.dart
 lib/data/entities/part/part_entity.g.dart
 lib/data/entities/part/part_entity.g.dart
 lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.freezed.dart
+lib/data/models/part/part_model.g.dart
+lib/data/models/part/part_model.freezed.dart
+lib/data/models/part_order/part_order_model.g.dart
+lib/data/models/part/part_model.freezed.dart
+lib/data/models/part/part_model.g.dart
