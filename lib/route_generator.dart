@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/presentation/pages/add_part/view/add_part_view.dart';
 import 'package:inventory_v1/presentation/pages/checkout/view/checkout_view.dart';
 import 'package:inventory_v1/presentation/pages/home_page/view/home_page_view.dart';

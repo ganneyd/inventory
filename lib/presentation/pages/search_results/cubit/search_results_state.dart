@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 
 part 'search_results_state.freezed.dart';
 

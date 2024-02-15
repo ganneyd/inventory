@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:mocktail/mocktail.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_cubit.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_state.dart';

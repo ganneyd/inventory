@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:logging/logging.dart';
 

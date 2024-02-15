@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/pages/search_results/cubit/search_results_cubit.dart';
 import 'package:inventory_v1/presentation/pages/search_results/view/add_to_cart_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';

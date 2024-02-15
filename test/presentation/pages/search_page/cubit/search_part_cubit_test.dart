@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/search_results/cubit/search_results_cubit.dart';
@@ -55,20 +55,20 @@ void main() {
     registerFallbackValue(const GetAllPartBySerialNumberParams(queryKey: ''));
   });
 
-  List<Part> toPartList(List<PartEntity> list) {
-    List<Part> partModel = [];
+  List<PartModel> toPartList(List<PartEntity> list) {
+    List<PartModel> partModel = [];
     for (var part in list) {
-      partModel.add(PartAdapter.fromEntity(part));
+      partModel.add(PartEntityToModelAdapter.fromEntity(part));
     }
     return partModel;
   }
 
   group('SearchPartCubit() initial state', () {
     test('correct state', () {
-      expect(sut.state.partsByName, <Part>[]);
-      expect(sut.state.partsByNsn, <Part>[]);
-      expect(sut.state.partsByPartNumber, <Part>[]);
-      expect(sut.state.partsBySerialNumber, <Part>[]);
+      expect(sut.state.partsByName, <PartModel>[]);
+      expect(sut.state.partsByNsn, <PartModel>[]);
+      expect(sut.state.partsByPartNumber, <PartModel>[]);
+      expect(sut.state.partsBySerialNumber, <PartModel>[]);
       expect(sut.state.error, 'no-error');
       expect(sut.state.status, SearchResultsStateStatus.loading);
       expect(sut.state.scrollController, isA<ScrollController>());
@@ -82,19 +82,19 @@ void main() {
           .thenAnswer((invocation) => 'key');
       when(() => mockGetByPartNumber
               .call(any(that: isA<GetAllPartByPartNumberParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, List<Part>>(toPartList(valuesForTest.parts())));
+          .thenAnswer((invocation) async => Right<Failure, List<PartModel>>(
+              toPartList(valuesForTest.parts())));
       when(() => mockGetBySerial
               .call(any(that: isA<GetAllPartBySerialNumberParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, List<Part>>(toPartList(valuesForTest.parts())));
+          .thenAnswer((invocation) async => Right<Failure, List<PartModel>>(
+              toPartList(valuesForTest.parts())));
       when(() => mockGetPartByNSN.call(any(that: isA<GetAllPartByNsnParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, List<Part>>(toPartList(valuesForTest.parts())));
+          .thenAnswer((invocation) async => Right<Failure, List<PartModel>>(
+              toPartList(valuesForTest.parts())));
       when(() =>
               mockGetPartByName.call(any(that: isA<GetAllPartByNameParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, List<Part>>(toPartList(valuesForTest.parts())));
+          .thenAnswer((invocation) async => Right<Failure, List<PartModel>>(
+              toPartList(valuesForTest.parts())));
     }
 
     test('all usecases complete successfully', () async {
@@ -139,7 +139,7 @@ void main() {
       when(() =>
               mockGetPartByName.call(any(that: isA<GetAllPartByNameParams>())))
           .thenAnswer((invocation) async =>
-              const Left<Failure, List<Part>>(GetFailure()));
+              const Left<Failure, List<PartModel>>(GetFailure()));
       //start stream listener before evoking function
       expectLater(
           sut.stream.map((state) => state.status),
@@ -164,7 +164,7 @@ void main() {
         //expectations
         //all the list should not be empty
         var expectedList = toPartList(valuesForTest.parts());
-        expect(sut.state.partsByName, <Part>[]);
+        expect(sut.state.partsByName, <PartModel>[]);
         expect(sut.state.partsByNsn, expectedList);
         expect(sut.state.partsByPartNumber, expectedList);
         expect(sut.state.partsBySerialNumber, expectedList);
@@ -195,10 +195,10 @@ void main() {
 
         //expectations
         //all the list should not be empty
-        expect(sut.state.partsByName, <Part>[]);
-        expect(sut.state.partsByNsn, <Part>[]);
-        expect(sut.state.partsByPartNumber, <Part>[]);
-        expect(sut.state.partsBySerialNumber, <Part>[]);
+        expect(sut.state.partsByName, <PartModel>[]);
+        expect(sut.state.partsByNsn, <PartModel>[]);
+        expect(sut.state.partsByPartNumber, <PartModel>[]);
+        expect(sut.state.partsBySerialNumber, <PartModel>[]);
       });
       sut.searchPart();
     });
