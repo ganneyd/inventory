@@ -20,16 +20,17 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       indexModel: fields[5] as int,
       checkedOutAmount: fields[1] as int,
       dateTimeModel: fields[2] as DateTime,
-      partModel: PartAdapter.fromEntity(fields[0] as PartEntity),
+      partModel: fields[0] as PartModel,
       isVerifiedModel: fields[3] as bool,
       verifiedDateModel: fields[4] as DateTime,
+      quantityDiscrepancyModel: fields[6] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, CheckedOutModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.partModel)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       ..writeByte(4)
       ..write(obj.verifiedDateModel)
       ..writeByte(5)
-      ..write(obj.indexModel);
+      ..write(obj.indexModel)
+      ..writeByte(6)
+      ..write(obj.quantityDiscrepancyModel);
   }
 
   @override
