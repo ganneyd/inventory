@@ -1,8 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
+import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
+import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_cubit.dart';
@@ -16,14 +19,20 @@ class MockPathProviderPlatform extends Mock implements PathProviderPlatform {}
 
 class MockPartRepo extends Mock implements PartRepository {}
 
+class MockCheckoutPartRepo extends Mock implements CheckedOutPartRepository {}
+
 class MockBox extends Mock implements Box<PartModel> {}
+
+class MockCheckoutBox extends Mock implements Box<CheckedOutModel> {}
 
 void main() {
   late DependencyCheckCubit sut;
   late MockGetIt mockGetIt;
   late MockPathProviderPlatform mockPathProviderPlatform;
   late MockPartRepo mockPartRepo;
+  late MockCheckoutPartRepo mockCheckoutPartRepo;
   late MockBox mockBox;
+  late MockCheckoutBox mockCheckoutBox;
   Future<void> dependencyInjection() async {
     mockGetIt = MockGetIt();
   }
@@ -32,7 +41,9 @@ void main() {
     await dependencyInjection();
     mockPathProviderPlatform = MockPathProviderPlatform();
     mockBox = MockBox();
+    mockCheckoutBox = MockCheckoutBox();
     mockPartRepo = MockPartRepo();
+    mockCheckoutPartRepo = MockCheckoutPartRepo();
     sut = DependencyCheckCubit(
         pathProviderPlatform: mockPathProviderPlatform,
         isHiveInitialized: true,
@@ -48,6 +59,9 @@ void main() {
       //part repo mock
       when(() => mockGetIt<PartRepositoryImplementation>())
           .thenAnswer((invocation) => PartRepositoryImplementation(mockBox));
+      when(() => mockGetIt<CheckedOutPartRepository>()).thenAnswer(
+          (invocation) =>
+              CheckedOutPartRepositoryImplementation(mockCheckoutBox));
       //usecases mock
       when(() => mockGetIt<AddPartUsecase>())
           .thenAnswer((invocation) => AddPartUsecase(mockPartRepo));
@@ -67,6 +81,17 @@ void main() {
           (invocation) => GetPartBySerialNumberUsecase(mockPartRepo));
       when(() => mockGetIt<GetDatabaseLength>())
           .thenAnswer((invocation) => GetDatabaseLength(mockPartRepo));
+      when(() => mockGetIt<AddCheckoutPart>()).thenAnswer((invocation) =>
+          AddCheckoutPart(mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+      when(() => mockGetIt<GetAllCheckoutParts>()).thenAnswer(
+          (invocation) => GetAllCheckoutParts(mockCheckoutPartRepo));
+      when(() => mockGetIt<VerifyCheckoutPart>()).thenAnswer((invocation) =>
+          VerifyCheckoutPart(
+              mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+      when(() => mockGetIt<GetUnverifiedCheckoutParts>()).thenAnswer(
+          (invocation) => GetUnverifiedCheckoutParts(mockCheckoutPartRepo));
+      when(() => mockGetIt<GetLowQuantityParts>())
+          .thenAnswer((invocation) => GetLowQuantityParts(mockPartRepo));
     }
 
     test('initial state is correct', () {
@@ -75,6 +100,7 @@ void main() {
       expect(sut.state.isPartRepoInit, false);
       expect(sut.state.isPathAccessible, false);
       expect(sut.state.isUsecasesInit, false);
+      expect(sut.state.isCheckoutPartRepoInit, false);
       expect(sut.state.dependencyCheckStateStatus,
           DependencyCheckStateStatus.loading);
     });
@@ -86,10 +112,6 @@ void main() {
       expectLater(
           sut.stream.map((state) => state.dependencyCheckStateStatus),
           emitsInOrder([
-            DependencyCheckStateStatus.loading,
-            DependencyCheckStateStatus.loading,
-            DependencyCheckStateStatus.loading,
-            DependencyCheckStateStatus.loading,
             DependencyCheckStateStatus.loadedSuccessfully,
           ]));
       //evoke the function
@@ -122,9 +144,6 @@ void main() {
       expectLater(
           sut.stream.map((state) => state.dependencyCheckStateStatus),
           emitsInOrder([
-            DependencyCheckStateStatus.loading,
-            DependencyCheckStateStatus.loading,
-            DependencyCheckStateStatus.loading,
             DependencyCheckStateStatus.loadedUnsuccessfully,
           ]));
       //evoke the function
@@ -158,7 +177,7 @@ void main() {
       mockSetup();
 
       expectLater(sut.stream.map((state) => state.isPathAccessible),
-          emitsInOrder([true, true, true]));
+          emitsInOrder([true]));
       await sut.checkDependencies();
       //verify that the path was called once
       verify(() => mockPathProviderPlatform.getApplicationDocumentsPath())
@@ -173,7 +192,7 @@ void main() {
           .thenAnswer((invocation) async => null);
       //start the stream listener before the actual call so that all emitted state are captured
       expectLater(sut.stream.map((state) => state.isPathAccessible),
-          emitsInOrder([false, false]));
+          emitsInOrder([false]));
       //evoke the function
       await sut.checkDependencies();
       //verify that the path was called once
@@ -221,7 +240,7 @@ void main() {
       //expectations, start the stream listener before the actual call to the function
       //so all emitted state can be captured
       expectLater(sut.stream.map((state) => state.isPartRepoInit),
-          emitsInOrder([false, true, true]));
+          emitsInOrder([true]));
       //evoke the function
       await sut.checkDependencies();
       //verify that the service locator was only called once
@@ -234,7 +253,7 @@ void main() {
       //expectations, start the stream listener before the actual call to the function
       //so all emitted state can be captured
       expectLater(sut.stream.map((state) => state.isPartRepoInit),
-          emitsInOrder([false, false]));
+          emitsInOrder([false]));
       //evoke the function
       await sut.checkDependencies();
       //verify that the service locator was only called once
@@ -242,6 +261,38 @@ void main() {
     });
   });
 
+  group('Checkout Repo', () {
+    void mockSetup() {
+      when(() => mockGetIt<CheckedOutPartRepository>()).thenAnswer(
+          (invocation) =>
+              CheckedOutPartRepositoryImplementation(mockCheckoutBox));
+    }
+
+    test('checkout part repo is open', () async {
+      mockSetup();
+      //expectations, start the stream listener before the actual call to the function
+      //so all emitted state can be captured
+      expectLater(sut.stream.map((state) => state.isCheckoutPartRepoInit),
+          emitsInOrder([true]));
+      //evoke the function
+      await sut.checkDependencies();
+      //verify that the service locator was only called once
+      verify(() => mockGetIt<CheckedOutPartRepository>()).called(1);
+    });
+
+    test('checkout part repo is not open', () async {
+      when(() => mockGetIt<CheckedOutPartRepository>())
+          .thenAnswer((invocation) => throw Exception());
+      //expectations, start the stream listener before the actual call to the function
+      //so all emitted state can be captured
+      expectLater(sut.stream.map((state) => state.isCheckoutPartRepoInit),
+          emitsInOrder([false]));
+      //evoke the function
+      await sut.checkDependencies();
+      //verify that the service locator was only called once
+      verify(() => mockGetIt<CheckedOutPartRepository>()).called(1);
+    });
+  });
   group('Usecases', () {
     //setup
     void mockSetup() {
@@ -265,6 +316,17 @@ void main() {
           (invocation) => GetPartBySerialNumberUsecase(mockPartRepo));
       when(() => mockGetIt<GetDatabaseLength>())
           .thenAnswer((invocation) => GetDatabaseLength(mockPartRepo));
+      when(() => mockGetIt<AddCheckoutPart>()).thenAnswer((invocation) =>
+          AddCheckoutPart(mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+      when(() => mockGetIt<GetAllCheckoutParts>()).thenAnswer(
+          (invocation) => GetAllCheckoutParts(mockCheckoutPartRepo));
+      when(() => mockGetIt<VerifyCheckoutPart>()).thenAnswer((invocation) =>
+          VerifyCheckoutPart(
+              mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+      when(() => mockGetIt<GetUnverifiedCheckoutParts>()).thenAnswer(
+          (invocation) => GetUnverifiedCheckoutParts(mockCheckoutPartRepo));
+      when(() => mockGetIt<GetLowQuantityParts>())
+          .thenAnswer((invocation) => GetLowQuantityParts(mockPartRepo));
     }
 
     test('Usecases are initialized', () async {
@@ -272,7 +334,7 @@ void main() {
       //expectations, start the stream listener before the actual call to the function
       //so all emitted state can be captured
       expectLater(sut.stream.map((state) => state.isUsecasesInit),
-          emitsInOrder([false, true, true]));
+          emitsInOrder([true]));
       //evoke the function
       await sut.checkDependencies();
       //verify that the service locator was only called once per usecase
@@ -295,7 +357,7 @@ void main() {
       //expectations, start the stream listener before the actual call to the function
       //so all emitted state can be captured
       expectLater(sut.stream.map((state) => state.isUsecasesInit),
-          emitsInOrder([false, false]));
+          emitsInOrder([false]));
       //evoke the function
       await sut.checkDependencies();
       //verify that the service locator was only called once per usecase
