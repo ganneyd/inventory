@@ -7,7 +7,6 @@ import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
-import 'package:inventory_v1/domain/usecases/checkout/verify_checkout_part.dart';
 import 'package:logging/logging.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 
@@ -20,7 +19,7 @@ Logger serviceLocatorLogger = Logger('service_locator');
 //initialize various dependencies
 Future<void> initDependencies() async {
   WidgetsFlutterBinding.ensureInitialized();
-  serviceLocatorLogger = Logger('service_logga');
+  serviceLocatorLogger = Logger('service_logger');
   await initHive();
   serviceLocatorLogger.finest('initializing service locator');
   await setupLocator();
