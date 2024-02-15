@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:logging/logging.dart';
 import 'package:logging/logging.dart';
@@ -9,32 +10,12 @@ import 'package:logging/logging.dart';
 import '../../core/error/exceptions.dart';
 
 class PartRepositoryImplementation extends PartRepository {
-  PartRepositoryImplementation(LocalDataSource localDataSource)
-      : _localDataSource = localDataSource,
-        _logger = Logger('part-repo-impl');
-  PartRepositoryImplementation(Box<PartEntity> localDataSource)
+  PartRepositoryImplementation(Box<PartModel> localDataSource)
       : _localDataSource = localDataSource,
         _logger = Logger('part-repo');
 
-  final LocalDataSource _localDataSource;
+  final Box<PartModel> _localDataSource;
   final Logger _logger;
-  final Box<PartEntity> _localDataSource;
-  final Logger _logger;
-
-  PartEntity _getPartWithIndex(
-      {required int index, required PartEntity partEntity}) {
-    return PartEntity(
-        index: index,
-        name: partEntity.name,
-        nsn: partEntity.nsn,
-        partNumber: partEntity.partNumber,
-        location: partEntity.location,
-        quantity: partEntity.quantity,
-        requisitionPoint: partEntity.requisitionPoint,
-        requisitionQuantity: partEntity.requisitionQuantity,
-        serialNumber: partEntity.serialNumber,
-        unitOfIssue: partEntity.unitOfIssue);
-  }
 
   @override
   Future<Either<Failure, void>> createPart(PartEntity partEntity) async {
@@ -46,8 +27,8 @@ class PartRepositoryImplementation extends PartRepository {
       var index = _localDataSource.isEmpty ? 0 : _localDataSource.length;
       _logger.finest('index is $index');
 
-      await _localDataSource
-          .add(_getPartWithIndex(index: index, partEntity: partEntity));
+      var addPart = PartEntityToModelAdapter.fromEntity(partEntity);
+      await _localDataSource.add(addPart.copyWith(index: index));
       _logger.finest('index set');
       return const Right<Failure, void>(null);
     } on CreateDataException {
@@ -78,11 +59,10 @@ class PartRepositoryImplementation extends PartRepository {
   @override
   Future<Either<Failure, void>> editPart(PartEntity partEntity) async {
     try {
-      _logger.finest('editing  part $partEntity');
+      var updatePart = PartEntityToModelAdapter.fromEntity(partEntity);
+
       return Right<Failure, void>(
-          await _localDataSource.updateData(updatedData: partEntity));
-      return Right<Failure, void>(
-          await _localDataSource.putAt(partEntity.index, partEntity));
+          await _localDataSource.putAt(partEntity.index, updatePart));
     } on UpdateDataException {
       _logger.warning('UpdateDataFailure() occurred');
       return const Left<Failure, void>(UpdateDataFailure());
@@ -136,7 +116,7 @@ class PartRepositoryImplementation extends PartRepository {
       return const Left<Failure, List<PartEntity>>(ReadDataFailure());
     } on IndexOutOfBounds {
       _logger.warning('ReadDataFailure() occurred');
-      return Left<Failure, List<PartEntity>>(OutOfBoundsFailure());
+      return Left<Failure, List<PartEntity>>(IndexOutOfBoundsFailure());
     } catch (e) {
       _logger.severe('Unknown exception occurred  $e', [e.runtimeType]);
       _logger.severe('Unknown exception occurred  $e', [e.runtimeType]);
@@ -234,6 +214,21 @@ class PartRepositoryImplementation extends PartRepository {
       return Right<Failure, int>(length);
     } catch (e) {
       return const Left<Failure, int>(ReadDataFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, PartEntity>> getSpecificPart(int index) async {
+    try {
+      if (index < 0) {
+        throw IndexOutOfBounds();
+      }
+      var result = _localDataSource.getAt(index);
+      return Right<Failure, PartEntity>(result!);
+    } on IndexOutOfBounds {
+      return Left<Failure, PartEntity>(IndexOutOfBoundsFailure());
+    } catch (e) {
+      return const Left<Failure, PartEntity>(ReadDataFailure());
     }
   }
 }

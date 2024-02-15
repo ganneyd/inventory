@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/data/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/usecases/edit_part.dart';
 import 'package:logging/logging.dart';
@@ -25,38 +25,25 @@ class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
     }
     for (var checkoutPart in params.checkoutParts) {
       _logger.finest('adding ${checkoutPart.part.name} to checkout box');
-      var newCheckoutPart = CheckedOutEntity(
-          checkedOutQuantity: checkoutPart.checkedOutQuantity,
-          dateTime: DateTime.now(),
-          part: checkoutPart.part);
 
-      var part = newCheckoutPart.part;
-      var editPart = PartEntity(
-          index: part.index,
-          name: part.name,
-          nsn: part.nsn,
-          partNumber: part.partNumber,
-          location: part.location,
-          quantity: part.quantity - checkoutPart.checkedOutQuantity,
-          requisitionPoint: part.requisitionPoint,
-          requisitionQuantity: part.requisitionQuantity,
-          serialNumber: part.serialNumber,
-          unitOfIssue: part.unitOfIssue);
+      var part = checkoutPart.part;
+      var newPart = part.copyWith(
+          quantity: part.quantity - checkoutPart.checkedOutQuantity);
 
-      var updatePartResults =
-          await _editPartUsecase(EditPartParams(partEntity: editPart));
+      var updatePartResults = await _editPartUsecase(
+          EditPartParams(partEntity: newPart.updateChecksum()));
       if (updatePartResults.isLeft()) {
-        return updatePartResults.fold((failure) => Left<Failure, void>(failure),
-            (r) => const Right<Failure, void>(null));
+        return Left<Failure, void>(CreateDataFailure());
       }
-      updatePartResults.fold((failure) => null, (r) async {
-        var results =
-            await _checkedOutPartRepository.createCheckOut(newCheckoutPart);
-        if (results.isLeft()) {
-          return results.fold((failure) => Left<Failure, void>(failure),
-              (r) => const Right<Failure, void>(null));
-        }
-      });
+
+      var results = await _checkedOutPartRepository.createCheckOut(
+          checkoutPart.copyWith(
+              dateTime: DateTime.now(),
+              partEntity: newPart,
+              checkedOutQuantity: checkoutPart.checkedOutQuantity));
+      if (results.isLeft()) {
+        return Left<Failure, void>(CreateDataFailure());
+      }
     }
     return const Right<Failure, void>(null);
   }
