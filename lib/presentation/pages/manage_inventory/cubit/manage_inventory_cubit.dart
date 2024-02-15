@@ -82,19 +82,14 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
     var startIndex = state.checkedOutParts.length;
     var endIndex = startIndex + state.fetchPartAmount;
-    List<CheckedOutEntity> oldCheckoutPartList = state.checkedOutParts.toList();
-    oldCheckoutPartList = oldCheckoutPartList
-        .map((checkoutPart) => checkoutPart.isVerified ?? false
-            ? checkoutPart
-            : checkoutPart.copyWith(
-                partEntity: _getAccuratePart(checkoutPart.part)))
-        .toList();
+    List<CheckedOutEntity> oldCheckoutPartList =
+        _updateCheckoutListParts(state.checkedOutParts.toList());
+
     _logger.finest(
         'loading checked out parts, startIndex:$startIndex endIndex:$endIndex');
 
     var results = await getAllCheckoutParts.call(
         GetAllCheckoutPartsParams(endIndex: endIndex, startIndex: startIndex));
-
     results.fold((failure) {
       _logger.warning('error while retrieving checked out parts');
       emit(state.copyWith(
@@ -107,7 +102,8 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
       emit(state.copyWith(
           status: ManageInventoryStateStatus.fetchedDataSuccessfully,
-          checkedOutParts: oldCheckoutPartList));
+          checkedOutParts: oldCheckoutPartList,
+          unverifiedParts: _filterUnverifiedParts(oldCheckoutPartList)));
       _logger.finest(
           'state has ${state.checkedOutParts.length} checked out parts');
     });
@@ -144,16 +140,19 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
     newCheckoutPartList[checkoutPart.index] = newCheckoutPart;
     emit(state.copyWith(
+      unverifiedParts: _filterUnverifiedParts(newCheckoutPartList),
       checkedOutParts: newCheckoutPartList,
     ));
-    filterUnverifiedParts();
   }
 
   PartEntity _getAccuratePart(PartEntity part) {
     var accuratePart = part;
+
     _logger.finest(
         'checksum ${part.checksum} state part: ${state.parts[part.index].checksum} failed ${part.name}  ${part.quantity}ea');
-    if (state.parts[part.index].checksum != part.checksum) {
+
+    if (state.parts[part.index].checksum != part.checksum &&
+        state.parts[part.index].checksum > part.checksum) {
       _logger.finest(
           'checksum ${part.checksum} does not match ${state.parts[part.index].checksum} failed ${part.name}  ${part.quantity}ea');
       accuratePart = state.parts[part.index];
@@ -166,45 +165,64 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
     List<PartEntity> newPartEntityList = state.parts.toList();
 
-    var newCheckoutPart = checkedOutEntity.copyWith(
-        isVerified: true, verifiedDate: DateTime.now());
-    var updatedPart = checkedOutEntity.part;
+    var updatedPart = checkedOutEntity.part.updateChecksum();
     _logger.finest(
         'updated part has ${updatedPart.quantity}ea and the discrepancy is ${checkedOutEntity.quantityDiscrepancy}');
-    updatedPart = updatedPart.updateChecksum();
-    newCheckoutPart = newCheckoutPart.copyWith(partEntity: updatedPart);
+
+    //update part
+
+    var newCheckoutPart = checkedOutEntity.copyWith(
+        isVerified: true,
+        verifiedDate: DateTime.now(),
+        partEntity: updatedPart);
+
     newCheckoutPartList[checkedOutEntity.index] = newCheckoutPart;
-    newCheckoutPartList = newCheckoutPartList
+    newCheckoutPartList =
+        _updatePartInCheckoutPartsList(newCheckoutPartList, updatedPart);
+    //reflect change in the parts list
+    newPartEntityList[checkedOutEntity.part.index] = updatedPart;
+    //add checkout part to verified list
+    newVerifiedList.add(newCheckoutPart);
+    //emit changes
+    emit(state.copyWith(
+        unverifiedParts: _filterUnverifiedParts(newCheckoutPartList),
+        newlyVerifiedParts: newVerifiedList,
+        checkedOutParts: newCheckoutPartList,
+        parts: newPartEntityList));
+  }
+
+  List<CheckedOutEntity> _filterUnverifiedParts(
+      List<CheckedOutEntity> checkoutEntityList) {
+    return checkoutEntityList.expand<CheckedOutEntity>((checkoutPart) {
+      if (checkoutPart.isVerified ?? false) return [];
+
+      return [
+        checkoutPart.copyWith(partEntity: _getAccuratePart(checkoutPart.part))
+      ];
+    }).toList();
+  }
+
+  List<CheckedOutEntity> _updateCheckoutListParts(
+    List<CheckedOutEntity> checkoutEntityList,
+  ) {
+    return checkoutEntityList
         .map((checkoutPart) => checkoutPart.isVerified ?? false
             ? checkoutPart
             : checkoutPart.copyWith(
                 partEntity: _getAccuratePart(checkoutPart.part)))
         .toList();
-    newPartEntityList[checkedOutEntity.part.index] = updatedPart;
-    newVerifiedList.add(newCheckoutPart);
-    emit(state.copyWith(
-        newlyVerifiedParts: newVerifiedList,
-        checkedOutParts: newCheckoutPartList,
-        parts: newPartEntityList));
-
-    filterUnverifiedParts();
   }
 
-  void filterUnverifiedParts() {
-    List<CheckedOutEntity> unverifiedList =
-        state.checkedOutParts.where((checkoutPart) {
-      return !(checkoutPart.isVerified ?? false);
-    }).toList();
-
-    unverifiedList = unverifiedList.map((checkoutPart) {
-      var newCheckoutPart = checkoutPart.copyWith(
-          partEntity: _getAccuratePart(checkoutPart.part));
-      return newCheckoutPart;
-    }).toList();
-
-    emit(state.copyWith(
-      unverifiedParts: unverifiedList,
-    ));
+  List<CheckedOutEntity> _updatePartInCheckoutPartsList(
+      List<CheckedOutEntity> checkoutEntityList, PartEntity part) {
+    return checkoutEntityList
+        .map((checkoutPart) => checkoutPart.isVerified ?? false
+            ? checkoutPart
+            : checkoutPart.copyWith(
+                partEntity: checkoutPart.part.index == part.index
+                    ? part
+                    : checkoutPart.part))
+        .toList();
   }
 
   @override
