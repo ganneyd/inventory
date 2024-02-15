@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/data/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/widgets/buttons/small_button_widget.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
@@ -23,14 +23,15 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
   bool showAllCheckedOutParts = true;
   List<bool> isExpandedList = [];
   final ScrollController controller = ScrollController();
+
   @override
   void initState() {
-    widget.cubit.loadUnverifiedParts();
+    widget.cubit.loadCheckedOutParts();
+    widget.cubit.filterUnverifiedParts();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        showAllCheckedOutParts
-            ? widget.cubit.loadCheckedOutParts()
-            : widget.cubit.loadUnverifiedParts();
+        widget.cubit.loadCheckedOutParts();
+        widget.cubit.filterUnverifiedParts();
       }
     });
     super.initState();
@@ -77,6 +78,7 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
                 : widget.allUnverifiedCheckedOutParts.length,
             itemBuilder: (context, index) {
               isExpandedList.add(false);
+
               return getAllCheckedOutPartExpansionTiles(
                   showAllCheckedOutParts
                       ? widget.allCheckedOutParts[index]
@@ -88,13 +90,14 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
   ExpansionTile getAllCheckedOutPartExpansionTiles(
       CheckedOutEntity checkedOutPart, int index) {
     var part = checkedOutPart.part;
+
     return ExpansionTile(
       initiallyExpanded: isExpandedList[index],
       title: PartCardDisplay(
           color: checkedOutPart.isVerified ?? false ? null : Colors.amber,
           left: part.nsn,
           center: part.name,
-          right: "#${checkedOutPart.index ?? -1} Location: ${part.location}",
+          right: "#${checkedOutPart.index} Location: ${part.location}",
           bottom: isExpandedList[index]
               ? ''
               : checkedOutPart.isVerified ?? false
@@ -102,6 +105,7 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
                   : 'Not Verified'),
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
               part.partNumber,
@@ -114,17 +118,22 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
           ],
         ),
         Row(
-          children: [
-            Text(
-                'Checked out ${checkedOutPart.checkedOutQuantity} in stock: ${part.quantity} ${part.unitOfIssue.displayValue}')
-          ],
-        ),
-        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text('Date Checked out: ${checkedOutPart.dateTime}'),
             checkedOutPart.isVerified ?? false
                 ? Text('Date verified: ${checkedOutPart.verifiedDate}')
                 : Container(),
+          ],
+        ),
+        checkedOutPart.isVerified ?? false
+            ? Container()
+            : getButtons(checkedOutPart),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+                'Checked out ${checkedOutPart.checkedOutQuantity} in stock: ${part.quantity} ${part.unitOfIssue.displayValue}')
           ],
         ),
         Row(
@@ -133,10 +142,29 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
                 ? Container()
                 : SmallButton(
                     buttonName: 'Verify',
-                    onPressed: () =>
-                        widget.cubit.verifyCheckoutPart(checkedOutPart)),
+                    onPressed: () => widget.cubit
+                        .verifyPart(checkedOutEntity: checkedOutPart)),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget getButtons(CheckedOutEntity checkedOutEntity) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        IconButton(
+            icon: const Icon(Icons.remove),
+            onPressed: () => widget.cubit.updateCheckoutQuantity(
+                checkoutPart: checkedOutEntity, quantityChange: -1)),
+        const SizedBox(
+          width: 10,
+        ),
+        IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => widget.cubit.updateCheckoutQuantity(
+                checkoutPart: checkedOutEntity, quantityChange: 1)),
       ],
     );
   }
