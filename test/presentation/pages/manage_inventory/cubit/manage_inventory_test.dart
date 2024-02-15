@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
+import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
@@ -36,7 +38,6 @@ void main() {
   late MockGetUnverifiedParts mockGetUnverifiedParts;
   late MockGetAllCheckoutParts mockGetAllCheckoutParts;
   late MockScrollController mockScrollController;
-  late MockScrollPosition mockScrollPosition;
   late ValuesForTest valuesForTest;
   late ManageInventoryCubit sut;
 
@@ -49,16 +50,19 @@ void main() {
     mockGetUnverifiedParts = MockGetUnverifiedParts();
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
     mockScrollController = MockScrollController();
-    mockScrollPosition = MockScrollPosition();
     sut = ManageInventoryCubit(
         verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
         getAllCheckoutParts: mockGetAllCheckoutParts,
         getLowQuantityParts: mockGetLowQuantityParts,
         getUnverifiedCheckoutParts: mockGetUnverifiedParts,
         fetchPartAmount: 2,
-        scrollController: mockScrollController,
         getAllPartsUsecase: mockGetAllPartUsecase,
         getDatabaseLength: mockGetDatabaseLength);
+    registerFallbackValue(VerifyCheckoutPartParams(
+        checkedOutEntityList: valuesForTest.createCheckedOutList()));
+    registerFallbackValue(GetAllCheckoutPartsParams(
+        endIndex: sut.state.checkedOutParts.length + sut.state.fetchPartAmount,
+        startIndex: sut.state.checkedOutParts.length));
 
     registerFallbackValue(GetAllPartParams(
         pageIndex: sut.state.parts.length + sut.state.fetchPartAmount,
@@ -70,22 +74,22 @@ void main() {
       expect(sut.state.fetchPartAmount, 2);
       expect(sut.state.databaseLength, 0);
       expect(sut.state.error, 'no error');
-      expect(sut.state.parts, <Part>[]);
+      expect(sut.state.parts, <PartModel>[]);
       expect(sut.state.status, ManageInventoryStateStatus.loading);
+      expect(sut.state.lowQuantityParts, <PartModel>[]);
+      expect(sut.state.newlyVerifiedParts, <CheckedOutEntity>[]);
+      expect(sut.state.unverifiedParts, <CheckedOutEntity>[]);
     });
   });
 
   group('.loadParts', () {
-    List<Part> parts = [];
     void mockSetup(GetAllPartParams params) {
-      when(() => mockGetAllPartUsecase.call(params))
-          .thenAnswer((invocation) async {
-        parts = [];
-        for (int i = params.startIndex; i < params.pageIndex; i++) {
-          parts.add(PartAdapter.fromEntity(valuesForTest.parts()[i]));
-        }
-        return Right<Failure, List<Part>>(parts);
-      });
+      when(() => mockGetAllCheckoutParts
+              .call(any(that: isA<GetAllCheckoutPartsParams>())))
+          .thenAnswer((_) async => Right<Failure, List<CheckedOutEntity>>(
+              valuesForTest.createCheckedOutList()));
+      when(() => mockGetAllPartUsecase.call(params)).thenAnswer(
+          (_) async => Right<Failure, List<PartEntity>>(valuesForTest.parts()));
 
       when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
           (invocation) async =>
@@ -93,6 +97,8 @@ void main() {
     }
 
     test('should emit the first 10 in the set', () {
+      var expectedPartList = valuesForTest.parts();
+
       //setup
       GetAllPartParams params = GetAllPartParams(
           pageIndex: sut.state.databaseLength + sut.state.fetchPartAmount,
@@ -106,8 +112,8 @@ void main() {
       ).called(1);
 
       //expect that the state is emitted with the parts gotten from the usecase
-      expectLater(
-          sut.stream.map((state) => state.parts), emitsInOrder([parts]));
+      expectLater(sut.stream.map((state) => state.parts),
+          emitsInOrder([expectedPartList]));
       //expect that the state is later emitted with the status
       expectLater(sut.stream.map((state) => state.status),
           emitsInOrder([ManageInventoryStateStatus.fetchedDataSuccessfully]));
@@ -120,7 +126,7 @@ void main() {
           startIndex: sut.state.databaseLength);
       when(() => mockGetAllPartUsecase.call(params)).thenAnswer(
           (invocation) async =>
-              const Left<Failure, List<Part>>(ReadDataFailure()));
+              const Left<Failure, List<PartModel>>(ReadDataFailure()));
       //evoke the function
       sut.loadParts();
       //usecase should only be called once
@@ -138,36 +144,25 @@ void main() {
   });
 
   group('.init()', () {
-    List<Part> parts = [];
-    void mockSetup(GetAllPartParams params) {
-      when(() => mockGetAllPartUsecase.call(params))
-          .thenAnswer((invocation) async {
-        parts = [];
-        for (int i = params.startIndex; i < params.pageIndex; i++) {
-          parts.add(PartAdapter.fromEntity(valuesForTest.parts()[i]));
-        }
-        return Right<Failure, List<Part>>(parts);
-      });
+    void mockSetup() {
+      when(() => mockGetAllCheckoutParts
+              .call(any(that: isA<GetAllCheckoutPartsParams>())))
+          .thenAnswer((_) async => Right<Failure, List<CheckedOutEntity>>(
+              valuesForTest.createCheckedOutList()));
+      when(() => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
+          .thenAnswer((invocation) async =>
+              Right<Failure, List<PartEntity>>(valuesForTest.parts()));
 
       when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
           (invocation) async =>
               Right<Failure, int>(valuesForTest.parts().length));
-
-      when(
-        () => mockScrollController.addListener(() {}),
-      ).thenAnswer((invocation) {});
     }
 
     //test
     test('part List should be returned ', () async {
-      //setup
-      GetAllPartParams params = GetAllPartParams(
-          pageIndex: parts.length + sut.state.fetchPartAmount,
-          startIndex: parts.length);
-      mockSetup(params);
-      sut.init();
-
       //expectations
+      mockSetup();
+      sut.init();
       //use the then() since the functions evoked in the cubit return before completing their tasks
       expectLater(
           sut.stream.map((state) => state.databaseLength),
@@ -176,7 +171,9 @@ void main() {
             valuesForTest.getPartList().length,
           ])).then((_) {
         //verify that both usecases were only called once each
-        verify(() => mockGetAllPartUsecase.call(params)).called(1);
+        verify(() =>
+                mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
+            .called(1);
         verify(() => mockGetDatabaseLength.call(NoParams())).called(1);
       });
 
@@ -191,11 +188,8 @@ void main() {
 
     test('state should emit 0 when getDatabaseLength returns an error', () {
 //setup
-      parts.clear();
-      GetAllPartParams params = GetAllPartParams(
-          pageIndex: parts.length + sut.state.fetchPartAmount,
-          startIndex: parts.length);
-      mockSetup(params);
+
+      mockSetup();
 
       when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
           (invocation) async => const Left<Failure, int>(ReadDataFailure()));
@@ -206,226 +200,206 @@ void main() {
     });
   });
 
-  group('Scroll Controller', () {
-    List<Part> parts = [];
-    VoidCallback? scrollCallback;
-
-    void mockSetup() async {
-      //usecase mock setup
-      when(() => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
-          .thenAnswer((invocation) async {
-        //ensure the list is empty
-        parts.clear();
-        GetAllPartParams params =
-            invocation.positionalArguments[0] as GetAllPartParams;
-        for (int i = params.startIndex; i < params.pageIndex; i++) {
-          parts.add(PartAdapter.fromEntity(valuesForTest.parts()[i]));
-        }
-        return Right<Failure, List<Part>>(parts);
-      });
-      //usecase mock setup
-      when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
-          (invocation) async =>
-              Right<Failure, int>(valuesForTest.parts().length));
-
-      //scroll controller mock setup
-      when(
-        () => mockScrollController.addListener(any(that: isA<VoidCallback>())),
-      ).thenAnswer((invocation) {
-        scrollCallback = invocation.positionalArguments[0] as VoidCallback;
-      });
-
-      when(() => mockScrollController.position)
-          .thenAnswer((_) => mockScrollPosition);
-      when(() => mockScrollPosition.pixels).thenAnswer((_) => 100);
-      when(() => mockScrollPosition.maxScrollExtent).thenAnswer((_) => 100);
+  group('.filterUnverifiedParts()', () {
+    void mockSetup() {
+      sut.emit(sut.state.copyWith(
+          parts: valuesForTest.parts(),
+          checkedOutParts: valuesForTest.createCheckedOutList()));
     }
 
-    test('Trigger the callback function and load more parts', () async {
+    test(
+        'should update the part quantity for edited parts in the checkoutPartList',
+        () {
+      expectLater(sut.stream.map((state) => state.parts[0].quantity),
+          emitsInOrder([30, 30, 31, 31, 31, 32, 32, 32, 31, 31, 31]));
       mockSetup();
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[0], quantityChange: -1);
+      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[0]);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[1], quantityChange: -1);
+      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[1]);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[2], quantityChange: 1);
+      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[2]);
 
-      //our expectations. reason why its before the call to .init() is because
-      //the method will emit stat changes, and placing the listener before the method
-      //ensures that all state changes are able to be captured
-      expectLater(
-          sut.stream.map((event) => event.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully,
-            ManageInventoryStateStatus.fetchingData,
-            ManageInventoryStateStatus.fetchedDataSuccessfully,
-          ]));
-      expectLater(
-          sut.stream.map((event) => event.parts.length),
-          emitsInOrder([
-            //initial length of the parts list in the state should be 0
-            sut.state.parts.length,
-            //after .loadParts is evoked, the parts list in the state should be equal
-            //to the state.fetchAmount
-            sut.state.fetchPartAmount,
-            //when then .scrollCallback is evoke another state is emitted
-            //but it is state.copy so the old parts.length is emitted which should
-            //still be state.fetchPartAmount
-            sut.state.fetchPartAmount,
-            //after .loadParts() is evoked for the second time. the parts list length should be
-            //twice that of the state.fetchPartAmount
-            sut.state.fetchPartAmount * 2
-          ]));
-      //evoke the function
-      sut.init();
-      //expectations immediately after evoking the function
-      //await the normal init() function lifecycle to complete
-      await expectLater(
-          sut.stream.map((state) => state.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully
-          ])).then((_) {
-        //after it completes mock the user scrolling to the end of the page
-        //evoke the scroll controller addListener() callback function
-        scrollCallback!.call();
-      });
+      sut.filterUnverifiedParts();
+    });
+    test('should filter the list', () {
+      mockSetup();
+      expectLater(sut.stream.map((state) => state.unverifiedParts.length),
+          emitsInOrder([2]));
 
-      //verifications
-      //verify that a callback function was passed to the .addListener
-      //verify that the position of the scroll controller was compared and
-      //is objects were called the appropriate number of times
-      verify(() =>
-              mockScrollController.addListener(any(that: isA<VoidCallback>())))
-          .called(1);
-      verify(() => mockScrollController.position).called(2);
-      verify(() => mockScrollPosition.pixels).called(1);
-      verify(() => mockScrollPosition.maxScrollExtent).called(1);
-      //verify that the database was called twice
-      verify(
-        () => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())),
-      ).called(2);
+      sut.filterUnverifiedParts();
+    });
+  });
+
+  group('updateCheckoutQuantity', () {
+    void mockSetup() {
+      sut.emit(sut.state.copyWith(
+          checkedOutParts: valuesForTest.createCheckedOutList(),
+          newlyVerifiedParts: []));
+    }
+
+    test('should update the check out quantity when subtracting 1', () async {
+      mockSetup();
+      var index = 0;
+
+      var checkoutPart = valuesForTest.createCheckedOutList()[index];
+
+      expectLater(
+          sut.stream
+              .map((event) => event.checkedOutParts[index].checkedOutQuantity),
+          emitsInOrder([
+            checkoutPart.checkedOutQuantity - 1,
+            checkoutPart.checkedOutQuantity - 2
+          ]));
+
+      expectLater(
+          sut.stream.map((event) => event.checkedOutParts[index].part.quantity),
+          emitsInOrder([
+            checkoutPart.part.quantity + 1,
+            checkoutPart.part.quantity + 2
+          ]));
+
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
     });
 
-    test("Shouldn't load more parts when the scroll position isn't maxed out",
-        () async {
+    test('should update the check out quantity when adding 1', () async {
       mockSetup();
+      var index = 0;
 
-      //override the position.pixel that is already defined int the mockSetup()
-      // so that the condition is not true
-      when(() => mockScrollPosition.pixels).thenAnswer((_) => 50);
-      //our expectations. reason why its before the call to .init() is because
-      //the method will emit stat changes, and placing the listener before the method
-      //ensures that all state changes are able to be captured
+      var checkoutPart = valuesForTest.createCheckedOutList()[index];
+      var newQuantity = checkoutPart.checkedOutQuantity + 1;
+
       expectLater(
-          sut.stream.map((event) => event.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully,
-          ]));
+          sut.stream
+              .map((event) => event.checkedOutParts[index].checkedOutQuantity),
+          emitsInOrder(
+              [newQuantity])).then((value) => print(
+          "second iteration ${sut.state.checkedOutParts[index].checkedOutQuantity}"));
+
       expectLater(
-          sut.stream.map((event) => event.parts.length),
+          sut.stream.map((event) => event.checkedOutParts[index].part.quantity),
+          emitsInOrder(
+              [checkoutPart.part.quantity - 1])).then((value) => print(
+          "second iteration ${sut.state.checkedOutParts[index].part.quantity}"));
+      sut.updateCheckoutQuantity(checkoutPart: checkoutPart, quantityChange: 1);
+    });
+  });
+
+  group('.verifyPart()', () {
+    void mockSetup() {
+      sut.emit(sut.state.copyWith(
+          parts: valuesForTest.parts(),
+          newlyVerifiedParts: [],
+          checkedOutParts: valuesForTest.createCheckedOutList()));
+    }
+
+    test('should verify the check out part and update the part quantity', () {
+      mockSetup();
+      var index = 0;
+      var checkoutPart = valuesForTest.createCheckedOutList()[index];
+      expectLater(
+          sut.stream.map((state) => state.parts[index].quantity),
           emitsInOrder([
-            //initial length of the parts list in the state should be 0
-            sut.state.parts.length,
-            //after .loadParts is evoked, the parts list in the state should be equal
-            //to the state.fetchAmount
-            sut.state.fetchPartAmount,
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity + 2,
+            checkoutPart.part.quantity + 2
           ]));
-      //evoke the function
-      sut.init();
-      //expectations immediately after evoking the function
-      //await the normal init() function lifecycle to complete
-      await expectLater(
-          sut.stream.map((state) => state.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully
-          ])).then((_) {
-        //after it completes mock the user scrolling to the end of the page
-        //evoke the scroll controller addListener() callback function
-        scrollCallback!.call();
-      });
 
-      //verifications
-      //verify that a callback function was passed to the .addListener
-      //verify that the position of the scroll controller was compared and
-      //is objects were called the appropriate number of times
-      verify(() =>
-              mockScrollController.addListener(any(that: isA<VoidCallback>())))
-          .called(1);
-      verify(() => mockScrollController.position).called(2);
-      verify(() => mockScrollPosition.pixels).called(1);
-      verify(() => mockScrollPosition.maxScrollExtent).called(1);
-
-      //usecase should only have been called once
-      verify(
-        () => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())),
-      ).called(1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
+      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[index]);
     });
 
-    test("Shouldn't load more parts when all parts are loaded", () async {
+    test(
+        'should verify the check out part and update the part quantity even if its been change but not verified in another checked out part',
+        () {
       mockSetup();
+      var index = 0;
+      var checkoutPart = valuesForTest.createCheckedOutList()[index];
+      expectLater(
+          sut.stream.map((state) => state.parts[index].quantity),
+          emitsInOrder([
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity + 2,
+            checkoutPart.part.quantity + 2
+          ]));
+//check that the other checkout part's quantity was messed with
+      expectLater(
+          sut.stream
+              .map((state) => state.checkedOutParts[index + 1].part.quantity),
+          emitsInOrder([
+            checkoutPart.part.quantity,
+            checkoutPart.part.quantity - 1,
+            checkoutPart.part.quantity - 2,
+            checkoutPart.part.quantity - 2,
+            checkoutPart.part.quantity - 2,
+            checkoutPart.part.quantity - 2
+          ]));
 
-      //close the old cubit and instantiate an new one with a fetchPartAmount that
-      //will ensure that all parts be loaded from the database
-      sut.close();
-      sut = ManageInventoryCubit(
-          verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
-          getAllCheckoutParts: mockGetAllCheckoutParts,
-          getLowQuantityParts: mockGetLowQuantityParts,
-          getUnverifiedCheckoutParts: mockGetUnverifiedParts,
-          fetchPartAmount: valuesForTest.parts().length,
-          scrollController: mockScrollController,
-          getAllPartsUsecase: mockGetAllPartUsecase,
-          getDatabaseLength: mockGetDatabaseLength);
-      //our expectations. reason why its before the call to .init() is because
-      //the method will emit stat changes, and placing the listener before the method
-      //ensures that all state changes are able to be captured
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index + 1],
+          quantityChange: 1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index + 1],
+          quantityChange: 1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
+      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[index]);
+    });
+  });
+  group('.updateDatabaseWithVerifiedParts()', () {
+    test('should emit a new part list', () {});
+    test('should emit verifiedSuccessfully', () async {
+      //setup
+      when(() => mockVerifyCheckOutPart(
+              any(that: isA<VerifyCheckoutPartParams>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
+
       expectLater(
-          sut.stream.map((event) => event.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully,
-          ]));
-      expectLater(
-          sut.stream.map((event) => event.parts.length),
-          emitsInOrder([
-            //initial length of the parts list in the state should be 0
-            sut.state.parts.length,
-            //after .loadParts is evoked, the parts list in the state should be equal
-            //to the state.fetchAmount
-            sut.state.fetchPartAmount,
-          ]));
-      //evoke the function
-      sut.init();
-      //expectations immediately after evoking the function
-      //await the normal init() function lifecycle to complete
-      await expectLater(
           sut.stream.map((state) => state.status),
           emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully
-          ])).then((_) {
-        //after it completes mock the user scrolling to the end of the page
-        //evoke the scroll controller addListener() callback function
-        scrollCallback!.call();
-      });
+            ManageInventoryStateStatus.verifyingPart,
+            ManageInventoryStateStatus.verifiedPartSuccessfully
+          ])).then((value) => verify(
+            () => mockVerifyCheckOutPart
+                .call(any(that: isA<VerifyCheckoutPartParams>())),
+          ).called(1));
 
-      //verifications
-      //verify that a callback function was passed to the .addListener
-      //verify that the position of the scroll controller was compared and
-      //is objects were called the appropriate number of times
-      verify(() =>
-              mockScrollController.addListener(any(that: isA<VoidCallback>())))
-          .called(1);
-      verify(() => mockScrollController.position).called(2);
-      verify(() => mockScrollPosition.pixels).called(1);
-      verify(() => mockScrollPosition.maxScrollExtent).called(1);
+      await sut.updateDatabaseWithVerifiedParts();
+    });
 
-      //usecase should only have been called once
-      verify(
-        () => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())),
-      ).called(1);
+    test('should emit verifiedUnsuccessfully', () async {
+      //setup
+      when(() =>
+          mockVerifyCheckOutPart(
+              any(that: isA<VerifyCheckoutPartParams>()))).thenAnswer(
+          (invocation) async => const Left<Failure, void>(ReadDataFailure()));
 
-      //the length of the part list in the state should be equal that of the
-      //testing part list
-      expect(sut.state.parts.length, valuesForTest.parts().length);
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.verifyingPart,
+            ManageInventoryStateStatus.verifiedPartUnsuccessfully
+          ])).then((value) => verify(
+            () => mockVerifyCheckOutPart
+                .call(any(that: isA<VerifyCheckoutPartParams>())),
+          ).called(1));
+
+      await sut.updateDatabaseWithVerifiedParts();
     });
   });
 

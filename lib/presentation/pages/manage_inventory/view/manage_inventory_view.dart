@@ -23,7 +23,6 @@ class ManageInventory extends StatelessWidget {
             getLowQuantityParts: locator<GetLowQuantityParts>(),
             getAllCheckoutParts: locator<GetAllCheckoutParts>(),
             getUnverifiedCheckoutParts: locator<GetUnverifiedCheckoutParts>(),
-            scrollController: ScrollController(),
             getAllPartsUsecase: locator<GetAllPartsUsecase>(),
             getDatabaseLength: locator<GetDatabaseLength>())
           ..init(),
