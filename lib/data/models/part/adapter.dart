@@ -1,11 +1,11 @@
 part of 'part_model.dart';
 
-class PartAdapter {
-  ///Even though [Part] inherits [PartEntity] an entity does not have access to
+class PartEntityToModelAdapter {
+  ///Even though [PartModel] inherits [PartEntity] an entity does not have access to
   ///methods defined by the part class in the data layer. As such this adapter
   ///class is used to bridge the structures.
-  static Part fromEntity(PartEntity partEntity) {
-    return Part(
+  static PartModel fromEntity(PartEntity partEntity) {
+    return PartModel(
         index: partEntity.index,
         name: partEntity.name,
         nsn: partEntity.nsn,
@@ -15,6 +15,7 @@ class PartAdapter {
         requisitionPoint: partEntity.requisitionPoint,
         requisitionQuantity: partEntity.requisitionQuantity,
         serialNumber: partEntity.serialNumber,
-        unitOfIssue: partEntity.unitOfIssue);
+        unitOfIssue: partEntity.unitOfIssue,
+        checksum: partEntity.checksum);
   }
 }
