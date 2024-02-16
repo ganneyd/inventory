@@ -13,8 +13,17 @@ class GetAllCheckoutParts
   @override
   Future<Either<Failure, List<CheckedOutEntity>>> call(
       GetAllCheckoutPartsParams params) async {
+    var lengthResult = await _checkedOutPartRepository.getDatabaseLength();
+    int length = 0;
+    lengthResult.fold((l) => null, (dbLength) => length = dbLength);
+    var endIndex = length - params.currentListLength - params.fetchAmount;
+
+    if (params.currentListLength >= length) {
+      return const Right<Failure, List<CheckedOutEntity>>([]);
+    }
     var results = await _checkedOutPartRepository.getCheckedOutItems(
-        params.startIndex, params.endIndex);
+        params.currentListLength, endIndex);
+
     return results.fold(
         (failure) => Left<Failure, List<CheckedOutEntity>>(failure),
         (checkoutParts) =>
@@ -24,10 +33,10 @@ class GetAllCheckoutParts
 
 class GetAllCheckoutPartsParams extends Equatable {
   const GetAllCheckoutPartsParams(
-      {required this.endIndex, required this.startIndex});
-  final int startIndex;
-  final int endIndex;
+      {required this.fetchAmount, required this.currentListLength});
+  final int currentListLength;
+  final int fetchAmount;
 
   @override
-  List<Object?> get props => [startIndex, endIndex];
+  List<Object?> get props => [fetchAmount, currentListLength];
 }
