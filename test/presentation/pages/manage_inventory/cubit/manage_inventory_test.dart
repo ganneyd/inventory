@@ -61,8 +61,8 @@ void main() {
     registerFallbackValue(VerifyCheckoutPartParams(
         checkedOutEntityList: valuesForTest.createCheckedOutList()));
     registerFallbackValue(GetAllCheckoutPartsParams(
-        endIndex: sut.state.checkedOutParts.length + sut.state.fetchPartAmount,
-        startIndex: sut.state.checkedOutParts.length));
+        currentListLength: sut.state.checkedOutParts.length,
+        fetchAmount: sut.state.fetchPartAmount));
 
     registerFallbackValue(GetAllPartParams(
         pageIndex: sut.state.parts.length + sut.state.fetchPartAmount,
