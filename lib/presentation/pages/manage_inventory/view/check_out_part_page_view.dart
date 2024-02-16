@@ -26,7 +26,6 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
 
   @override
   void initState() {
-    widget.cubit.loadCheckedOutParts();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
         widget.cubit.loadCheckedOutParts();
