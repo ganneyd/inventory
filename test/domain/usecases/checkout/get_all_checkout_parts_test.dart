@@ -15,49 +15,60 @@ void main() {
   late GetAllCheckoutParts sut;
   late MockCheckoutPartRepository mockCheckoutPartRepository;
   late List<CheckedOutEntity> checkoutParts;
-
+  late GetAllCheckoutPartsParams params;
   setUp(() {
     mockCheckoutPartRepository = MockCheckoutPartRepository();
     sut = GetAllCheckoutParts(mockCheckoutPartRepository);
     checkoutParts = ValuesForTest().createCheckedOutList();
+    params =
+        const GetAllCheckoutPartsParams(currentListLength: 0, fetchAmount: 20);
   });
 
-  test('should return a List<CheckoutEntity>', () async {
-    GetAllCheckoutPartsParams params =
-        const GetAllCheckoutPartsParams(endIndex: 20, startIndex: 0);
-    when(
-      () => mockCheckoutPartRepository.getCheckedOutItems(
-          params.startIndex, params.endIndex),
-    ).thenAnswer((invocation) async =>
-        Right<Failure, List<CheckedOutEntity>>(checkoutParts));
-    var results = await sut.call(params);
-    List<CheckedOutEntity> expectedList = [];
-    results.fold((l) => null, (list) => expectedList = list);
-    expect(expectedList, checkoutParts);
-    expect(results, isA<Right<Failure, List<CheckedOutEntity>>>());
-    verify(
-      () => mockCheckoutPartRepository.getCheckedOutItems(
-          params.startIndex, params.endIndex),
-    ).called(1);
-  });
+  group('.call()', () {
+    void mockSetup() {
+      when(
+        () => mockCheckoutPartRepository.getCheckedOutItems(
+            any(that: isA<int>()), any(that: isA<int>())),
+      ).thenAnswer((invocation) async =>
+          Right<Failure, List<CheckedOutEntity>>(checkoutParts));
+      when(() => mockCheckoutPartRepository.getDatabaseLength())
+          .thenAnswer((invocation) async => const Right<Failure, int>(10));
+    }
 
-  test('should return a Failure', () async {
-    GetAllCheckoutPartsParams params =
-        const GetAllCheckoutPartsParams(endIndex: 20, startIndex: 0);
-    when(
-      () => mockCheckoutPartRepository.getCheckedOutItems(
-          params.startIndex, params.endIndex),
-    ).thenAnswer((invocation) async =>
-        const Left<Failure, List<CheckedOutEntity>>(ReadDataFailure()));
-    var results = await sut.call(params);
-    Failure expectedFailure = const GetFailure();
-    results.fold((failure) => expectedFailure = failure, (list) => null);
-    expect(expectedFailure, const ReadDataFailure());
-    expect(results, isA<Left<Failure, List<CheckedOutEntity>>>());
+    test('should return a List<CheckoutEntity>', () async {
+      mockSetup();
 
-    verify(
-      () => mockCheckoutPartRepository.getCheckedOutItems(
-          params.startIndex, params.endIndex),
-    ).called(1);
+      var results = await sut.call(params);
+      List<CheckedOutEntity> expectedList = [];
+      results.fold((l) => null, (list) => expectedList.addAll(list));
+      expect(expectedList, checkoutParts);
+      expect(results, isA<Right<Failure, List<CheckedOutEntity>>>());
+      verify(
+        () => mockCheckoutPartRepository.getCheckedOutItems(
+            any(that: isA<int>()), any(that: isA<int>())),
+      ).called(1);
+      verify(() => mockCheckoutPartRepository.getDatabaseLength()).called(1);
+    });
+
+    test('should return a Failure', () async {
+      mockSetup();
+
+      when(
+        () => mockCheckoutPartRepository.getCheckedOutItems(
+            any(that: isA<int>()), any(that: isA<int>())),
+      ).thenAnswer((invocation) async =>
+          const Left<Failure, List<CheckedOutEntity>>(ReadDataFailure()));
+      var results = await sut.call(params);
+      Failure expectedFailure = const GetFailure();
+      results.fold((failure) => expectedFailure = failure, (list) => null);
+      expect(expectedFailure, const ReadDataFailure());
+      expect(results, isA<Left<Failure, List<CheckedOutEntity>>>());
+
+      verify(
+        () => mockCheckoutPartRepository.getCheckedOutItems(
+            any(that: isA<int>()), any(that: isA<int>())),
+      ).called(1);
+      verify(() => mockCheckoutPartRepository.getDatabaseLength()).called(1);
+    });
   });
 }
