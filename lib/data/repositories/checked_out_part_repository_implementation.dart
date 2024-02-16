@@ -16,7 +16,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
   final Logger _logger;
   final Box<CheckedOutModel> _localDatasource;
 
-  CheckedOutModel _toCheckoutPartModel(CheckedOutEntity checkedOutEntity) {
+  CheckedOutModel toCheckoutPartModel(CheckedOutEntity checkedOutEntity) {
     return CheckedOutModel(
         quantityDiscrepancyModel: checkedOutEntity.quantityDiscrepancy,
         indexModel: checkedOutEntity.index,
@@ -34,7 +34,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       _logger.finest('creating new checked out entry $checkedOutEntity');
       var index = _localDatasource.isEmpty ? 0 : _localDatasource.length;
       checkedOutEntity = checkedOutEntity.copyWith(index: index);
-      await _localDatasource.add(_toCheckoutPartModel(checkedOutEntity));
+      await _localDatasource.add(toCheckoutPartModel(checkedOutEntity));
       return const Right<Failure, void>(null);
     } catch (exception) {
       return const Left<Failure, void>(CreateDataFailure());
@@ -62,7 +62,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       }
 
       _localDatasource.putAt(
-          checkedOutEntity.index, _toCheckoutPartModel(checkedOutEntity));
+          checkedOutEntity.index, toCheckoutPartModel(checkedOutEntity));
       return const Right<Failure, void>(null);
     } on UpdateDataException {
       return const Left<Failure, void>(UpdateDataFailure());
@@ -75,22 +75,19 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
   Future<Either<Failure, List<CheckedOutEntity>>> getCheckedOutItems(
       int startIndex, int endIndex) async {
     try {
-      var upperBound = _localDatasource.length;
-      var lowerBound = startIndex < 0 ? 0 : startIndex;
+      var upperBound = _localDatasource.length - 1 - startIndex;
+      var lowerBound = 0 > endIndex ? 0 : endIndex;
 
-      if (endIndex < upperBound) {
-        upperBound = endIndex + 1;
-      }
       _logger.finest(
           'getting all parts lowerBound is $lowerBound and upperBound is $upperBound');
-      if (upperBound < lowerBound) {
+      if (lowerBound > upperBound) {
         _logger.severe(
-            'upperBound is less than lowerBound, throwing exception... ');
+            'lowerBound is greater than upperBound, throwing exception... ');
         throw IndexOutOfBounds();
       }
 
       List<CheckedOutModel> parts = [];
-      for (int i = lowerBound; i < upperBound; i++) {
+      for (int i = upperBound; i >= lowerBound; i--) {
         var part = _localDatasource.getAt(i);
         if (part != null) {
           parts.add(part);
