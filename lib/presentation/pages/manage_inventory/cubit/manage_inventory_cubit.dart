@@ -80,16 +80,12 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     // Indicate loading state, especially useful for UI indicators
     emit(state.copyWith(status: ManageInventoryStateStatus.loading));
 
-    var startIndex = state.checkedOutParts.length;
-    var endIndex = startIndex + state.fetchPartAmount;
     List<CheckedOutEntity> oldCheckoutPartList =
         _updateCheckoutListParts(state.checkedOutParts.toList());
 
-    _logger.finest(
-        'loading checked out parts, startIndex:$startIndex endIndex:$endIndex');
-
-    var results = await getAllCheckoutParts.call(
-        GetAllCheckoutPartsParams(endIndex: endIndex, startIndex: startIndex));
+    var results = await getAllCheckoutParts.call(GetAllCheckoutPartsParams(
+        currentListLength: state.checkedOutParts.length,
+        fetchAmount: state.fetchPartAmount));
     results.fold((failure) {
       _logger.warning('error while retrieving checked out parts');
       emit(state.copyWith(
