@@ -22,9 +22,8 @@ mixin _$SearchResultsState {
   List<PartEntity> get partsBySerialNumber =>
       throw _privateConstructorUsedError;
   List<PartEntity> get partsByPartNumber => throw _privateConstructorUsedError;
+  List<CartCheckoutEntity> get cartItems => throw _privateConstructorUsedError;
   TextEditingController get searchBarController =>
-      throw _privateConstructorUsedError;
-  List<CheckedOutEntity> get partCheckoutCart =>
       throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
   SearchResultsStateStatus get status => throw _privateConstructorUsedError;
@@ -46,8 +45,8 @@ abstract class $SearchResultsStateCopyWith<$Res> {
       List<PartEntity> partsByNsn,
       List<PartEntity> partsBySerialNumber,
       List<PartEntity> partsByPartNumber,
+      List<CartCheckoutEntity> cartItems,
       TextEditingController searchBarController,
-      List<CheckedOutEntity> partCheckoutCart,
       String error,
       SearchResultsStateStatus status});
 }
@@ -70,8 +69,8 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
     Object? partsByNsn = null,
     Object? partsBySerialNumber = null,
     Object? partsByPartNumber = null,
+    Object? cartItems = null,
     Object? searchBarController = null,
-    Object? partCheckoutCart = null,
     Object? error = null,
     Object? status = null,
   }) {
@@ -96,14 +95,14 @@ class _$SearchResultsStateCopyWithImpl<$Res, $Val extends SearchResultsState>
           ? _value.partsByPartNumber
           : partsByPartNumber // ignore: cast_nullable_to_non_nullable
               as List<PartEntity>,
+      cartItems: null == cartItems
+          ? _value.cartItems
+          : cartItems // ignore: cast_nullable_to_non_nullable
+              as List<CartCheckoutEntity>,
       searchBarController: null == searchBarController
           ? _value.searchBarController
           : searchBarController // ignore: cast_nullable_to_non_nullable
               as TextEditingController,
-      partCheckoutCart: null == partCheckoutCart
-          ? _value.partCheckoutCart
-          : partCheckoutCart // ignore: cast_nullable_to_non_nullable
-              as List<CheckedOutEntity>,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -130,8 +129,8 @@ abstract class _$$SearchResultsStateImplCopyWith<$Res>
       List<PartEntity> partsByNsn,
       List<PartEntity> partsBySerialNumber,
       List<PartEntity> partsByPartNumber,
+      List<CartCheckoutEntity> cartItems,
       TextEditingController searchBarController,
-      List<CheckedOutEntity> partCheckoutCart,
       String error,
       SearchResultsStateStatus status});
 }
@@ -152,8 +151,8 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
     Object? partsByNsn = null,
     Object? partsBySerialNumber = null,
     Object? partsByPartNumber = null,
+    Object? cartItems = null,
     Object? searchBarController = null,
-    Object? partCheckoutCart = null,
     Object? error = null,
     Object? status = null,
   }) {
@@ -178,14 +177,14 @@ class __$$SearchResultsStateImplCopyWithImpl<$Res>
           ? _value._partsByPartNumber
           : partsByPartNumber // ignore: cast_nullable_to_non_nullable
               as List<PartEntity>,
+      cartItems: null == cartItems
+          ? _value._cartItems
+          : cartItems // ignore: cast_nullable_to_non_nullable
+              as List<CartCheckoutEntity>,
       searchBarController: null == searchBarController
           ? _value.searchBarController
           : searchBarController // ignore: cast_nullable_to_non_nullable
               as TextEditingController,
-      partCheckoutCart: null == partCheckoutCart
-          ? _value._partCheckoutCart
-          : partCheckoutCart // ignore: cast_nullable_to_non_nullable
-              as List<CheckedOutEntity>,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -207,16 +206,15 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
       final List<PartEntity> partsByNsn = const <PartEntity>[],
       final List<PartEntity> partsBySerialNumber = const <PartEntity>[],
       final List<PartEntity> partsByPartNumber = const <PartEntity>[],
+      final List<CartCheckoutEntity> cartItems = const <CartCheckoutEntity>[],
       required this.searchBarController,
-      final List<CheckedOutEntity> partCheckoutCart =
-          const <CheckedOutEntity>[],
       this.error = 'no-error',
       this.status = SearchResultsStateStatus.loading})
       : _partsByName = partsByName,
         _partsByNsn = partsByNsn,
         _partsBySerialNumber = partsBySerialNumber,
         _partsByPartNumber = partsByPartNumber,
-        _partCheckoutCart = partCheckoutCart;
+        _cartItems = cartItems;
 
   @override
   final ScrollController scrollController;
@@ -258,18 +256,17 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
     return EqualUnmodifiableListView(_partsByPartNumber);
   }
 
-  @override
-  final TextEditingController searchBarController;
-  final List<CheckedOutEntity> _partCheckoutCart;
+  final List<CartCheckoutEntity> _cartItems;
   @override
   @JsonKey()
-  List<CheckedOutEntity> get partCheckoutCart {
-    if (_partCheckoutCart is EqualUnmodifiableListView)
-      return _partCheckoutCart;
+  List<CartCheckoutEntity> get cartItems {
+    if (_cartItems is EqualUnmodifiableListView) return _cartItems;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_partCheckoutCart);
+    return EqualUnmodifiableListView(_cartItems);
   }
 
+  @override
+  final TextEditingController searchBarController;
   @override
   @JsonKey()
   final String error;
@@ -279,7 +276,7 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
 
   @override
   String toString() {
-    return 'SearchResultsState(scrollController: $scrollController, partsByName: $partsByName, partsByNsn: $partsByNsn, partsBySerialNumber: $partsBySerialNumber, partsByPartNumber: $partsByPartNumber, searchBarController: $searchBarController, partCheckoutCart: $partCheckoutCart, error: $error, status: $status)';
+    return 'SearchResultsState(scrollController: $scrollController, partsByName: $partsByName, partsByNsn: $partsByNsn, partsBySerialNumber: $partsBySerialNumber, partsByPartNumber: $partsByPartNumber, cartItems: $cartItems, searchBarController: $searchBarController, error: $error, status: $status)';
   }
 
   @override
@@ -297,10 +294,10 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
                 .equals(other._partsBySerialNumber, _partsBySerialNumber) &&
             const DeepCollectionEquality()
                 .equals(other._partsByPartNumber, _partsByPartNumber) &&
+            const DeepCollectionEquality()
+                .equals(other._cartItems, _cartItems) &&
             (identical(other.searchBarController, searchBarController) ||
                 other.searchBarController == searchBarController) &&
-            const DeepCollectionEquality()
-                .equals(other._partCheckoutCart, _partCheckoutCart) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.status, status) || other.status == status));
   }
@@ -313,8 +310,8 @@ class _$SearchResultsStateImpl implements _SearchResultsState {
       const DeepCollectionEquality().hash(_partsByNsn),
       const DeepCollectionEquality().hash(_partsBySerialNumber),
       const DeepCollectionEquality().hash(_partsByPartNumber),
+      const DeepCollectionEquality().hash(_cartItems),
       searchBarController,
-      const DeepCollectionEquality().hash(_partCheckoutCart),
       error,
       status);
 
@@ -333,8 +330,8 @@ abstract class _SearchResultsState implements SearchResultsState {
       final List<PartEntity> partsByNsn,
       final List<PartEntity> partsBySerialNumber,
       final List<PartEntity> partsByPartNumber,
+      final List<CartCheckoutEntity> cartItems,
       required final TextEditingController searchBarController,
-      final List<CheckedOutEntity> partCheckoutCart,
       final String error,
       final SearchResultsStateStatus status}) = _$SearchResultsStateImpl;
 
@@ -349,9 +346,9 @@ abstract class _SearchResultsState implements SearchResultsState {
   @override
   List<PartEntity> get partsByPartNumber;
   @override
-  TextEditingController get searchBarController;
+  List<CartCheckoutEntity> get cartItems;
   @override
-  List<CheckedOutEntity> get partCheckoutCart;
+  TextEditingController get searchBarController;
   @override
   String get error;
   @override

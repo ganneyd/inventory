@@ -80,8 +80,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     // Indicate loading state, especially useful for UI indicators
     emit(state.copyWith(status: ManageInventoryStateStatus.loading));
 
-    List<CheckedOutEntity> oldCheckoutPartList =
-        _updateCheckoutListParts(state.checkedOutParts.toList());
+    List<CheckedOutEntity> oldCheckoutPartList = state.checkedOutParts.toList();
 
     var results = await getAllCheckoutParts.call(GetAllCheckoutPartsParams(
         currentListLength: state.checkedOutParts.length,
@@ -126,15 +125,14 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     required int quantityChange,
   }) {
     List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
-    var accuratePart = _getAccuratePart(checkoutPart.part);
-    var newPart = accuratePart.copyWith(
-        quantity: checkoutPart.part.quantity - quantityChange);
-    var newCheckoutPart = checkoutPart.copyWith(
-        checkedOutQuantity: checkoutPart.checkedOutQuantity + quantityChange,
-        quantityDiscrepancy: checkoutPart.quantityDiscrepancy + quantityChange,
-        partEntity: newPart);
+    var indexInList = newCheckoutPartList.indexOf(checkoutPart);
 
-    newCheckoutPartList[checkoutPart.index] = newCheckoutPart;
+    var newCheckoutPart = checkoutPart.copyWith(
+      checkedOutQuantity: checkoutPart.checkedOutQuantity + quantityChange,
+      quantityDiscrepancy: checkoutPart.quantityDiscrepancy + quantityChange,
+    );
+
+    newCheckoutPartList[indexInList] = newCheckoutPart;
     emit(state.copyWith(
       unverifiedParts: _filterUnverifiedParts(newCheckoutPartList),
       checkedOutParts: newCheckoutPartList,
@@ -160,23 +158,21 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     List<CheckedOutEntity> newVerifiedList = state.newlyVerifiedParts.toList();
     List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
     List<PartEntity> newPartEntityList = state.parts.toList();
-
-    var updatedPart = checkedOutEntity.part.updateChecksum();
-    _logger.finest(
-        'updated part has ${updatedPart.quantity}ea and the discrepancy is ${checkedOutEntity.quantityDiscrepancy}');
+    var indexInList = newCheckoutPartList.indexOf(checkedOutEntity);
 
     //update part
 
     var newCheckoutPart = checkedOutEntity.copyWith(
-        isVerified: true,
-        verifiedDate: DateTime.now(),
-        partEntity: updatedPart);
+      isVerified: true,
+      verifiedDate: DateTime.now(),
+    );
 
-    newCheckoutPartList[checkedOutEntity.index] = newCheckoutPart;
-    newCheckoutPartList =
-        _updatePartInCheckoutPartsList(newCheckoutPartList, updatedPart);
+    newCheckoutPartList[indexInList] = newCheckoutPart;
+
+    var partEntity = newPartEntityList[checkedOutEntity.partEntityIndex];
     //reflect change in the parts list
-    newPartEntityList[checkedOutEntity.part.index] = updatedPart;
+    newPartEntityList[checkedOutEntity.partEntityIndex] = partEntity.copyWith(
+        quantity: partEntity.quantity - newCheckoutPart.quantityDiscrepancy);
     //add checkout part to verified list
     newVerifiedList.add(newCheckoutPart);
     //emit changes
@@ -189,41 +185,8 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
   List<CheckedOutEntity> _filterUnverifiedParts(
       List<CheckedOutEntity> checkoutEntityList) {
-    return checkoutEntityList.expand<CheckedOutEntity>((checkoutPart) {
-      if (checkoutPart.isVerified ?? false) return [];
-
-      return [
-        checkoutPart.copyWith(partEntity: _getAccuratePart(checkoutPart.part))
-      ];
-    }).toList();
-  }
-
-  List<CheckedOutEntity> _updateCheckoutListParts(
-    List<CheckedOutEntity> checkoutEntityList,
-  ) {
     return checkoutEntityList
-        .map((checkoutPart) => checkoutPart.isVerified ?? false
-            ? checkoutPart
-            : checkoutPart.copyWith(
-                partEntity: _getAccuratePart(checkoutPart.part)))
-        .toList();
-  }
-
-  List<CheckedOutEntity> _updatePartInCheckoutPartsList(
-      List<CheckedOutEntity> checkoutEntityList, PartEntity part) {
-    return checkoutEntityList
-        .map((checkoutPart) => checkoutPart.isVerified ?? false
-            ? checkoutPart
-            : checkoutPart.copyWith(
-                checkedOutQuantity: checkoutPart.part.index == part.index
-                    ? checkoutPart.checkedOutQuantity -
-                        checkoutPart.quantityDiscrepancy
-                    : null,
-                quantityDiscrepancy:
-                    checkoutPart.part.index == part.index ? 0 : null,
-                partEntity: checkoutPart.part.index == part.index
-                    ? part
-                    : checkoutPart.part))
+        .where((entity) => !(entity.isVerified ?? false))
         .toList();
   }
 

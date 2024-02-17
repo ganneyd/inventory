@@ -7,6 +7,7 @@ import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:logging/logging.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 
@@ -52,36 +53,37 @@ Future<void> setupLocator() async {
 
   //!Data Layer
   //!Repositories
-  locator.registerLazySingleton<PartRepositoryImplementation>(
+  locator.registerLazySingleton<PartRepository>(
       () => PartRepositoryImplementation(Hive.box<PartModel>(boxName)));
   locator.registerLazySingleton<CheckedOutPartRepository>(() =>
       CheckedOutPartRepositoryImplementation(
           Hive.box<CheckedOutModel>(checkoutPartBox)));
   //!Usecases
   locator.registerFactory<AddPartUsecase>(
-      () => AddPartUsecase(locator<PartRepositoryImplementation>()));
+      () => AddPartUsecase(locator<PartRepository>()));
   locator.registerFactory<DeletePartUsecase>(
-      () => DeletePartUsecase(locator<PartRepositoryImplementation>()));
+      () => DeletePartUsecase(locator<PartRepository>()));
   locator.registerFactory<EditPartUsecase>(
-      () => EditPartUsecase(locator<PartRepositoryImplementation>()));
+      () => EditPartUsecase(locator<PartRepository>()));
   locator.registerFactory<GetAllPartsUsecase>(
-      () => GetAllPartsUsecase(locator<PartRepositoryImplementation>()));
+      () => GetAllPartsUsecase(locator<PartRepository>()));
   locator.registerFactory<GetPartByNameUseCase>(
-      () => GetPartByNameUseCase(locator<PartRepositoryImplementation>()));
+      () => GetPartByNameUseCase(locator<PartRepository>()));
   locator.registerFactory<GetPartByNsnUseCase>(
-      () => GetPartByNsnUseCase(locator<PartRepositoryImplementation>()));
-  locator.registerFactory<GetPartByPartNumberUsecase>(() =>
-      GetPartByPartNumberUsecase(locator<PartRepositoryImplementation>()));
-  locator.registerFactory<GetPartBySerialNumberUsecase>(() =>
-      GetPartBySerialNumberUsecase(locator<PartRepositoryImplementation>()));
+      () => GetPartByNsnUseCase(locator<PartRepository>()));
+  locator.registerFactory<GetPartByPartNumberUsecase>(
+      () => GetPartByPartNumberUsecase(locator<PartRepository>()));
+  locator.registerFactory<GetPartBySerialNumberUsecase>(
+      () => GetPartBySerialNumberUsecase(locator<PartRepository>()));
   locator.registerFactory<GetDatabaseLength>(
-      () => GetDatabaseLength(locator<PartRepositoryImplementation>()));
+      () => GetDatabaseLength(locator<PartRepository>()));
   locator.registerFactory<GetLowQuantityParts>(
-      () => GetLowQuantityParts(locator<PartRepositoryImplementation>()));
+      () => GetLowQuantityParts(locator<PartRepository>()));
+
   locator.registerFactory<VerifyCheckoutPart>(() => VerifyCheckoutPart(
-      locator<CheckedOutPartRepository>(), locator<EditPartUsecase>()));
+      locator<CheckedOutPartRepository>(), locator<PartRepository>()));
   locator.registerFactory<AddCheckoutPart>(() => AddCheckoutPart(
-      locator<CheckedOutPartRepository>(), locator<EditPartUsecase>()));
+      locator<CheckedOutPartRepository>(), locator<PartRepository>()));
   locator.registerFactory<GetAllCheckoutParts>(
       () => GetAllCheckoutParts(locator<CheckedOutPartRepository>()));
   locator.registerFactory<GetUnverifiedCheckoutParts>(

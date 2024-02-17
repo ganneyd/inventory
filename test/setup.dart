@@ -1,3 +1,4 @@
+import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
@@ -145,7 +146,7 @@ class ValuesForTest {
         checkedOutQuantity: 2,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 2)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
       ),
@@ -154,7 +155,7 @@ class ValuesForTest {
         checkedOutQuantity: 3,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 2)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
       ),
@@ -163,7 +164,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -173,7 +174,7 @@ class ValuesForTest {
         checkedOutQuantity: 3,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 7)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: true,
         verifiedDate: DateTime.now().subtract(const Duration(days: 6)),
       ),
@@ -182,7 +183,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -191,7 +192,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -200,7 +201,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -209,7 +210,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -218,7 +219,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -227,7 +228,7 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 4)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
@@ -236,12 +237,24 @@ class ValuesForTest {
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
         dateTime: DateTime.now().subtract(const Duration(days: 10)),
-        part: parts()[0],
+        partEntityIndex: parts()[0].index,
         isVerified: false,
         verifiedDate: null,
       ),
 
       // Add more variations as needed
     ];
+  }
+
+  List<CartCheckoutEntity> getCartCheckoutEntities() {
+    List<CartCheckoutEntity> newList = [];
+
+    for (var checkoutPart in createCheckedOutList()) {
+      newList.add(CartCheckoutEntity(
+          checkedOutEntity: checkoutPart,
+          partEntity: parts()[checkoutPart.partEntityIndex]));
+    }
+
+    return newList;
   }
 }

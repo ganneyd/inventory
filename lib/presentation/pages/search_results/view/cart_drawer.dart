@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/pages/search_results/cubit/search_results_cubit.dart';
 import 'package:inventory_v1/presentation/widgets/buttons/small_button_widget.dart';
 
 Widget buildDrawer(
-    {required List<CheckedOutEntity> checkedOutParts,
+    {required List<CartCheckoutEntity> cartItems,
     required void Function(int index, int newQuantity) addCallback,
     required void Function(int index, int newQuantity) subtractCallback,
     required BuildContext context}) {
@@ -29,18 +31,19 @@ Widget buildDrawer(
         ),
         // Scrollable part of the drawer
         Expanded(
-            child: checkedOutParts.isEmpty
+            child: cartItems.isEmpty
                 ? const Text('No Part in Cart')
                 : ListView.builder(
-                    itemCount: checkedOutParts.length,
+                    itemCount: cartItems.length,
                     itemBuilder: (context, index) {
                       CheckedOutEntity checkedOutPart =
-                          checkedOutParts[index]; // Current part
+                          cartItems[index].checkedOutEntity; // Current part
+                      PartEntity part = cartItems[index].partEntity;
                       int checkoutQuantity = checkedOutPart
                           .checkedOutQuantity; // Default checkout quantity
 
                       // Extract the last 4 characters of the NSN
-                      String nsn = checkedOutPart.part.nsn;
+                      String nsn = part.nsn;
                       String lastFour =
                           nsn.length > 4 ? nsn.substring(nsn.length - 4) : nsn;
 
@@ -48,7 +51,7 @@ Widget buildDrawer(
                         backgroundColor: Colors.blueAccent,
 
                         // Display the last 4 characters of the NSN and the part name
-                        title: Text("$lastFour - ${checkedOutPart.part.name}"),
+                        title: Text("$lastFour - ${part.name}"),
                         // Display the intended checkout quantity
                         subtitle: Text("Checkout: $checkoutQuantity"),
                         children: <Widget>[
@@ -67,7 +70,7 @@ Widget buildDrawer(
                               IconButton(
                                 icon: const Icon(Icons.add),
                                 onPressed: () => checkoutQuantity <
-                                        checkedOutPart.part.quantity
+                                        part.quantity
                                     ? addCallback(index, checkoutQuantity + 1)
                                     : null,
                               ),
@@ -83,7 +86,7 @@ Widget buildDrawer(
                       );
                     },
                   )),
-        checkedOutParts.isEmpty
+        cartItems.isEmpty
             ? Container()
             : Flex(direction: Axis.horizontal, children: [
                 SmallButton(
@@ -91,7 +94,7 @@ Widget buildDrawer(
                     onPressed: () {
                       BlocProvider.of<SearchPartCubit>(context).checkout();
                       Navigator.of(context)
-                          .pushNamed('/checkout', arguments: checkedOutParts);
+                          .pushNamed('/checkout', arguments: cartItems);
                     })
               ]),
       ],

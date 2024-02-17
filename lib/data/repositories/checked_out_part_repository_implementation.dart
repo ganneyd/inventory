@@ -4,7 +4,6 @@ import 'package:inventory_v1/core/error/exceptions.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
-import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:logging/logging.dart';
 
@@ -22,7 +21,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
         indexModel: checkedOutEntity.index,
         checkedOutAmount: checkedOutEntity.checkedOutQuantity,
         dateTimeModel: checkedOutEntity.dateTime,
-        partModel: PartEntityToModelAdapter.fromEntity(checkedOutEntity.part),
+        partModelIndex: checkedOutEntity.partEntityIndex,
         isVerifiedModel: checkedOutEntity.isVerified ?? false,
         verifiedDateModel: checkedOutEntity.verifiedDate ?? DateTime.now());
   }

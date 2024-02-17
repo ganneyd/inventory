@@ -5,30 +5,32 @@ import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
-import 'package:inventory_v1/domain/usecases/edit_part.dart';
+import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:logging/logging.dart';
 
 class VerifyCheckoutPart implements UseCase<void, VerifyCheckoutPartParams> {
   VerifyCheckoutPart(CheckedOutPartRepository checkedOutPartRepository,
-      EditPartUsecase editPartUsecase)
+      PartRepository partRepository)
       : _checkedOutPartRepository = checkedOutPartRepository,
-        _editPartUsecase = editPartUsecase,
+        _partRepository = partRepository,
         _logger = Logger('verify-part-usecase');
   final CheckedOutPartRepository _checkedOutPartRepository;
-  final EditPartUsecase _editPartUsecase;
+  final PartRepository _partRepository;
   final Logger _logger;
 
   @override
   Future<Either<Failure, void>> call(VerifyCheckoutPartParams params) async {
     for (var checkoutPart in params.checkedOutEntityList) {
-      PartEntity updatedPart = checkoutPart.part;
-
-      var updatePartResults =
-          await _editPartUsecase.call(EditPartParams(partEntity: updatedPart));
-      if (updatePartResults.isLeft()) {
-        _logger.warning('error encounter when updating part');
-        return const Left<Failure, void>(UpdateDataFailure());
+      var getPart =
+          await _partRepository.getSpecificPart(checkoutPart.partEntityIndex);
+      if (getPart.isLeft()) {
+        return const Left<Failure, void>(ReadDataFailure());
       }
+
+      getPart.fold((l) => null, (updatedPart) async {
+        _partRepository.editPart(updatedPart.copyWith(
+            quantity: updatedPart.quantity - checkoutPart.quantityDiscrepancy));
+      });
 
       var updatedCheckoutPart =
           checkoutPart.copyWith(verifiedDate: DateTime.now(), isVerified: true);

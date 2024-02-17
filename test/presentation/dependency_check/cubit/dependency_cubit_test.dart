@@ -81,13 +81,12 @@ void main() {
           (invocation) => GetPartBySerialNumberUsecase(mockPartRepo));
       when(() => mockGetIt<GetDatabaseLength>())
           .thenAnswer((invocation) => GetDatabaseLength(mockPartRepo));
-      when(() => mockGetIt<AddCheckoutPart>()).thenAnswer((invocation) =>
-          AddCheckoutPart(mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+      when(() => mockGetIt<AddCheckoutPart>()).thenAnswer(
+          (invocation) => AddCheckoutPart(mockCheckoutPartRepo, mockPartRepo));
       when(() => mockGetIt<GetAllCheckoutParts>()).thenAnswer(
           (invocation) => GetAllCheckoutParts(mockCheckoutPartRepo));
       when(() => mockGetIt<VerifyCheckoutPart>()).thenAnswer((invocation) =>
-          VerifyCheckoutPart(
-              mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+          VerifyCheckoutPart(mockCheckoutPartRepo, mockPartRepo));
       when(() => mockGetIt<GetUnverifiedCheckoutParts>()).thenAnswer(
           (invocation) => GetUnverifiedCheckoutParts(mockCheckoutPartRepo));
       when(() => mockGetIt<GetLowQuantityParts>())
@@ -316,13 +315,12 @@ void main() {
           (invocation) => GetPartBySerialNumberUsecase(mockPartRepo));
       when(() => mockGetIt<GetDatabaseLength>())
           .thenAnswer((invocation) => GetDatabaseLength(mockPartRepo));
-      when(() => mockGetIt<AddCheckoutPart>()).thenAnswer((invocation) =>
-          AddCheckoutPart(mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+      when(() => mockGetIt<AddCheckoutPart>()).thenAnswer(
+          (invocation) => AddCheckoutPart(mockCheckoutPartRepo, mockPartRepo));
       when(() => mockGetIt<GetAllCheckoutParts>()).thenAnswer(
           (invocation) => GetAllCheckoutParts(mockCheckoutPartRepo));
       when(() => mockGetIt<VerifyCheckoutPart>()).thenAnswer((invocation) =>
-          VerifyCheckoutPart(
-              mockCheckoutPartRepo, EditPartUsecase(mockPartRepo)));
+          VerifyCheckoutPart(mockCheckoutPartRepo, mockPartRepo));
       when(() => mockGetIt<GetUnverifiedCheckoutParts>()).thenAnswer(
           (invocation) => GetUnverifiedCheckoutParts(mockCheckoutPartRepo));
       when(() => mockGetIt<GetLowQuantityParts>())

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_state.dart';
 import 'package:logging/logging.dart';
@@ -102,7 +102,7 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
 
   bool _isPartRepositoryInitialized() {
     try {
-      sl<PartRepositoryImplementation>();
+      sl<PartRepository>();
 
       return true;
     } catch (e) {

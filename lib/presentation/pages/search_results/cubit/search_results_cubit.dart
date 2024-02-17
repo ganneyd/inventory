@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
@@ -119,11 +120,11 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
 
   ///add parts to the checkout list
   void addPartToCart(PartEntity addPart, int quantity) {
-    List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
+    List<CartCheckoutEntity> cartCheckoutEntities = state.cartItems.toList();
     bool isPartInCart = false;
 
-    for (var partInCart in newCartList) {
-      if (partInCart.part == addPart) {
+    for (var checkoutEntity in cartCheckoutEntities) {
+      if (checkoutEntity.partEntity.index == addPart.index) {
         isPartInCart = true;
       }
     }
@@ -133,35 +134,37 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
           index: -1,
           checkedOutQuantity: quantity,
           dateTime: DateTime.now(),
-          part: addPart,
+          partEntityIndex: addPart.index,
           quantityDiscrepancy: 0);
-      newCartList.add(newCartEntry);
-      emit(state.copyWith(partCheckoutCart: newCartList));
+      cartCheckoutEntities.add(CartCheckoutEntity(
+          checkedOutEntity: newCartEntry, partEntity: addPart));
+      emit(state.copyWith(cartItems: cartCheckoutEntities));
     }
   }
 
   void removeCheckoutPart(int checkoutPartIndex) {
-    List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
+    List<CartCheckoutEntity> newCartList = state.cartItems.toList();
 
     newCartList.removeAt(checkoutPartIndex);
 
-    emit(state.copyWith(partCheckoutCart: newCartList));
+    emit(state.copyWith(cartItems: newCartList));
   }
 
   void updateCheckoutQuantity(
       {required int checkoutPartIndex, required int newQuantity}) {
-    var checkoutPart = state.partCheckoutCart[checkoutPartIndex];
+    var checkoutPart = state.cartItems[checkoutPartIndex].checkedOutEntity;
 
     var newCheckOutPart =
         checkoutPart.copyWith(checkedOutQuantity: newQuantity);
-    List<CheckedOutEntity> newCartList = state.partCheckoutCart.toList();
-    newCartList[checkoutPartIndex] = newCheckOutPart;
-    emit(state.copyWith(partCheckoutCart: newCartList));
+    List<CartCheckoutEntity> newCartList = state.cartItems.toList();
+    newCartList[checkoutPartIndex] = newCartList[checkoutPartIndex]
+        .copyWith(checkedOutEntity: newCheckOutPart);
+    emit(state.copyWith(cartItems: newCartList));
   }
 
   void checkout() {
     emit(state.copyWith(
-      partCheckoutCart: [],
+      cartItems: [],
     ));
   }
 }

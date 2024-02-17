@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/util.dart';
-import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_cubit.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_state.dart';
@@ -15,14 +15,15 @@ import 'package:inventory_v1/service_locator.dart';
 
 class CheckOutView extends StatelessWidget {
   CheckOutView(this.cartItems) : super(key: const Key('checkout-view'));
-  final List<CheckedOutEntity> cartItems;
+  final List<CartCheckoutEntity> cartItems;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CheckoutCubit>(
       create: (_) => CheckoutCubit(
-          addCheckoutPart: locator<AddCheckoutPart>(), cartItems: cartItems)
-        ..init(),
+        addCheckoutPart: locator<AddCheckoutPart>(),
+        cartItems: cartItems,
+      )..init(),
       child:
           BlocBuilder<CheckoutCubit, CheckoutState>(builder: (context, state) {
         // Post-frame callbacks for showing SnackBars based on state
@@ -59,7 +60,7 @@ class CheckOutView extends StatelessWidget {
             title: 'Checkout Parts',
             showBackButton: !state.isCheckoutCompleted,
             backButtonCallback: () async {
-              if (state.checkoutParts.isNotEmpty) {
+              if (state.cartItems.isNotEmpty) {
                 await showDialog(
                     context: context,
                     builder: (BuildContext dialogContext) {
@@ -78,11 +79,11 @@ class CheckOutView extends StatelessWidget {
             children: [
               Expanded(
                   child: ListView.builder(
-                      itemCount: state.checkoutParts.length,
+                      itemCount: state.cartItems.length,
                       itemBuilder: (context, index) {
-                        var checkoutQuantity =
-                            state.checkoutParts[index].checkedOutQuantity;
-                        var part = state.checkoutParts[index].part;
+                        var checkoutQuantity = state.cartItems[index]
+                            .checkedOutEntity.checkedOutQuantity;
+                        var part = state.cartItems[index].partEntity;
 
                         return ExpansionTile(
                           expandedAlignment: Alignment.center,
@@ -109,7 +110,7 @@ class CheckOutView extends StatelessWidget {
                                             ? BlocProvider.of<CheckoutCubit>(
                                                     context)
                                                 .updateCheckoutQuantity(
-                                                    checkoutPartIndex: index,
+                                                    cartItemIndex: index,
                                                     newQuantity:
                                                         checkoutQuantity - 1)
                                             : null,
@@ -122,7 +123,7 @@ class CheckOutView extends StatelessWidget {
                                             ? BlocProvider.of<CheckoutCubit>(
                                                     context)
                                                 .updateCheckoutQuantity(
-                                                    checkoutPartIndex: index,
+                                                    cartItemIndex: index,
                                                     newQuantity:
                                                         checkoutQuantity + 1)
                                             : null,

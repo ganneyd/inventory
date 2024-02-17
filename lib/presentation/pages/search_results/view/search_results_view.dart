@@ -78,7 +78,7 @@ class _SearchResultsState extends State<SearchResults> {
             key: _scaffoldKey,
             endDrawer: buildDrawer(
                 context: context,
-                checkedOutParts: state.partCheckoutCart,
+                cartItems: state.cartItems,
                 subtractCallback: (index, newQuantity) =>
                     BlocProvider.of<SearchPartCubit>(context)
                         .updateCheckoutQuantity(
@@ -93,7 +93,7 @@ class _SearchResultsState extends State<SearchResults> {
               // Directly use AppBar here
               title: 'Search Results',
               backButtonCallback: () async {
-                if (state.partCheckoutCart.isNotEmpty) {
+                if (state.cartItems.isNotEmpty) {
                   await showDialog(
                       context: context,
                       builder: (BuildContext dialogContext) {
@@ -108,10 +108,17 @@ class _SearchResultsState extends State<SearchResults> {
                 }
               },
               actions: [
-                IconButton(
-                  onPressed: () => _scaffoldKey.currentState
-                      ?.openEndDrawer(), // Use openEndDrawer if the drawer is on the right
-                  icon: const Icon(Icons.shopping_cart_checkout_rounded),
+                Padding(
+                  padding: const EdgeInsets.only(right: 30, top: 20),
+                  child: Badge(
+                    label: Text('${state.cartItems.length}'),
+                    child: IconButton(
+                      iconSize: 30,
+                      onPressed: () => _scaffoldKey.currentState
+                          ?.openEndDrawer(), // Use openEndDrawer if the drawer is on the right
+                      icon: const Icon(Icons.shopping_cart_checkout_rounded),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 20.0),
               ],

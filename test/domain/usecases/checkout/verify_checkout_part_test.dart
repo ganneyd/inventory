@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -12,25 +12,23 @@ import '../../../setup.dart';
 class MockCheckoutPartRepository extends Mock
     implements CheckedOutPartRepository {}
 
-class MockEditPartUsecase extends Mock implements EditPartUsecase {}
+class MockPartRepository extends Mock implements PartRepository {}
 
 void main() {
   late VerifyCheckoutPart sut;
-  late MockEditPartUsecase mockEditPartUsecase;
+  late MockPartRepository mockPartRepository;
   late MockCheckoutPartRepository mockCheckoutPartRepository;
   late List<CheckedOutEntity> unverifiedCheckoutPart;
   late ValuesForTest valuesForTest;
   setUp(() {
     valuesForTest = ValuesForTest();
     mockCheckoutPartRepository = MockCheckoutPartRepository();
-    mockEditPartUsecase = MockEditPartUsecase();
-    sut = VerifyCheckoutPart(mockCheckoutPartRepository, mockEditPartUsecase);
+    mockPartRepository = MockPartRepository();
+    sut = VerifyCheckoutPart(mockCheckoutPartRepository, mockPartRepository);
 
     unverifiedCheckoutPart = valuesForTest.createCheckedOutList();
-    EditPartParams editPartParams =
-        EditPartParams(partEntity: unverifiedCheckoutPart[0].part);
+
     registerFallbackValue(unverifiedCheckoutPart[0]);
-    registerFallbackValue(editPartParams);
   });
 
   group('.call()', () {
@@ -39,9 +37,7 @@ void main() {
           checkedOutEntityList: unverifiedCheckoutPart);
 
       //setup
-      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, PartEntity?>(valuesForTest.parts()[0]));
+
       when(
         () => mockCheckoutPartRepository
             .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
@@ -53,8 +49,6 @@ void main() {
 
       verify(() => mockCheckoutPartRepository
               .editCheckedOutItem(any(that: isA<CheckedOutEntity>())))
-          .called(unverifiedCheckoutPart.length);
-      verify(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
           .called(unverifiedCheckoutPart.length);
     });
 
@@ -63,9 +57,7 @@ void main() {
           checkedOutEntityList: unverifiedCheckoutPart);
 
       //setup
-      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
-          .thenAnswer(
-              (invocation) async => const Right<Failure, PartEntity?>(null));
+
       when(
         () => mockCheckoutPartRepository
             .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
@@ -77,8 +69,6 @@ void main() {
 
       verify(() => mockCheckoutPartRepository
               .editCheckedOutItem(any(that: isA<CheckedOutEntity>())))
-          .called(unverifiedCheckoutPart.length);
-      verify(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
           .called(unverifiedCheckoutPart.length);
     });
 
@@ -89,9 +79,7 @@ void main() {
           checkedOutEntityList: unverifiedCheckoutPart);
 
       //setup
-      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
-          .thenAnswer(
-              (invocation) async => const Right<Failure, PartEntity?>(null));
+
       when(
         () => mockCheckoutPartRepository
             .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
@@ -106,8 +94,6 @@ void main() {
 
       verify(() => mockCheckoutPartRepository
           .editCheckedOutItem(any(that: isA<CheckedOutEntity>()))).called(1);
-      verify(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
-          .called(1);
     });
 
     test(
@@ -117,9 +103,7 @@ void main() {
           checkedOutEntityList: unverifiedCheckoutPart);
 
       //setup
-      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
-          .thenAnswer((invocation) async =>
-              const Left<Failure, PartEntity?>(UpdateDataFailure()));
+
       when(
         () => mockCheckoutPartRepository
             .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
@@ -133,8 +117,8 @@ void main() {
 
       verifyNever(() => mockCheckoutPartRepository
           .editCheckedOutItem(any(that: isA<CheckedOutEntity>())));
-      verify(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
-          .called(1);
+      // verify(() => mockPartRepository.call(any(that: isA<EditPartParams>())))
+      //     .called(1);
     });
   });
 }
