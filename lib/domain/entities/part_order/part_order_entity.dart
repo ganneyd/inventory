@@ -1,3 +1,5 @@
+import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
+
 class PartOrderEntity {
   PartOrderEntity(
       {required this.index,
@@ -29,5 +31,15 @@ extension PartOrderExtension on PartOrderEntity {
         orderAmount: orderAmount ?? this.orderAmount,
         isFulfilled: isFulfilled ?? this.isFulfilled,
         orderDate: orderDate ?? this.orderDate);
+  }
+
+  PartOrderModel toModel() {
+    return PartOrderModel(
+        indexModel: index,
+        partModelIndex: partEntityIndex,
+        orderAmountModel: orderAmount,
+        orderDateModel: orderDate,
+        isFulfilledModel: isFulfilled,
+        fulfillmentDateModel: fulfillmentDate ?? DateTime.now());
   }
 }
