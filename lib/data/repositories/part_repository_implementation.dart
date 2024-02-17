@@ -49,7 +49,8 @@ class PartRepositoryImplementation extends PartRepository {
   @override
   Future<Either<Failure, void>> editPart(PartEntity partEntity) async {
     try {
-      var updatePart = PartEntityToModelAdapter.fromEntity(partEntity);
+      var updatePart =
+          PartEntityToModelAdapter.fromEntity(partEntity.updateChecksum());
 
       return Right<Failure, void>(
           await _localDataSource.putAt(partEntity.index, updatePart));

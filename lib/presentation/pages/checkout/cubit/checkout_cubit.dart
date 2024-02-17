@@ -1,33 +1,33 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_state.dart';
 import 'package:logging/logging.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
-  CheckoutCubit(
-      {required AddCheckoutPart addCheckoutPart,
-      required List<CheckedOutEntity> cartItems})
-      : _addCheckoutPart = addCheckoutPart,
-        _cartItems = cartItems,
+  CheckoutCubit({
+    required AddCheckoutPart addCheckoutPart,
+    required List<CartCheckoutEntity> cartItems,
+  })  : _addCheckoutPart = addCheckoutPart,
         _logger = Logger('checkout-part-cubit'),
-        super(CheckoutState());
+        super(CheckoutState(cartItems: cartItems));
 
   final AddCheckoutPart _addCheckoutPart;
   final Logger _logger;
-  final List<CheckedOutEntity> _cartItems;
-
   void init() {
+    if (state.cartItems.isEmpty) {
+      emit(state.copyWith(status: CheckoutStateStatus.loadedUnsuccessfully));
+    }
     emit(state.copyWith(
-        status: CheckoutStateStatus.loadedSuccessfully,
-        checkoutParts: _cartItems));
+        error: 'no-parts', status: CheckoutStateStatus.loadedSuccessfully));
   }
 
   void checkoutCart() async {
     emit(state.copyWith(status: CheckoutStateStatus.checkingOut));
-    _logger.finest('checking out ${state.checkoutParts.length} parts');
+    _logger.finest('checking out ${state.cartItems.length} parts');
     var results = await _addCheckoutPart
-        .call(AddCheckoutPartParams(checkoutParts: state.checkoutParts));
+        .call(AddCheckoutPartParams(cartItems: state.cartItems));
 
     results.fold(
         (failure) => emit(state.copyWith(
@@ -40,27 +40,28 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   void partRetrievalCompleted() {
     emit(state.copyWith(
-        checkoutParts: [],
+        cartItems: [],
         isCheckoutCompleted: true,
         status: CheckoutStateStatus.completed));
   }
 
   void removeCheckoutPart(int checkoutPartIndex) {
-    List<CheckedOutEntity> newCartList = state.checkoutParts.toList();
+    List<CartCheckoutEntity> newCartList = state.cartItems.toList();
 
     newCartList.removeAt(checkoutPartIndex);
 
-    emit(state.copyWith(checkoutParts: newCartList));
+    emit(state.copyWith(cartItems: newCartList));
   }
 
   void updateCheckoutQuantity(
-      {required int checkoutPartIndex, required int newQuantity}) {
-    var checkoutPart = state.checkoutParts[checkoutPartIndex];
+      {required int cartItemIndex, required int newQuantity}) {
+    var cartItem = state.cartItems[cartItemIndex];
 
-    var newCheckOutPart =
-        checkoutPart.copyWith(checkedOutQuantity: newQuantity);
-    List<CheckedOutEntity> newCartList = state.checkoutParts.toList();
-    newCartList[checkoutPartIndex] = newCheckOutPart;
-    emit(state.copyWith(checkoutParts: newCartList));
+    var newCartItem = cartItem.copyWith(
+        checkedOutEntity: cartItem.checkedOutEntity
+            .copyWith(checkedOutQuantity: newQuantity));
+    List<CartCheckoutEntity> newCartList = state.cartItems.toList();
+    newCartList[cartItemIndex] = newCartItem;
+    emit(state.copyWith(cartItems: newCartList));
   }
 }

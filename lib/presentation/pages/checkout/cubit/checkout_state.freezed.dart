@@ -16,8 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$CheckoutState {
-  List<CheckedOutEntity> get checkoutParts =>
-      throw _privateConstructorUsedError;
+  List<CartCheckoutEntity> get cartItems => throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
   bool get isCheckoutCompleted => throw _privateConstructorUsedError;
   CheckoutStateStatus get status => throw _privateConstructorUsedError;
@@ -34,7 +33,7 @@ abstract class $CheckoutStateCopyWith<$Res> {
       _$CheckoutStateCopyWithImpl<$Res, CheckoutState>;
   @useResult
   $Res call(
-      {List<CheckedOutEntity> checkoutParts,
+      {List<CartCheckoutEntity> cartItems,
       String error,
       bool isCheckoutCompleted,
       CheckoutStateStatus status});
@@ -53,16 +52,16 @@ class _$CheckoutStateCopyWithImpl<$Res, $Val extends CheckoutState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? checkoutParts = null,
+    Object? cartItems = null,
     Object? error = null,
     Object? isCheckoutCompleted = null,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
-      checkoutParts: null == checkoutParts
-          ? _value.checkoutParts
-          : checkoutParts // ignore: cast_nullable_to_non_nullable
-              as List<CheckedOutEntity>,
+      cartItems: null == cartItems
+          ? _value.cartItems
+          : cartItems // ignore: cast_nullable_to_non_nullable
+              as List<CartCheckoutEntity>,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -88,7 +87,7 @@ abstract class _$$AddPartStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<CheckedOutEntity> checkoutParts,
+      {List<CartCheckoutEntity> cartItems,
       String error,
       bool isCheckoutCompleted,
       CheckoutStateStatus status});
@@ -105,16 +104,16 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? checkoutParts = null,
+    Object? cartItems = null,
     Object? error = null,
     Object? isCheckoutCompleted = null,
     Object? status = null,
   }) {
     return _then(_$AddPartStateImpl(
-      checkoutParts: null == checkoutParts
-          ? _value._checkoutParts
-          : checkoutParts // ignore: cast_nullable_to_non_nullable
-              as List<CheckedOutEntity>,
+      cartItems: null == cartItems
+          ? _value._cartItems
+          : cartItems // ignore: cast_nullable_to_non_nullable
+              as List<CartCheckoutEntity>,
       error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -135,19 +134,19 @@ class __$$AddPartStateImplCopyWithImpl<$Res>
 
 class _$AddPartStateImpl implements _AddPartState {
   _$AddPartStateImpl(
-      {final List<CheckedOutEntity> checkoutParts = const <CheckedOutEntity>[],
+      {final List<CartCheckoutEntity> cartItems = const <CartCheckoutEntity>[],
       this.error = '',
       this.isCheckoutCompleted = false,
       this.status = CheckoutStateStatus.loading})
-      : _checkoutParts = checkoutParts;
+      : _cartItems = cartItems;
 
-  final List<CheckedOutEntity> _checkoutParts;
+  final List<CartCheckoutEntity> _cartItems;
   @override
   @JsonKey()
-  List<CheckedOutEntity> get checkoutParts {
-    if (_checkoutParts is EqualUnmodifiableListView) return _checkoutParts;
+  List<CartCheckoutEntity> get cartItems {
+    if (_cartItems is EqualUnmodifiableListView) return _cartItems;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_checkoutParts);
+    return EqualUnmodifiableListView(_cartItems);
   }
 
   @override
@@ -162,7 +161,7 @@ class _$AddPartStateImpl implements _AddPartState {
 
   @override
   String toString() {
-    return 'CheckoutState(checkoutParts: $checkoutParts, error: $error, isCheckoutCompleted: $isCheckoutCompleted, status: $status)';
+    return 'CheckoutState(cartItems: $cartItems, error: $error, isCheckoutCompleted: $isCheckoutCompleted, status: $status)';
   }
 
   @override
@@ -171,7 +170,7 @@ class _$AddPartStateImpl implements _AddPartState {
         (other.runtimeType == runtimeType &&
             other is _$AddPartStateImpl &&
             const DeepCollectionEquality()
-                .equals(other._checkoutParts, _checkoutParts) &&
+                .equals(other._cartItems, _cartItems) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.isCheckoutCompleted, isCheckoutCompleted) ||
                 other.isCheckoutCompleted == isCheckoutCompleted) &&
@@ -181,7 +180,7 @@ class _$AddPartStateImpl implements _AddPartState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(_checkoutParts),
+      const DeepCollectionEquality().hash(_cartItems),
       error,
       isCheckoutCompleted,
       status);
@@ -195,13 +194,13 @@ class _$AddPartStateImpl implements _AddPartState {
 
 abstract class _AddPartState implements CheckoutState {
   factory _AddPartState(
-      {final List<CheckedOutEntity> checkoutParts,
+      {final List<CartCheckoutEntity> cartItems,
       final String error,
       final bool isCheckoutCompleted,
       final CheckoutStateStatus status}) = _$AddPartStateImpl;
 
   @override
-  List<CheckedOutEntity> get checkoutParts;
+  List<CartCheckoutEntity> get cartItems;
   @override
   String get error;
   @override

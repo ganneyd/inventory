@@ -1,5 +1,3 @@
-import 'package:inventory_v1/domain/entities/part/part_entity.dart';
-
 class CheckedOutEntity {
   ///Specify which part was taken out, how much and when
   CheckedOutEntity({
@@ -7,14 +5,14 @@ class CheckedOutEntity {
     required this.quantityDiscrepancy,
     required this.checkedOutQuantity,
     required this.dateTime,
-    required this.part,
+    required this.partEntityIndex,
     this.isVerified,
     this.verifiedDate,
   });
   final int index;
 
   ///The part that was checked out
-  final PartEntity part;
+  final int partEntityIndex;
 
   ///Quantity that the user took out
   final int checkedOutQuantity;
@@ -30,12 +28,37 @@ class CheckedOutEntity {
 
   ///The date time when the checked out instance was verified
   final DateTime? verifiedDate;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is CheckedOutEntity &&
+        other.index == index &&
+        other.partEntityIndex == partEntityIndex &&
+        other.checkedOutQuantity == checkedOutQuantity &&
+        other.quantityDiscrepancy == quantityDiscrepancy &&
+        other.dateTime == dateTime &&
+        other.isVerified == isVerified &&
+        other.verifiedDate == verifiedDate;
+  }
+
+  @override
+  int get hashCode {
+    return index.hashCode ^
+        partEntityIndex.hashCode ^
+        checkedOutQuantity.hashCode ^
+        quantityDiscrepancy.hashCode ^
+        dateTime.hashCode ^
+        isVerified.hashCode ^
+        verifiedDate.hashCode;
+  }
 }
 
 extension CheckedOutEntityExtension on CheckedOutEntity {
   String extensionOverride() => 'over ride $checkedOutQuantity';
   CheckedOutEntity copyWith(
-      {PartEntity? partEntity,
+      {int? partEntityIndex,
       int? index,
       int? checkedOutQuantity,
       bool? isVerified,
@@ -47,7 +70,7 @@ extension CheckedOutEntityExtension on CheckedOutEntity {
         index: index ?? this.index,
         checkedOutQuantity: checkedOutQuantity ?? this.checkedOutQuantity,
         dateTime: dateTime ?? this.dateTime,
-        part: partEntity ?? part,
+        partEntityIndex: partEntityIndex ?? this.partEntityIndex,
         isVerified: isVerified ?? this.isVerified,
         verifiedDate: verifiedDate ?? this.verifiedDate);
   }

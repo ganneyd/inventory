@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/presentation/pages/add_part/view/add_part_view.dart';
 import 'package:inventory_v1/presentation/pages/checkout/view/checkout_view.dart';
 import 'package:inventory_v1/presentation/pages/home_page/view/home_page_view.dart';
@@ -25,9 +25,11 @@ class RouteGenerator {
             textEditingController: TextEditingController(text: searchKey)));
 
       case '/checkout':
-        final List<CheckedOutEntity> checkoutItems = settings.arguments == null
-            ? []
-            : settings.arguments as List<CheckedOutEntity>;
+        final List<CartCheckoutEntity> checkoutItems =
+            settings.arguments == null
+                ? []
+                : settings.arguments as List<CartCheckoutEntity>;
+
         return getRoute(CheckOutView(checkoutItems));
       default:
         return _errorRoute(settings.name);

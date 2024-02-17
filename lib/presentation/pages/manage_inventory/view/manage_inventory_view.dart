@@ -119,6 +119,7 @@ class ManageInventory extends StatelessWidget {
                         lowQuantityParts: state.lowQuantityParts,
                         cubit: BlocProvider.of<ManageInventoryCubit>(context)),
                     CheckoutPartPageView(
+                        allParts: state.parts,
                         allCheckedOutParts: state.checkedOutParts,
                         allUnverifiedCheckedOutParts: state.unverifiedParts,
                         cubit: BlocProvider.of<ManageInventoryCubit>(context)),

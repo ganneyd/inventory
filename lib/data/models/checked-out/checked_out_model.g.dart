@@ -20,7 +20,7 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       indexModel: fields[5] as int,
       checkedOutAmount: fields[1] as int,
       dateTimeModel: fields[2] as DateTime,
-      partModel: fields[0] as PartModel,
+      partModelIndex: 0,
       isVerifiedModel: fields[3] as bool,
       verifiedDateModel: fields[4] as DateTime,
       quantityDiscrepancyModel: fields[6] as int,
@@ -32,7 +32,7 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
     writer
       ..writeByte(7)
       ..writeByte(0)
-      ..write(obj.partModel)
+      ..write(obj.partModelIndex)
       ..writeByte(1)
       ..write(obj.checkedOutAmount)
       ..writeByte(2)

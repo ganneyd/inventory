@@ -215,72 +215,36 @@ void main() {
     }
 
     test(
-        'should update the part quantity for edited parts in the checkoutPartList',
+        'should update the quantity discrepancy for edited checkout part in the checkoutPartList',
         () async {
       mockSetup();
       expectLater(
-          sut.stream.map((state) => state.parts[0].quantity),
+          sut.stream
+              .map((state) => state.checkedOutParts[0].quantityDiscrepancy),
           emitsInOrder([
-            30,
-            31,
-            31,
-            32,
-            32,
-            31,
+            -1,
+            -2,
+            -2,
           ]));
 
       expectLater(
           sut.stream.map((state) => state.checkedOutParts[0].isVerified),
           emitsInOrder([
             false,
-            true,
-            true,
-            true,
-            true,
+            false,
             true,
           ]));
 
       expectLater(
-          sut.stream.map((state) => state.checkedOutParts[1].isVerified),
-          emitsInOrder([
-            false,
-            false,
-            false,
-            true,
-            true,
-            true,
-          ]));
-
-      expectLater(
-          sut.stream.map((state) => state.checkedOutParts[2].isVerified),
-          emitsInOrder([
-            false,
-            false,
-            false,
-            false,
-            false,
-            true,
-          ]));
-      expectLater(
-          sut.stream.map((state) => state.checkedOutParts[2].part.quantity),
-          emitsInOrder([
-            30,
-            31,
-            31,
-            32,
-            31,
-            31,
-          ]));
+          sut.stream.map((state) =>
+              state.parts[state.checkedOutParts[0].partEntityIndex].quantity),
+          emitsInOrder([30, 30, 32]));
 
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[0], quantityChange: -1);
+      sut.updateCheckoutQuantity(
+          checkoutPart: sut.state.checkedOutParts[0], quantityChange: -1);
       sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[0]);
-      sut.updateCheckoutQuantity(
-          checkoutPart: sut.state.checkedOutParts[1], quantityChange: -1);
-      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[1]);
-      sut.updateCheckoutQuantity(
-          checkoutPart: sut.state.checkedOutParts[2], quantityChange: 1);
-      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[2]);
     });
     test('should filter the list', () async {
       sut.emit(sut.state.copyWith(
@@ -321,13 +285,6 @@ void main() {
             checkoutPart.checkedOutQuantity - 2,
           ]));
 
-      expectLater(
-          sut.stream.map((event) => event.checkedOutParts[index].part.quantity),
-          emitsInOrder([
-            checkoutPart.part.quantity + 1,
-            checkoutPart.part.quantity + 2,
-          ]));
-
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
       sut.updateCheckoutQuantity(
@@ -343,9 +300,6 @@ void main() {
               .map((event) => event.checkedOutParts[index].quantityDiscrepancy),
           emitsInOrder([1]));
 
-      expectLater(
-          sut.stream.map((event) => event.checkedOutParts[index].part.quantity),
-          emitsInOrder([29]));
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[index], quantityChange: 1);
     });
@@ -364,12 +318,11 @@ void main() {
       var index = 0;
       var checkoutPart = valuesForTest.createCheckedOutList()[index];
       expectLater(
-          sut.stream.map((state) => state.parts[index].quantity),
-          emitsInOrder([
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity + 2,
-          ]));
+          sut.stream.map((state) => state.checkedOutParts[0].isVerified),
+          emitsInOrder([false, false, true])).then((_) {
+        expect(sut.state.parts[checkoutPart.partEntityIndex].quantity,
+            valuesForTest.parts()[checkoutPart.partEntityIndex].quantity + 2);
+      });
 
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
@@ -384,26 +337,14 @@ void main() {
       mockSetup();
       var index = 0;
       var checkoutPart = valuesForTest.createCheckedOutList()[index];
-      expectLater(
-          sut.stream.map((state) => state.parts[index].quantity),
-          emitsInOrder([
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity + 2,
-          ]));
+
 //check that the other checkout part's quantity was messed with
       expectLater(
-          sut.stream
-              .map((state) => state.checkedOutParts[index + 1].part.quantity),
-          emitsInOrder([
-            checkoutPart.part.quantity,
-            checkoutPart.part.quantity - 1,
-            checkoutPart.part.quantity - 2,
-            checkoutPart.part.quantity - 2,
-          ]));
-
+          sut.stream.map((state) => state.checkedOutParts[0].isVerified),
+          emitsInOrder([false, false, false, false, true])).then((_) {
+        expect(sut.state.parts[checkoutPart.partEntityIndex].quantity,
+            valuesForTest.parts()[checkoutPart.partEntityIndex].quantity + 2);
+      });
       sut.updateCheckoutQuantity(
           checkoutPart: sut.state.checkedOutParts[index], quantityChange: -1);
       sut.updateCheckoutQuantity(
