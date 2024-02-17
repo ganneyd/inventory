@@ -1,11 +1,11 @@
 import 'package:hive/hive.dart';
-import 'package:inventory_v1/domain/entities/part_order/part_order_entity.dart';
+import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
 
 part 'part_order_model.g.dart';
 
 @HiveType(typeId: 4)
-class PartOrderModel extends PartOrderEntity {
-  PartOrderModel(
+class OrderModel extends OrderEntity {
+  OrderModel(
       {required this.indexModel,
       required this.partModelIndex,
       required this.orderAmountModel,

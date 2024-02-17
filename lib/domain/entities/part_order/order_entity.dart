@@ -1,7 +1,7 @@
 import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
 
-class PartOrderEntity {
-  PartOrderEntity(
+class OrderEntity {
+  OrderEntity(
       {required this.index,
       required this.partEntityIndex,
       required this.orderAmount,
@@ -17,15 +17,15 @@ class PartOrderEntity {
   final DateTime? fulfillmentDate;
 }
 
-extension PartOrderExtension on PartOrderEntity {
-  PartOrderEntity copyWith(
+extension PartOrderExtension on OrderEntity {
+  OrderEntity copyWith(
       {int? index,
       int? partEntityIndex,
       int? orderAmount,
       DateTime? orderDate,
       bool? isFulfilled,
       DateTime? fulfillmentDate}) {
-    return PartOrderEntity(
+    return OrderEntity(
         index: index ?? this.index,
         partEntityIndex: partEntityIndex ?? this.partEntityIndex,
         orderAmount: orderAmount ?? this.orderAmount,
@@ -33,8 +33,8 @@ extension PartOrderExtension on PartOrderEntity {
         orderDate: orderDate ?? this.orderDate);
   }
 
-  PartOrderModel toModel() {
-    return PartOrderModel(
+  OrderModel toModel() {
+    return OrderModel(
         indexModel: index,
         partModelIndex: partEntityIndex,
         orderAmountModel: orderAmount,
