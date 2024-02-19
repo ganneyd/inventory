@@ -11,14 +11,14 @@ import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/service_locator.dart';
 
 class ManageInventory extends StatelessWidget {
-  ManageInventory()
-      : _pageController = PageController(),
-        super(key: const Key('manage-inventory-view'));
-  final PageController _pageController;
+  const ManageInventory() : super(key: const Key('manage-inventory-view'));
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+            createPartOrderUsecase: locator<CreatePartOrderUsecase>(),
+            fulfillPartOrdersUsecase: locator<FulfillPartOrdersUsecase>(),
             verifyCheckoutPartUsecase: locator<VerifyCheckoutPart>(),
             getLowQuantityParts: locator<GetLowQuantityParts>(),
             getAllCheckoutParts: locator<GetAllCheckoutParts>(),
@@ -90,41 +90,43 @@ class ManageInventory extends StatelessWidget {
               }
             });
 
-            return Scaffold(
-                appBar: CustomAppBar(
-                  key: const Key('manage-inventory-app-bar'),
-                  title: 'Manage Inventory',
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          BlocProvider.of<ManageInventoryCubit>(context)
-                              .loadParts();
-                          _pageController.jumpToPage(0);
-                        },
-                        child: const Text("All Parts")),
-                    TextButton(
-                        onPressed: () {
-                          BlocProvider.of<ManageInventoryCubit>(context)
-                              .loadParts();
-                          _pageController.jumpToPage(1);
-                        },
-                        child: const Text('Checked Out Parts')),
-                  ],
-                ),
-                body: PageView(
-                  controller: _pageController,
-                  children: [
-                    PartsPageView(
-                        allParts: state.parts,
-                        lowQuantityParts: state.lowQuantityParts,
-                        cubit: BlocProvider.of<ManageInventoryCubit>(context)),
-                    CheckoutPartPageView(
-                        allParts: state.parts,
-                        allCheckedOutParts: state.checkedOutParts,
-                        allUnverifiedCheckedOutParts: state.unverifiedParts,
-                        cubit: BlocProvider.of<ManageInventoryCubit>(context)),
-                  ],
-                ));
+            return DefaultTabController(
+                length: 3,
+                child: Scaffold(
+                    appBar: const CustomAppBar(
+                        key: Key('manage-inventory-view-search-bar'),
+                        title: 'Manage Inventory',
+                        bottom: TabBar(
+                          tabs: [
+                            Tab(
+                              text: 'Parts',
+                            ),
+                            Tab(
+                              text: 'Checked out Parts',
+                            ),
+                            Tab(
+                              text: 'Part Orders',
+                            )
+                          ],
+                        )),
+                    body: TabBarView(
+                      children: [
+                        PartsPageView(
+                            allParts: state.parts,
+                            lowQuantityParts: state.lowQuantityParts,
+                            cubit:
+                                BlocProvider.of<ManageInventoryCubit>(context)),
+                        CheckoutPartPageView(
+                            allParts: state.parts,
+                            allCheckedOutParts: state.checkedOutParts,
+                            allUnverifiedCheckedOutParts: state.unverifiedParts,
+                            cubit:
+                                BlocProvider.of<ManageInventoryCubit>(context)),
+                        Container(
+                          child: Text('Third Page'),
+                        ),
+                      ],
+                    )));
           },
         ));
   }
