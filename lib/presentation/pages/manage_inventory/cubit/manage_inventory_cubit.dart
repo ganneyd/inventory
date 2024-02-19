@@ -18,6 +18,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     required this.verifyCheckoutPartUsecase,
     required this.fulfillPartOrdersUsecase,
     required this.createPartOrderUsecase,
+    required this.getAllPartOrdersUsecase,
   })  : _logger = Logger('manage-inv-cubit'),
         super(ManageInventoryState(fetchPartAmount: fetchPartAmount));
 
@@ -30,6 +31,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final GetAllCheckoutParts getAllCheckoutParts;
   final FulfillPartOrdersUsecase fulfillPartOrdersUsecase;
   final CreatePartOrderUsecase createPartOrderUsecase;
+  final GetAllPartOrdersUsecase getAllPartOrdersUsecase;
   //for debugging
   final Logger _logger;
 
@@ -79,6 +81,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
             databaseLength: r, status: ManageInventoryStateStatus.loading)));
     loadParts();
     loadCheckedOutParts();
+    loadPartOrders();
   }
 
   void loadCheckedOutParts() async {
@@ -183,9 +186,15 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   }
 
   ///order parts methods
-  void orderPart({required OrderEntity orderEntity}) async {
+  void orderPart(
+      {required int orderAmount, required int partEntityIndex}) async {
     emit(state.copyWith(status: ManageInventoryStateStatus.creatingPartOrder));
     var partOrders = state.allPartOrders.toList();
+    var orderEntity = OrderEntity(
+        index: state.allPartOrders.length,
+        partEntityIndex: partEntityIndex,
+        orderAmount: orderAmount,
+        orderDate: DateTime.now());
     partOrders.add(orderEntity);
     var results = await createPartOrderUsecase
         .call(CreatePartOrderParams(orderEntity: orderEntity));
@@ -229,6 +238,26 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   List<OrderEntity> _filterUnfulfilledPartOrders(
       List<OrderEntity> unfilteredList) {
     return unfilteredList.where((order) => !order.isFulfilled).toList();
+  }
+
+  void loadPartOrders() async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.fetchingData));
+    var allPartOrdersList = state.allPartOrders.toList();
+    var results = await getAllPartOrdersUsecase.call(GetAllPartOrdersParams(
+        currentOrderListLength: state.allPartOrders.length,
+        fetchAmount: state.fetchPartAmount));
+
+    results.fold(
+        (l) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.fetchedDataUnsuccessfully)),
+        (orders) {
+      allPartOrdersList.addAll(orders);
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.fetchedDataSuccessfully,
+          allPartOrders: allPartOrdersList,
+          allUnfulfilledPartOrders:
+              _filterUnfulfilledPartOrders(allPartOrdersList)));
+    });
   }
 
   @override
