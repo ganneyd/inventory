@@ -20,7 +20,7 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       indexModel: fields[5] as int,
       checkedOutAmount: fields[1] as int,
       dateTimeModel: fields[2] as DateTime,
-      partModelIndex: 0,
+      partModelIndex: fields[0] as int,
       isVerifiedModel: fields[3] as bool,
       verifiedDateModel: fields[4] as DateTime,
       quantityDiscrepancyModel: fields[6] as int,
