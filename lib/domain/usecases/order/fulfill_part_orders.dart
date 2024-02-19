@@ -17,10 +17,13 @@ class FulfillPartOrdersUsecase
   final PartRepository _partRepository;
   @override
   Future<Either<Failure, void>> call(FulfillPartOrdersParams params) async {
+    PartEntity? originalPart;
     if (params.fulfillmentEntities.isEmpty) {
       return const Right<Failure, void>(null);
     }
+    var isEditPartLeft = false;
     for (var orderEntity in params.fulfillmentEntities) {
+      isEditPartLeft = false;
       var getPartResults =
           await _partRepository.getSpecificPart(orderEntity.partEntityIndex);
       if (getPartResults.isLeft()) {
@@ -28,14 +31,23 @@ class FulfillPartOrdersUsecase
       }
 
       await getPartResults.fold((l) => null, (part) async {
-        await _partRepository.editPart(
+        originalPart = part;
+        var editPartResults = await _partRepository.editPart(
             part.copyWith(quantity: part.quantity + orderEntity.orderAmount));
+        isEditPartLeft = editPartResults.isLeft();
       });
+
+      if (isEditPartLeft) {
+        continue;
+      }
 
       var orderUpdateResults = await _partOrderRepository.editPartOrder(
           orderEntity.copyWith(
               isFulfilled: true, fulfillmentDate: DateTime.now()));
       if (orderUpdateResults.isLeft()) {
+        //roll back previous changes to the part
+        await _partRepository
+            .editPart(getPartResults.getOrElse(() => originalPart!));
         return const Left<Failure, void>(UpdateDataFailure());
       }
     }
