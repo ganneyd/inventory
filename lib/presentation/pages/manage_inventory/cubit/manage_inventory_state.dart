@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
 
 part 'manage_inventory_state.freezed.dart';
 
@@ -14,7 +15,10 @@ enum ManageInventoryStateStatus {
   fetchedDataUnsuccessfully,
   verifyingPart,
   verifiedPartSuccessfully,
-  verifiedPartUnsuccessfully
+  verifiedPartUnsuccessfully,
+  creatingPartOrder,
+  createdPartOrderSuccessfully,
+  createdPartOrderUnsuccessfully,
 }
 
 @freezed
@@ -27,6 +31,9 @@ class ManageInventoryState with _$ManageInventoryState {
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> unverifiedParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> newlyVerifiedParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkedOutParts,
+    @Default(<OrderEntity>[]) List<OrderEntity> allPartOrders,
+    @Default(<OrderEntity>[]) List<OrderEntity> allUnfulfilledPartOrders,
+    @Default(<OrderEntity>[]) List<OrderEntity> newlyFulfilledPartOrders,
     @Default('no error') error,
     @Default(ManageInventoryStateStatus.loading)
     ManageInventoryStateStatus status,
