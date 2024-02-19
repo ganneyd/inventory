@@ -5,6 +5,7 @@ import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/check_out_part_page_view.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/part_order_view.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/part_page_view.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
@@ -17,6 +18,7 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+            getAllPartOrdersUsecase: locator<GetAllPartOrdersUsecase>(),
             createPartOrderUsecase: locator<CreatePartOrderUsecase>(),
             fulfillPartOrdersUsecase: locator<FulfillPartOrdersUsecase>(),
             verifyCheckoutPartUsecase: locator<VerifyCheckoutPart>(),
@@ -58,6 +60,17 @@ class ManageInventory extends StatelessWidget {
                 ));
               }
               if (state.status ==
+                  ManageInventoryStateStatus.createdPartOrderSuccessfully) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.green,
+                  duration: Duration(milliseconds: 100),
+                  content: SizedBox(
+                    height: 5,
+                    child: Text('ordered part'),
+                  ),
+                ));
+              }
+              if (state.status ==
                   ManageInventoryStateStatus.verifiedPartSuccessfully) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   backgroundColor: Colors.purple,
@@ -77,6 +90,19 @@ class ManageInventory extends StatelessWidget {
                     height: 5,
                     child: Center(
                       child: Text('Could not verify part'),
+                    ),
+                  ),
+                ));
+              }
+              if (state.status ==
+                  ManageInventoryStateStatus.createdPartOrderUnsuccessfully) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.pink,
+                  duration: Duration(milliseconds: 10),
+                  content: SizedBox(
+                    height: 5,
+                    child: Center(
+                      child: Text('Could not order part'),
                     ),
                   ),
                 ));
@@ -122,9 +148,13 @@ class ManageInventory extends StatelessWidget {
                             allUnverifiedCheckedOutParts: state.unverifiedParts,
                             cubit:
                                 BlocProvider.of<ManageInventoryCubit>(context)),
-                        Container(
-                          child: Text('Third Page'),
-                        ),
+                        PartOrdersPageView(
+                            allPartOrders: state.allPartOrders,
+                            unfulfilledPartOrders:
+                                state.allUnfulfilledPartOrders,
+                            allParts: state.parts,
+                            cubit:
+                                BlocProvider.of<ManageInventoryCubit>(context))
                       ],
                     )));
           },
