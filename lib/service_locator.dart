@@ -4,9 +4,12 @@ import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
+import 'package:inventory_v1/data/repositories/part_order_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/repositories/part_order_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:logging/logging.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
@@ -14,6 +17,7 @@ import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 //name of the Hive.box that the parts data is stored in
 const String boxName = 'parts_json';
 const String checkoutPartBox = 'checkout_parts';
+const String partOrdersBox = 'part_orders';
 final GetIt locator = GetIt.instance;
 Logger serviceLocatorLogger = Logger('service_locator');
 
@@ -33,6 +37,8 @@ Future<void> initHive() async {
   Hive.registerAdapter(PartModelAdapter());
   Hive.registerAdapter(UnitOfIssueAdapter());
   Hive.registerAdapter(CheckedOutModelAdapter());
+  Hive.registerAdapter(OrderModelAdapter());
+  await Hive.openBox<OrderModel>(partOrdersBox);
   await Hive.openBox<PartModel>(boxName);
   await Hive.openBox<CheckedOutModel>(checkoutPartBox);
 
@@ -58,6 +64,8 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<CheckedOutPartRepository>(() =>
       CheckedOutPartRepositoryImplementation(
           Hive.box<CheckedOutModel>(checkoutPartBox)));
+  locator.registerLazySingleton<PartOrderRepository>(() =>
+      PartOrderRepositoryImplementation(Hive.box<OrderModel>(partOrdersBox)));
   //!Usecases
   locator.registerFactory<AddPartUsecase>(
       () => AddPartUsecase(locator<PartRepository>()));
@@ -88,6 +96,20 @@ Future<void> setupLocator() async {
       () => GetAllCheckoutParts(locator<CheckedOutPartRepository>()));
   locator.registerFactory<GetUnverifiedCheckoutParts>(
       () => GetUnverifiedCheckoutParts(locator<CheckedOutPartRepository>()));
+
+  locator.registerFactory<CreatePartOrderUsecase>(
+      () => CreatePartOrderUsecase(locator<PartOrderRepository>()));
+  locator.registerFactory<DeletePartOrderUsecase>(
+      () => DeletePartOrderUsecase(locator<PartOrderRepository>()));
+  locator.registerFactory<EditPartOrderUsecase>(
+      () => EditPartOrderUsecase(locator<PartOrderRepository>()));
+  locator.registerFactory<FulfillPartOrdersUsecase>(() =>
+      FulfillPartOrdersUsecase(
+          locator<PartRepository>(), locator<PartOrderRepository>()));
+  locator.registerFactory<GetAllPartOrdersUsecase>(
+      () => GetAllPartOrdersUsecase(locator<PartOrderRepository>()));
+  locator.registerFactory<GetPartOrderUsecase>(
+      () => GetPartOrderUsecase(locator<PartOrderRepository>()));
 
   //!Presentation Layer
 //!Pages
