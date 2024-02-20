@@ -19,6 +19,9 @@ enum ManageInventoryStateStatus {
   creatingPartOrder,
   createdPartOrderSuccessfully,
   createdPartOrderUnsuccessfully,
+  deletingPartOrder,
+  deletedPartOrderSuccessfully,
+  deletedPartOrderUnsuccessfully
 }
 
 @freezed
