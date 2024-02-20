@@ -6,8 +6,6 @@ import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/get_all_part.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../setup.dart';
-
 //class to mock the part repository for testing purposes
 class MockPartRepository extends Mock implements PartRepository {}
 
@@ -18,11 +16,10 @@ void main() {
   //
   late MockPartRepository mockPartRepository;
   //
-  late ValuesForTest valuesForTest;
 
   setUp(() async {
     //initialize all the variables
-    valuesForTest = ValuesForTest();
+
     mockPartRepository = MockPartRepository();
     sut = GetAllPartsUsecase(mockPartRepository);
   });
@@ -30,44 +27,42 @@ void main() {
   group('GetPartsUsecase.call()', () {
     test('should return a list of all parts between startIndex and pageIndex',
         () async {
-      int startIndex = 2;
-      int pageIndex = 10;
       //list
-      List<PartEntity> parts = [];
-      when(() => mockPartRepository.getAllParts(startIndex, pageIndex))
-          .thenAnswer((invocation) async {
-        for (int i = startIndex; i < pageIndex; i++) {
-          parts.add(valuesForTest.parts()[i]);
-        }
-        return Right<Failure, List<PartEntity>>(parts);
-      });
 
-      var results = await sut
-          .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
+      when(() => mockPartRepository.getAllParts(
+              any(that: isA<int>()), any(that: isA<int>())))
+          .thenAnswer(
+              (invocation) async => const Right<Failure, List<PartEntity>>([]));
+
+      var results = await sut.call(
+          const GetAllPartParams(currentDatabaseLength: 0, fetchAmount: 30));
       expect(results, isA<Right<Failure, List<PartEntity>>>());
-      var rightResult = <PartEntity>[];
-      results.fold((l) => null, (r) => rightResult = r);
-      expect(rightResult, equals(parts));
-      verify(() => mockPartRepository.getAllParts(startIndex, pageIndex))
-          .called(1);
+
+      var capture = verify(() => mockPartRepository.getAllParts(
+          captureAny(that: isA<int>()), captureAny(that: isA<int>()))).captured;
+      var currentListLength = capture.first as int;
+      var fetchAmount = capture.last as int;
+      expect(currentListLength, 0);
+      expect(fetchAmount, 30);
     });
 
     test('should return ReadDataFailure upon an failure', () async {
-      int startIndex = 2;
-      int pageIndex = 10;
-      when(() => mockPartRepository.getAllParts(startIndex, pageIndex))
+      when(() => mockPartRepository.getAllParts(
+              any(that: isA<int>()), any(that: isA<int>())))
           .thenAnswer((invocation) async {
         return const Left<Failure, List<PartEntity>>(ReadDataFailure());
       });
 
-      var results = await sut
-          .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
-      expect(results, isA<Left<Failure, List<PartEntity>>>());
-      Failure leftResult = const GetFailure();
-      results.fold((l) => leftResult = l, (r) => null);
-      expect(leftResult, equals(const ReadDataFailure()));
-      verify(() => mockPartRepository.getAllParts(startIndex, pageIndex))
-          .called(1);
+      var results = await sut.call(
+          const GetAllPartParams(currentDatabaseLength: 0, fetchAmount: 20));
+      expect(results, const Left<Failure, List<PartEntity>>(ReadDataFailure()));
+
+      var capture = verify(() => mockPartRepository.getAllParts(
+          captureAny(that: isA<int>()), captureAny(that: isA<int>()))).captured;
+      var currentListLength = capture.first as int;
+      var fetchAmount = capture.last as int;
+      expect(currentListLength, 0);
+      expect(fetchAmount, 20);
     });
   });
 }
