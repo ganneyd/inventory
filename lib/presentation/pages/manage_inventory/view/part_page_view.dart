@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/order_part_alert_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
@@ -113,7 +114,20 @@ class _PartsPageViewState extends State<PartsPageView> {
           children: [
             SmallButton(
                 buttonName: showAllParts ? 'Order More' : 'On-Order',
-                onPressed: () {}),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return OrderPartDialog(
+                          part: widget.allParts[index],
+                          onOrder: (int quantity, int partEntityIndex) {
+                            widget.cubit.orderPart(
+                                orderAmount: quantity,
+                                partEntityIndex: partEntityIndex);
+                          },
+                        );
+                      });
+                }),
             SmallButton(buttonName: 'Discontinue', onPressed: () {})
           ],
         ),

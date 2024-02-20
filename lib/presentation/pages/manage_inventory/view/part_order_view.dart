@@ -30,6 +30,11 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
   @override
   void initState() {
     controller = ScrollController();
+    controller.addListener(() {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        widget.cubit.loadPartOrders();
+      }
+    });
     super.initState();
   }
 
@@ -55,13 +60,13 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
                             //controller.jumpTo(controller.initialScrollOffset);
                             showFulfilledPartOrders = true;
                           }),
-                      child: const Text('Checked Out Parts')),
+                      child: const Text('All Orders')),
                   TextButton(
                       onPressed: () => setState(() {
                             // controller.jumpTo(controller.initialScrollOffset);
                             showFulfilledPartOrders = false;
                           }),
-                      child: const Text('Unverified Parts'))
+                      child: const Text('Unfulfilled Orders'))
                 ],
               ),
             )
@@ -117,9 +122,9 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Date Checked out: ${orderEntity.orderDate}'),
+            Text('Date ordered out: ${orderEntity.orderDate}'),
             orderEntity.isFulfilled
-                ? Text('Date verified: ${orderEntity.fulfillmentDate}')
+                ? Text('Date fulfilled: ${orderEntity.fulfillmentDate}')
                 : Container(),
           ],
         ),
@@ -128,16 +133,19 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
           children: [
             orderEntity.isFulfilled
                 ? Text(
-                    'Checked out ${orderEntity.orderAmount} in stock:  ${partEntity.quantity} ${partEntity.unitOfIssue.displayValue}')
+                    'Ordered on ${orderEntity.orderAmount} in stock:  ${partEntity.quantity} ${partEntity.unitOfIssue.displayValue}')
                 : Text(
-                    'Checked out ${orderEntity.orderAmount} in stock:  ${partEntity.quantity + orderEntity.orderAmount} ${partEntity.unitOfIssue.displayValue}'),
+                    'Ordered on ${orderEntity.orderAmount} in stock:  ${partEntity.quantity + orderEntity.orderAmount} ${partEntity.unitOfIssue.displayValue}'),
           ],
         ),
         Row(
           children: [
             orderEntity.isFulfilled
                 ? Container()
-                : SmallButton(buttonName: 'Verify', onPressed: () => ()),
+                : SmallButton(
+                    buttonName: 'Fulfilled',
+                    onPressed: () => widget.cubit
+                        .fulfillPartOrder(orderEntityIndex: orderEntity.index)),
           ],
         ),
       ],
