@@ -28,14 +28,10 @@ enum ManageInventoryStateStatus {
 class ManageInventoryState with _$ManageInventoryState {
   factory ManageInventoryState({
     @Default(20) int fetchPartAmount,
-    @Default(0) int databaseLength,
-    @Default(<PartEntity>[]) List<PartEntity> parts,
-    @Default(<PartEntity>[]) List<PartEntity> lowQuantityParts,
-    @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> unverifiedParts,
+    @Default(<PartEntity>[]) List<PartEntity> allParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> newlyVerifiedParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkedOutParts,
     @Default(<OrderEntity>[]) List<OrderEntity> allPartOrders,
-    @Default(<OrderEntity>[]) List<OrderEntity> allUnfulfilledPartOrders,
     @Default(<OrderEntity>[]) List<OrderEntity> newlyFulfilledPartOrders,
     @Default('no error') error,
     @Default(ManageInventoryStateStatus.loading)
