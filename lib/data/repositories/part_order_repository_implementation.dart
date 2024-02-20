@@ -61,17 +61,18 @@ class PartOrderRepositoryImplementation extends PartOrderRepository {
   Future<Either<Failure, List<OrderEntity>>> getAllPartOrders(
       int startIndex, int endIndex) async {
     try {
+      if (startIndex >= _localDatasource.length) {
+        return const Right<Failure, List<OrderEntity>>([]);
+      }
       _logger.finest(endIndex);
-      var end = _localDatasource.length + endIndex;
-      var upperBound = _localDatasource.length - 1 - startIndex;
+      var end = _localDatasource.length - endIndex.abs();
+      var upperBound = _localDatasource.length - 1 - startIndex.abs();
       var lowerBound = 0 > end ? 0 : end;
 
       _logger.finest(
           'getting all parts lowerBound is $lowerBound and upperBound is $upperBound');
-      if (upperBound == -1) {
-        return const Right<Failure, List<OrderEntity>>([]);
-      }
-      if (lowerBound > upperBound) {
+
+      if (lowerBound >= upperBound) {
         _logger.severe(
             'lowerBound is greater than upperBound, throwing exception... ');
         throw IndexOutOfBounds();
