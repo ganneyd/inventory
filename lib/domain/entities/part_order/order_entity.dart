@@ -30,6 +30,7 @@ extension PartOrderExtension on OrderEntity {
         partEntityIndex: partEntityIndex ?? this.partEntityIndex,
         orderAmount: orderAmount ?? this.orderAmount,
         isFulfilled: isFulfilled ?? this.isFulfilled,
+        fulfillmentDate: fulfillmentDate,
         orderDate: orderDate ?? this.orderDate);
   }
 
