@@ -14,10 +14,11 @@ class GetAllPartsUsecase
   @override
   Future<Either<Failure, List<PartEntity>>> call(
       GetAllPartParams params) async {
-    Either<Failure, List<PartEntity>> usecase =
-        await _partRepository.getAllParts(params.startIndex, params.pageIndex);
+    var startIndex = params.currentDatabaseLength;
+    var endIndex = startIndex + params.fetchAmount;
+    var results = await _partRepository.getAllParts(startIndex, endIndex);
 
-    return usecase
+    return results
         .fold((l) => const Left<Failure, List<PartEntity>>(ReadDataFailure()),
             (List<PartEntity> parts) {
       return Right<Failure, List<PartEntity>>(parts);
@@ -26,9 +27,10 @@ class GetAllPartsUsecase
 }
 
 class GetAllPartParams extends Equatable {
-  const GetAllPartParams({required this.pageIndex, required this.startIndex});
-  final int startIndex;
-  final int pageIndex;
+  const GetAllPartParams(
+      {required this.currentDatabaseLength, required this.fetchAmount});
+  final int currentDatabaseLength;
+  final int fetchAmount;
   @override
-  List<Object?> get props => <Object>[startIndex, pageIndex];
+  List<Object?> get props => <Object>[currentDatabaseLength, fetchAmount];
 }
