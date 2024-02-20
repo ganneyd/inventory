@@ -15,6 +15,28 @@ class OrderEntity {
   final DateTime orderDate;
   final bool isFulfilled;
   final DateTime? fulfillmentDate;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is OrderEntity &&
+        other.index == index &&
+        other.partEntityIndex == partEntityIndex &&
+        other.orderAmount == orderAmount &&
+        other.orderDate == orderDate &&
+        other.isFulfilled == isFulfilled;
+  }
+
+  @override
+  int get hashCode {
+    return index.hashCode ^
+        partEntityIndex.hashCode ^
+        orderAmount.hashCode ^
+        orderDate.hashCode ^
+        isFulfilled.hashCode ^
+        fulfillmentDate.hashCode;
+  }
 }
 
 extension PartOrderExtension on OrderEntity {
