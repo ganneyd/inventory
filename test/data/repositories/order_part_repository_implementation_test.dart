@@ -30,41 +30,50 @@ void main() {
 
   group('.createPartOrder()', () {
     void mockSetup() {
-      when(() => mockBox.length).thenAnswer(
-        (invocation) => 1,
-      );
-      when(() => mockBox.add(any(that: isA<OrderModel>())))
-          .thenAnswer((invocation) async => 0);
-      when(() => mockBox.isEmpty).thenAnswer((invocation) => false);
+      when(() => mockBox.length).thenAnswer((invocation) => 1);
+      when(() => mockBox.put(
+              any(that: isA<dynamic>()), any(that: isA<OrderModel>())))
+          .thenAnswer((invocation) async => ());
     }
 
     test('should return Right', () async {
       mockSetup();
+
       var results = await sut.createPartOrder(OrderEntity(
           index: 1,
           partEntityIndex: 0,
           orderAmount: 30,
           orderDate: DateTime.now().subtract(const Duration(days: 20))));
       expect(results, const Right<Failure, void>(null));
-      verify(() => mockBox.add(any(that: isA<OrderModel>()))).called(1);
+      verify(() =>
+              mockBox.put(any(that: isA<int>()), any(that: isA<OrderModel>())))
+          .called(1);
     });
 
     test('should return left', () async {
       mockSetup();
-      when(() => mockBox.length).thenThrow(Exception);
+      when(() =>
+              mockBox.put(any(that: isA<int>()), any(that: isA<OrderModel>())))
+          .thenThrow(Exception);
       var results = await sut.createPartOrder(OrderEntity(
           index: 1,
           partEntityIndex: 0,
           orderAmount: 30,
           orderDate: DateTime.now().subtract(const Duration(days: 20))));
       expect(results, const Left<Failure, void>(CreateDataFailure()));
-      verifyNever(() => mockBox.add(any(that: isA<OrderModel>())));
+      verify(() => mockBox.put(
+          any(that: isA<dynamic>()), any(that: isA<OrderModel>()))).called(1);
+      verifyNever(() => mockBox.length);
     });
   });
 
   group('.deletePartOrder()', () {
     void mockSetup() {
-      when(() => mockBox.deleteAt(1)).thenAnswer((invocation) async => ());
+      when(() => mockBox.containsKey(any(that: isA<dynamic>())))
+          .thenAnswer((_) => true);
+      when(() => mockBox.delete(any(that: isA<dynamic>())))
+          .thenAnswer((invocation) async => ());
+      when(() => mockBox.keys).thenAnswer((_) => [0, 0, 0]);
     }
 
     test('should return Right', () async {
@@ -75,18 +84,26 @@ void main() {
           orderAmount: 30,
           orderDate: DateTime.now().subtract(const Duration(days: 20))));
       expect(results, const Right<Failure, void>(null));
-      verify(() => mockBox.deleteAt(1)).called(1);
+      verify(() => mockBox.delete(1)).called(1);
+      var capture =
+          verify(() => mockBox.containsKey(captureAny(that: isA<dynamic>())))
+              .captured;
+      var index = capture.first as int;
+      expect(index, 1);
     });
 
     test('should return left', () async {
-      when(() => mockBox.deleteAt(1)).thenThrow(Exception);
-      var results = await sut.createPartOrder(OrderEntity(
+      mockSetup();
+      when(() => mockBox.delete(1)).thenThrow(Exception);
+      var results = await sut.deletePartOrder(OrderEntity(
           index: 1,
           partEntityIndex: 0,
           orderAmount: 30,
           orderDate: DateTime.now().subtract(const Duration(days: 20))));
-      expect(results, const Left<Failure, void>(CreateDataFailure()));
-      verifyNever(() => mockBox.add(any(that: isA<OrderModel>())));
+      expect(results, const Left<Failure, void>(DeleteDataFailure()));
+      verifyNever(() => mockBox.keys);
+      verify(() => mockBox.containsKey(1)).called(1);
+      verify(() => mockBox.delete(1)).called(1);
     });
   });
 
@@ -159,44 +176,42 @@ void main() {
 
   group('.getAllPartOrders()', () {
     void mockSetup() {
-      when(() => mockBox.length).thenAnswer((invocation) => 10);
-      when(() => mockBox.valuesBetween(
-              startKey: any(named: 'startKey'), endKey: any(named: 'endKey')))
-          .thenAnswer(
-              (invocation) => [orderModel, orderModel, orderModel, orderModel]);
+      when(() => mockBox.length).thenAnswer((invocation) => 30);
+      when(() => mockBox.getAt(any(that: isA<int>())))
+          .thenAnswer((_) => orderModel);
+      when(() => mockBox.keyAt(any(that: isA<int>()))).thenAnswer((_) => 55);
     }
 
     test('should return the list with updated indexes', () async {
       mockSetup();
-      var results = await sut.getAllPartOrders(0, 10);
+      var fetchAmount = 20;
+      var results = await sut.getAllPartOrders(0, fetchAmount);
 
       List<OrderEntity> list = [];
-      results.fold((l) => null, (newList) => list.addAll(newList));
-      expect(list.last.index, list.length - 1);
-      expect(list.first.index, 0);
+      results.fold((l) => null, (newList) {
+        list.addAll(newList);
+      });
+      expect(results, isA<Right<Failure, List<OrderEntity>>>());
+      expect(list.last.index, 55);
+      expect(list.first.index, 55);
+      expect(list.length, fetchAmount);
     });
     test(
-        'should return an empty list when start index equals the database length',
+        'should return an empty list when start index equals or is greater than the database length',
         () async {
       mockSetup();
-      var results = await sut.getAllPartOrders(10, 20);
+      var results = await sut.getAllPartOrders(110, -1);
 
       expect(results, const Right<Failure, List<OrderEntity>>([]));
     });
     test('should return an Left   when start index negative', () async {
       mockSetup();
-      var results = await sut.getAllPartOrders(-1, 20);
+      var results = await sut.getAllPartOrders(-51, 50);
 
       expect(
           results, const Left<Failure, List<OrderEntity>>(ReadDataFailure()));
     });
-    test('should return an Left   when end index negative', () async {
-      mockSetup();
-      var results = await sut.getAllPartOrders(1, -20);
 
-      expect(
-          results, const Left<Failure, List<OrderEntity>>(ReadDataFailure()));
-    });
     test('should return an Left   when start index greater than endIndex',
         () async {
       mockSetup();
