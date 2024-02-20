@@ -2,6 +2,7 @@ import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.d
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
 
 class ValuesForTest {
   List<Map<String, dynamic>> partsList = [
@@ -256,5 +257,68 @@ class ValuesForTest {
     }
 
     return newList;
+  }
+
+  List<OrderEntity> getOrders() {
+    return [
+      OrderEntity(
+          index: 0,
+          partEntityIndex: 0,
+          orderAmount: 20,
+          orderDate: DateTime.now()),
+      OrderEntity(
+          index: 1,
+          partEntityIndex: 0,
+          orderAmount: 30,
+          orderDate: DateTime.now()),
+      OrderEntity(
+          index: 2,
+          partEntityIndex: 0,
+          orderAmount: 25,
+          orderDate: DateTime.now()),
+      OrderEntity(
+          index: 3,
+          partEntityIndex: 0,
+          orderAmount: 34,
+          orderDate: DateTime.now().subtract(const Duration(days: 10)),
+          isFulfilled: true,
+          fulfillmentDate: DateTime.now()),
+      OrderEntity(
+          index: 4,
+          partEntityIndex: 0,
+          orderAmount: 43,
+          orderDate: DateTime.now()),
+      OrderEntity(
+          index: 5,
+          partEntityIndex: 0,
+          orderAmount: 53,
+          orderDate: DateTime.now().subtract(const Duration(days: 10)),
+          isFulfilled: true,
+          fulfillmentDate: DateTime.now()),
+      OrderEntity(
+          index: 6,
+          partEntityIndex: 0,
+          orderAmount: 12,
+          orderDate: DateTime.now().subtract(const Duration(days: 10)),
+          isFulfilled: true,
+          fulfillmentDate: DateTime.now()),
+      OrderEntity(
+          index: 7,
+          partEntityIndex: 0,
+          orderAmount: 10,
+          orderDate: DateTime.now()),
+      OrderEntity(
+          index: 8,
+          partEntityIndex: 0,
+          orderAmount: 68,
+          orderDate: DateTime.now()),
+      OrderEntity(
+          index: 9,
+          partEntityIndex: 0,
+          orderAmount: 36,
+          orderDate: DateTime.now().subtract(const Duration(days: 10)),
+          isFulfilled: true,
+          fulfillmentDate: DateTime.now()),
+    ];
   }
 }
