@@ -13,10 +13,10 @@ class GetAllPartOrdersUsecase
   @override
   Future<Either<Failure, List<OrderEntity>>> call(
       GetAllPartOrdersParams params) {
-    var startIndex = params.currentOrderListLength;
-    var endIndex = startIndex + params.fetchAmount;
+    var endIndex = -params.currentOrderListLength - params.fetchAmount;
 
-    return _partOrderRepository.getAllPartOrders(startIndex, endIndex);
+    return _partOrderRepository.getAllPartOrders(
+        params.currentOrderListLength, endIndex);
   }
 }
 
