@@ -98,7 +98,7 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
         color: orderEntity.isFulfilled ? null : Colors.amber,
         left: partEntity.nsn,
         center: partEntity.name,
-        right: 'Location ${partEntity.location}',
+        right: '#$index *${orderEntity.index}Location ${partEntity.location}',
         bottom: isExpandedList[index]
             ? ''
             : orderEntity.isFulfilled
@@ -131,21 +131,30 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            orderEntity.isFulfilled
-                ? Text(
-                    'Ordered on ${orderEntity.orderAmount} in stock:  ${partEntity.quantity} ${partEntity.unitOfIssue.displayValue}')
-                : Text(
-                    'Ordered on ${orderEntity.orderAmount} in stock:  ${partEntity.quantity + orderEntity.orderAmount} ${partEntity.unitOfIssue.displayValue}'),
+            Text(
+                'Ordered  ${orderEntity.orderAmount} in stock:  ${partEntity.quantity} ${partEntity.unitOfIssue.displayValue}')
           ],
         ),
         Row(
           children: [
             orderEntity.isFulfilled
                 ? Container()
-                : SmallButton(
-                    buttonName: 'Fulfilled',
-                    onPressed: () => widget.cubit
-                        .fulfillPartOrder(orderEntityIndex: orderEntity.index)),
+                : SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SmallButton(
+                            buttonName: 'Delete',
+                            onPressed: () => widget.cubit
+                                .deletePartOrder(orderEntity: orderEntity)),
+                        SmallButton(
+                            buttonName: 'Fulfilled',
+                            onPressed: () => widget.cubit
+                                .fulfillPartOrder(orderEntity: orderEntity))
+                      ],
+                    ),
+                  ),
           ],
         ),
       ],
