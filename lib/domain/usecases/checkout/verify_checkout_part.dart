@@ -20,25 +20,42 @@ class VerifyCheckoutPart implements UseCase<void, VerifyCheckoutPartParams> {
 
   @override
   Future<Either<Failure, void>> call(VerifyCheckoutPartParams params) async {
+    PartEntity? originalPart;
+    if (params.checkedOutEntityList.isEmpty) {
+      return const Right<Failure, void>(null);
+    }
+
+    var isEditPartLeft = false;
     for (var checkoutPart in params.checkedOutEntityList) {
-      var getPart =
+      isEditPartLeft = false;
+      var getPartResults =
           await _partRepository.getSpecificPart(checkoutPart.partEntityIndex);
-      if (getPart.isLeft()) {
-        return const Left<Failure, void>(ReadDataFailure());
+      if (getPartResults.isLeft()) {
+        continue;
       }
 
-      getPart.fold((l) => null, (updatedPart) async {
-        _partRepository.editPart(updatedPart.copyWith(
-            quantity: updatedPart.quantity - checkoutPart.quantityDiscrepancy));
+      await getPartResults.fold((l) => null, (updatedPart) async {
+        originalPart = updatedPart;
+        var editPartResults = await _partRepository.editPart(
+            updatedPart.copyWith(
+                quantity:
+                    updatedPart.quantity - checkoutPart.quantityDiscrepancy));
+
+        isEditPartLeft = editPartResults.isLeft();
+        print('edit part res is ${editPartResults.isLeft()}');
       });
 
+      if (isEditPartLeft) {
+        continue;
+      }
       var updatedCheckoutPart =
           checkoutPart.copyWith(verifiedDate: DateTime.now(), isVerified: true);
       var result = await _checkedOutPartRepository
           .editCheckedOutItem(updatedCheckoutPart);
       if (result.isLeft()) {
         _logger.warning('error encounter when updating check out part');
-        return const Left<Failure, void>(UpdateDataFailure());
+        await _partRepository
+            .editPart(getPartResults.getOrElse(() => originalPart!));
       }
     }
 
