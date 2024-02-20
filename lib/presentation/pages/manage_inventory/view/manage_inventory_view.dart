@@ -18,6 +18,7 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+            deletePartOrderUsecase: locator<DeletePartOrderUsecase>(),
             getAllPartOrdersUsecase: locator<GetAllPartOrdersUsecase>(),
             createPartOrderUsecase: locator<CreatePartOrderUsecase>(),
             fulfillPartOrdersUsecase: locator<FulfillPartOrdersUsecase>(),
@@ -90,6 +91,19 @@ class ManageInventory extends StatelessWidget {
                     height: 5,
                     child: Center(
                       child: Text('Could not verify part'),
+                    ),
+                  ),
+                ));
+              }
+              if (state.status ==
+                  ManageInventoryStateStatus.deletedPartOrderUnsuccessfully) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.pink,
+                  duration: Duration(milliseconds: 10),
+                  content: SizedBox(
+                    height: 5,
+                    child: Center(
+                      child: Text('Could not delete part'),
                     ),
                   ),
                 ));
