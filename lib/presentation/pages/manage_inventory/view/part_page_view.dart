@@ -7,11 +7,9 @@ import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart'
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
 class PartsPageView extends StatefulWidget {
-  const PartsPageView(
-      {required this.allParts,
-      required this.lowQuantityParts,
-      required this.cubit})
-      : super(key: const Key('parts-page-view'));
+  PartsPageView({required this.allParts, required this.cubit})
+      : lowQuantityParts = cubit.filterLowQuantityParts(allParts),
+        super(key: const Key('parts-page-view'));
 
   final List<PartEntity> allParts;
   final List<PartEntity> lowQuantityParts;
@@ -27,12 +25,9 @@ class _PartsPageViewState extends State<PartsPageView> {
   final ScrollController controller = ScrollController();
   @override
   void initState() {
-    widget.cubit.filterLowQuantityParts();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        showAllParts
-            ? widget.cubit.loadParts()
-            : widget.cubit.filterLowQuantityParts();
+        widget.cubit.loadParts();
       }
     });
     super.initState();
