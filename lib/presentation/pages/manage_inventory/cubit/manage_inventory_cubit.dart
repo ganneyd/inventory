@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
@@ -11,7 +10,6 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   ManageInventoryCubit(
       {int fetchPartAmount = 20,
       required this.getAllPartsUsecase,
-      required this.getDatabaseLength,
       required this.getUnverifiedCheckoutParts,
       required this.getAllCheckoutParts,
       required this.getLowQuantityParts,
@@ -27,7 +25,6 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   //usecase init
   final GetAllPartsUsecase getAllPartsUsecase;
   final GetLowQuantityParts getLowQuantityParts;
-  final GetDatabaseLength getDatabaseLength;
   final GetUnverifiedCheckoutParts getUnverifiedCheckoutParts;
   final VerifyCheckoutPart verifyCheckoutPartUsecase;
   final GetAllCheckoutParts getAllCheckoutParts;
@@ -37,21 +34,21 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final DeletePartOrderUsecase _deletePartOrderUsecase;
   //for debugging
   final Logger _logger;
+//initialization method
+  void init() async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
+    loadParts();
+    loadCheckedOutParts();
+    loadPartOrders();
+  }
 
   ///Method uses the [GetAllPartsUsecase] to retrieve the parts lazily
   void loadParts() async {
-    //set the indexes that the parts should be gotten from
-    var startIndex = state.parts.length;
-    //retrieve 20 elements at a time
-    var pageIndex = startIndex + state.fetchPartAmount;
     //get the current list of parts
-    List<PartEntity> oldList = state.parts.toList();
-    //!debug
-    _logger
-        .finest('loading parts, startIndex:$startIndex pageIndex:$pageIndex');
-
-    var results = await getAllPartsUsecase
-        .call(GetAllPartParams(pageIndex: pageIndex, startIndex: startIndex));
+    List<PartEntity> oldList = state.allParts.toList();
+    var results = await getAllPartsUsecase.call(GetAllPartParams(
+        currentDatabaseLength: state.allParts.length,
+        fetchAmount: state.fetchPartAmount));
 
     //unfold the results and return proper data to the UI
     results.fold((l) {
@@ -62,35 +59,16 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
           error: l.errorMessage,
           status: ManageInventoryStateStatus.fetchedDataUnsuccessfully));
     }, (newParts) {
-      for (var part in newParts) {
-        oldList.add(part);
-      }
-      _logger.finest('retrieved all parts: ${state.parts.length}');
+      oldList.addAll(newParts);
+      _logger.finest('retrieved all parts: ${state.allParts.length}');
       //emit the state with the retrieved parts and status
       emit(state.copyWith(
           status: ManageInventoryStateStatus.fetchedDataSuccessfully,
-          parts: oldList));
+          allParts: oldList));
     });
   }
 
-  //initialization method
-  void init() async {
-    var length = await getDatabaseLength.call(NoParams());
-    //load up the first 20 parts
-    //tell the UI the data is loading
-    length.fold(
-        (l) => emit(state.copyWith(databaseLength: 0)),
-        (r) => emit(state.copyWith(
-            databaseLength: r, status: ManageInventoryStateStatus.loading)));
-    loadParts();
-    loadCheckedOutParts();
-    loadPartOrders();
-  }
-
   void loadCheckedOutParts() async {
-    // Indicate loading state, especially useful for UI indicators
-    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
-
     List<CheckedOutEntity> oldCheckoutPartList = state.checkedOutParts.toList();
 
     var results = await getAllCheckoutParts.call(GetAllCheckoutPartsParams(
@@ -107,30 +85,48 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       oldCheckoutPartList.addAll(newParts); // Use addAll for efficiency
 
       emit(state.copyWith(
-          status: ManageInventoryStateStatus.fetchedDataSuccessfully,
-          checkedOutParts: oldCheckoutPartList,
-          unverifiedParts: _filterUnverifiedParts(oldCheckoutPartList)));
+        status: ManageInventoryStateStatus.fetchedDataSuccessfully,
+        checkedOutParts: oldCheckoutPartList,
+      ));
       _logger.finest(
           'state has ${state.checkedOutParts.length} checked out parts');
     });
   }
 
-  void filterLowQuantityParts() async {
-    List<PartEntity> newLowQuantityList = state.parts
-        .where((part) => part.quantity <= part.requisitionPoint)
-        .toList();
+  void loadPartOrders() async {
+    var allPartOrdersList = state.allPartOrders.toList();
+    var results = await getAllPartOrdersUsecase.call(GetAllPartOrdersParams(
+        currentOrderListLength: state.allPartOrders.length,
+        fetchAmount: state.fetchPartAmount));
 
-    emit(state.copyWith(lowQuantityParts: newLowQuantityList));
+    results.fold(
+        (l) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.fetchedDataUnsuccessfully)),
+        (orders) {
+      allPartOrdersList.addAll(orders);
+      emit(state.copyWith(
+        status: ManageInventoryStateStatus.fetchedDataSuccessfully,
+        allPartOrders: allPartOrdersList,
+      ));
+    });
   }
 
-  Future<void> updateDatabase() async {
-    _logger.finest('placing verified parts in the database');
-    emit(state.copyWith(status: ManageInventoryStateStatus.verifyingPart));
+  List<PartEntity> filterLowQuantityParts(List<PartEntity> allParts) {
+    return allParts
+        .where((part) => part.quantity <= part.requisitionPoint)
+        .toList();
+  }
 
-    await verifyCheckoutPartUsecase.call(VerifyCheckoutPartParams(
-        checkedOutEntityList: state.newlyVerifiedParts));
-    await fulfillPartOrdersUsecase.call(FulfillPartOrdersParams(
-        fulfillmentEntities: state.newlyFulfilledPartOrders));
+  List<CheckedOutEntity> filterUnverifiedParts(
+      List<CheckedOutEntity> checkoutEntityList) {
+    return checkoutEntityList
+        .where((entity) => !(entity.isVerified ?? false))
+        .toList();
+  }
+
+  List<OrderEntity> filterUnfulfilledPartOrders(
+      List<OrderEntity> unfilteredList) {
+    return unfilteredList.where((order) => !order.isFulfilled).toList();
   }
 
   void updateCheckoutQuantity({
@@ -147,7 +143,6 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
     newCheckoutPartList[indexInList] = newCheckoutPart;
     emit(state.copyWith(
-      unverifiedParts: _filterUnverifiedParts(newCheckoutPartList),
       checkedOutParts: newCheckoutPartList,
     ));
   }
@@ -155,7 +150,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   void verifyPart({required CheckedOutEntity checkedOutEntity}) {
     List<CheckedOutEntity> newVerifiedList = state.newlyVerifiedParts.toList();
     List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
-    List<PartEntity> newPartEntityList = state.parts.toList();
+    List<PartEntity> newPartEntityList = state.allParts.toList();
     var indexInList = newCheckoutPartList.indexOf(checkedOutEntity);
 
     //update part
@@ -175,17 +170,33 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     newVerifiedList.add(newCheckoutPart);
     //emit changes
     emit(state.copyWith(
-        unverifiedParts: _filterUnverifiedParts(newCheckoutPartList),
         newlyVerifiedParts: newVerifiedList,
         checkedOutParts: newCheckoutPartList,
-        parts: newPartEntityList));
+        allParts: newPartEntityList));
   }
 
-  List<CheckedOutEntity> _filterUnverifiedParts(
-      List<CheckedOutEntity> checkoutEntityList) {
-    return checkoutEntityList
-        .where((entity) => !(entity.isVerified ?? false))
-        .toList();
+  void fulfillPartOrder({required OrderEntity orderEntity}) {
+    List<PartEntity> allParts = state.allParts.toList();
+    List<OrderEntity> allPartOrders = state.allPartOrders.toList();
+    List<OrderEntity> newlyFulfilledPartOrders =
+        state.newlyFulfilledPartOrders.toList();
+    var index = allPartOrders.indexOf(orderEntity);
+    var fulfilledOrder = allPartOrders[index]
+        .copyWith(fulfillmentDate: DateTime.now(), isFulfilled: true);
+    allPartOrders[index] = fulfilledOrder;
+    var partEntity = allParts[fulfilledOrder.partEntityIndex];
+
+    partEntity = partEntity.copyWith(
+        quantity: partEntity.quantity + fulfilledOrder.orderAmount);
+
+    allParts[partEntity.index] = partEntity;
+
+    newlyFulfilledPartOrders.add(fulfilledOrder);
+
+    emit(state.copyWith(
+        allPartOrders: allPartOrders,
+        newlyFulfilledPartOrders: newlyFulfilledPartOrders,
+        allParts: allParts));
   }
 
   ///order parts methods
@@ -208,59 +219,9 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
           status: ManageInventoryStateStatus.createdPartOrderUnsuccessfully));
     }, (_) {
       emit(state.copyWith(
-          status: ManageInventoryStateStatus.createdPartOrderSuccessfully,
-          allPartOrders: partOrders,
-          allUnfulfilledPartOrders: _filterUnfulfilledPartOrders(partOrders)));
-    });
-  }
-
-  void fulfillPartOrder({required OrderEntity orderEntity}) {
-    List<PartEntity> allParts = state.parts.toList();
-    List<OrderEntity> allPartOrders = state.allPartOrders.toList();
-    List<OrderEntity> newlyFulfilledPartOrders =
-        state.newlyFulfilledPartOrders.toList();
-    var index = allPartOrders.indexOf(orderEntity);
-    var fulfilledOrder = allPartOrders[index]
-        .copyWith(fulfillmentDate: DateTime.now(), isFulfilled: true);
-    allPartOrders[index] = fulfilledOrder;
-    var partEntity = allParts[fulfilledOrder.partEntityIndex];
-
-    partEntity = partEntity.copyWith(
-        quantity: partEntity.quantity + fulfilledOrder.orderAmount);
-
-    allParts[partEntity.index] = partEntity;
-
-    newlyFulfilledPartOrders.add(fulfilledOrder);
-
-    emit(state.copyWith(
-        allUnfulfilledPartOrders: _filterUnfulfilledPartOrders(allPartOrders),
-        allPartOrders: allPartOrders,
-        newlyFulfilledPartOrders: newlyFulfilledPartOrders,
-        parts: allParts));
-  }
-
-  List<OrderEntity> _filterUnfulfilledPartOrders(
-      List<OrderEntity> unfilteredList) {
-    return unfilteredList.where((order) => !order.isFulfilled).toList();
-  }
-
-  void loadPartOrders() async {
-    emit(state.copyWith(status: ManageInventoryStateStatus.fetchingData));
-    var allPartOrdersList = state.allPartOrders.toList();
-    var results = await getAllPartOrdersUsecase.call(GetAllPartOrdersParams(
-        currentOrderListLength: state.allPartOrders.length,
-        fetchAmount: state.fetchPartAmount));
-
-    results.fold(
-        (l) => emit(state.copyWith(
-            status: ManageInventoryStateStatus.fetchedDataUnsuccessfully)),
-        (orders) {
-      allPartOrdersList.addAll(orders);
-      emit(state.copyWith(
-          status: ManageInventoryStateStatus.fetchedDataSuccessfully,
-          allPartOrders: allPartOrdersList,
-          allUnfulfilledPartOrders:
-              _filterUnfulfilledPartOrders(allPartOrdersList)));
+        status: ManageInventoryStateStatus.createdPartOrderSuccessfully,
+        allPartOrders: partOrders,
+      ));
     });
   }
 
@@ -274,18 +235,29 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     results.fold(
         (failure) => emit(state.copyWith(
             status: ManageInventoryStateStatus.deletedPartOrderUnsuccessfully)),
-        (r) {
+        (_) {
       partOrders.remove(orderEntity);
+
       emit(state.copyWith(
-          status: ManageInventoryStateStatus.deletedPartOrderSuccessfully,
-          allPartOrders: partOrders,
-          allUnfulfilledPartOrders: _filterUnfulfilledPartOrders(partOrders)));
+        status: ManageInventoryStateStatus.deletedPartOrderSuccessfully,
+        allPartOrders: partOrders,
+      ));
     });
+  }
+
+  Future<void> _updateDatabase() async {
+    _logger.finest('placing verified parts in the database');
+    emit(state.copyWith(status: ManageInventoryStateStatus.verifyingPart));
+
+    await verifyCheckoutPartUsecase.call(VerifyCheckoutPartParams(
+        checkedOutEntityList: state.newlyVerifiedParts));
+    await fulfillPartOrdersUsecase.call(FulfillPartOrdersParams(
+        fulfillmentEntities: state.newlyFulfilledPartOrders));
   }
 
   @override
   Future<void> close() async {
-    await updateDatabase();
+    await _updateDatabase();
     super.close();
   }
 }
