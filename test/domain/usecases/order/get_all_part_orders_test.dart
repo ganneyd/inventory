@@ -40,7 +40,7 @@ void main() {
           captureAny(that: isA<int>()), captureAny(that: isA<int>()))).captured;
       expect(results, Right<Failure, List<OrderEntity>>(orderEntityList));
       expect(capture.first, params.currentOrderListLength);
-      expect(capture.last, params.fetchAmount + params.currentOrderListLength);
+      expect(capture.last, -params.fetchAmount - params.currentOrderListLength);
     });
 
     test('should return left', () async {
@@ -57,7 +57,7 @@ void main() {
       expect(
           results, const Left<Failure, List<OrderEntity>>(ReadDataFailure()));
       expect(capture.first, params.currentOrderListLength);
-      expect(capture.last, params.fetchAmount + params.currentOrderListLength);
+      expect(capture.last, -params.fetchAmount - params.currentOrderListLength);
     });
   });
 }
