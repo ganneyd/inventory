@@ -8,18 +8,20 @@ import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_in
 import 'package:logging/logging.dart';
 
 class ManageInventoryCubit extends Cubit<ManageInventoryState> {
-  ManageInventoryCubit({
-    int fetchPartAmount = 20,
-    required this.getAllPartsUsecase,
-    required this.getDatabaseLength,
-    required this.getUnverifiedCheckoutParts,
-    required this.getAllCheckoutParts,
-    required this.getLowQuantityParts,
-    required this.verifyCheckoutPartUsecase,
-    required this.fulfillPartOrdersUsecase,
-    required this.createPartOrderUsecase,
-    required this.getAllPartOrdersUsecase,
-  })  : _logger = Logger('manage-inv-cubit'),
+  ManageInventoryCubit(
+      {int fetchPartAmount = 20,
+      required this.getAllPartsUsecase,
+      required this.getDatabaseLength,
+      required this.getUnverifiedCheckoutParts,
+      required this.getAllCheckoutParts,
+      required this.getLowQuantityParts,
+      required this.verifyCheckoutPartUsecase,
+      required this.fulfillPartOrdersUsecase,
+      required this.createPartOrderUsecase,
+      required this.getAllPartOrdersUsecase,
+      required DeletePartOrderUsecase deletePartOrderUsecase})
+      : _logger = Logger('manage-inv-cubit'),
+        _deletePartOrderUsecase = deletePartOrderUsecase,
         super(ManageInventoryState(fetchPartAmount: fetchPartAmount));
 
   //usecase init
@@ -32,6 +34,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final FulfillPartOrdersUsecase fulfillPartOrdersUsecase;
   final CreatePartOrderUsecase createPartOrderUsecase;
   final GetAllPartOrdersUsecase getAllPartOrdersUsecase;
+  final DeletePartOrderUsecase _deletePartOrderUsecase;
   //for debugging
   final Logger _logger;
 
@@ -190,12 +193,13 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       {required int orderAmount, required int partEntityIndex}) async {
     emit(state.copyWith(status: ManageInventoryStateStatus.creatingPartOrder));
     var partOrders = state.allPartOrders.toList();
+    var index = state.allPartOrders.isEmpty ? 0 : partOrders.first.index + 1;
     var orderEntity = OrderEntity(
-        index: state.allPartOrders.length,
+        index: index,
         partEntityIndex: partEntityIndex,
         orderAmount: orderAmount,
         orderDate: DateTime.now());
-    partOrders.add(orderEntity);
+    partOrders.insert(0, orderEntity);
     var results = await createPartOrderUsecase
         .call(CreatePartOrderParams(orderEntity: orderEntity));
 
@@ -210,15 +214,15 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     });
   }
 
-  void fulfillPartOrder({required int orderEntityIndex}) {
+  void fulfillPartOrder({required OrderEntity orderEntity}) {
     List<PartEntity> allParts = state.parts.toList();
     List<OrderEntity> allPartOrders = state.allPartOrders.toList();
     List<OrderEntity> newlyFulfilledPartOrders =
         state.newlyFulfilledPartOrders.toList();
-
-    var fulfilledOrder = allPartOrders[orderEntityIndex]
+    var index = allPartOrders.indexOf(orderEntity);
+    var fulfilledOrder = allPartOrders[index]
         .copyWith(fulfillmentDate: DateTime.now(), isFulfilled: true);
-    allPartOrders[orderEntityIndex] = fulfilledOrder;
+    allPartOrders[index] = fulfilledOrder;
     var partEntity = allParts[fulfilledOrder.partEntityIndex];
 
     partEntity = partEntity.copyWith(
@@ -257,6 +261,25 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
           allPartOrders: allPartOrdersList,
           allUnfulfilledPartOrders:
               _filterUnfulfilledPartOrders(allPartOrdersList)));
+    });
+  }
+
+  void deletePartOrder({required OrderEntity orderEntity}) async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.deletingPartOrder));
+    var partOrders = state.allPartOrders.toList();
+
+    var results = await _deletePartOrderUsecase
+        .call(DeletePartOrderParams(orderEntity: orderEntity));
+
+    results.fold(
+        (failure) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.deletedPartOrderUnsuccessfully)),
+        (r) {
+      partOrders.remove(orderEntity);
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.deletedPartOrderSuccessfully,
+          allPartOrders: partOrders,
+          allUnfulfilledPartOrders: _filterUnfulfilledPartOrders(partOrders)));
     });
   }
 
