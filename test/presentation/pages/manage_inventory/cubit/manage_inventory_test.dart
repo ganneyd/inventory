@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
-import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
@@ -16,11 +15,12 @@ import '../../../../setup.dart';
 
 class MockGetAllPartUsecase extends Mock implements GetAllPartsUsecase {}
 
-class MockGetDatabaseLength extends Mock implements GetDatabaseLength {}
-
 class MockGetLowQuantityParts extends Mock implements GetLowQuantityParts {}
 
 class MockVerifyCheckOutPart extends Mock implements VerifyCheckoutPart {}
+
+class MockDeletePartOrderUsecase extends Mock
+    implements DeletePartOrderUsecase {}
 
 class MockFulfillPartOrders extends Mock implements FulfillPartOrdersUsecase {}
 
@@ -39,41 +39,42 @@ class MockScrollController extends Mock implements ScrollController {}
 class MockScrollPosition extends Mock implements ScrollPosition {}
 
 void main() {
+  late MockDeletePartOrderUsecase mockDeletePartOrderUsecase;
   late MockGetAllPartOrdersUsecase mockGetAllPartOrdersUsecase;
-  late MockVerifyCheckOutPart mockVerifyCheckOutPart;
+  late MockVerifyCheckOutPart mockVerifyCheckOutPartUsecase;
   late MockGetAllPartUsecase mockGetAllPartUsecase;
-  late MockGetDatabaseLength mockGetDatabaseLength;
   late MockGetLowQuantityParts mockGetLowQuantityParts;
   late MockGetUnverifiedParts mockGetUnverifiedParts;
   late MockGetAllCheckoutParts mockGetAllCheckoutParts;
   late MockCreatePartOrder mockCreatePartOrder;
-  late MockFulfillPartOrders mockFulfillPartOrders;
+  late MockFulfillPartOrders mockFulfillPartOrdersUsecase;
   late ValuesForTest valuesForTest;
   late ManageInventoryCubit sut;
 
   setUp(() {
     valuesForTest = ValuesForTest();
+    mockDeletePartOrderUsecase = MockDeletePartOrderUsecase();
     mockGetAllPartOrdersUsecase = MockGetAllPartOrdersUsecase();
     mockCreatePartOrder = MockCreatePartOrder();
-    mockFulfillPartOrders = MockFulfillPartOrders();
-    mockVerifyCheckOutPart = MockVerifyCheckOutPart();
+    mockFulfillPartOrdersUsecase = MockFulfillPartOrders();
+    mockVerifyCheckOutPartUsecase = MockVerifyCheckOutPart();
     mockGetAllPartUsecase = MockGetAllPartUsecase();
-    mockGetDatabaseLength = MockGetDatabaseLength();
     mockGetLowQuantityParts = MockGetLowQuantityParts();
     mockGetUnverifiedParts = MockGetUnverifiedParts();
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
 
     sut = ManageInventoryCubit(
-        getAllPartOrdersUsecase: mockGetAllPartOrdersUsecase,
-        createPartOrderUsecase: mockCreatePartOrder,
-        fulfillPartOrdersUsecase: mockFulfillPartOrders,
-        verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
-        getAllCheckoutParts: mockGetAllCheckoutParts,
-        getLowQuantityParts: mockGetLowQuantityParts,
-        getUnverifiedCheckoutParts: mockGetUnverifiedParts,
-        fetchPartAmount: 2,
-        getAllPartsUsecase: mockGetAllPartUsecase,
-        getDatabaseLength: mockGetDatabaseLength);
+      deletePartOrderUsecase: mockDeletePartOrderUsecase,
+      getAllPartOrdersUsecase: mockGetAllPartOrdersUsecase,
+      createPartOrderUsecase: mockCreatePartOrder,
+      fulfillPartOrdersUsecase: mockFulfillPartOrdersUsecase,
+      verifyCheckoutPartUsecase: mockVerifyCheckOutPartUsecase,
+      getAllCheckoutParts: mockGetAllCheckoutParts,
+      getLowQuantityParts: mockGetLowQuantityParts,
+      getUnverifiedCheckoutParts: mockGetUnverifiedParts,
+      fetchPartAmount: 2,
+      getAllPartsUsecase: mockGetAllPartUsecase,
+    );
     registerFallbackValue(VerifyCheckoutPartParams(
         checkedOutEntityList: valuesForTest.createCheckedOutList()));
     registerFallbackValue(GetAllCheckoutPartsParams(
@@ -81,16 +82,15 @@ void main() {
         fetchAmount: sut.state.fetchPartAmount));
 
     registerFallbackValue(GetAllPartParams(
-        pageIndex: sut.state.parts.length + sut.state.fetchPartAmount,
-        startIndex: sut.state.parts.length));
-    registerFallbackValue(FulfillPartOrdersParams(fulfillmentEntities: [
-      OrderEntity(
-          index: 0,
-          partEntityIndex: 0,
-          orderAmount: 23,
-          orderDate: DateTime.now())
-    ]));
+        currentDatabaseLength: sut.state.allParts.length,
+        fetchAmount: sut.state.fetchPartAmount));
+    registerFallbackValue(FulfillPartOrdersParams(
+        fulfillmentEntities: valuesForTest.getOrders()));
 
+    registerFallbackValue(const GetAllPartOrdersParams(
+        currentOrderListLength: 0, fetchAmount: 20));
+    registerFallbackValue(
+        DeletePartOrderParams(orderEntity: valuesForTest.getOrders()[0]));
     registerFallbackValue(CreatePartOrderParams(
         orderEntity: OrderEntity(
             index: 0,
@@ -102,16 +102,57 @@ void main() {
   group('ManageInventoryCubit()', () {
     test('initial state', () {
       expect(sut.state.fetchPartAmount, 2);
-      expect(sut.state.databaseLength, 0);
       expect(sut.state.error, 'no error');
-      expect(sut.state.parts, <PartModel>[]);
-      expect(sut.state.status, ManageInventoryStateStatus.loading);
-      expect(sut.state.lowQuantityParts, <PartModel>[]);
+      expect(sut.state.allParts, <PartEntity>[]);
+      expect(sut.state.checkedOutParts, <CheckedOutEntity>[]);
       expect(sut.state.newlyVerifiedParts, <CheckedOutEntity>[]);
-      expect(sut.state.unverifiedParts, <CheckedOutEntity>[]);
+      expect(sut.state.allPartOrders, <OrderEntity>[]);
+      expect(sut.state.newlyFulfilledPartOrders, <OrderEntity>[]);
+      expect(sut.state.status, ManageInventoryStateStatus.loading);
     });
   });
 
+  group('.init()', () {
+    void mockSetup() {
+      when(() => mockGetAllPartOrdersUsecase
+              .call(any(that: isA<GetAllPartOrdersParams>())))
+          .thenAnswer((invocation) async =>
+              Right<Failure, List<OrderEntity>>(valuesForTest.getOrders()));
+      when(() => mockGetAllCheckoutParts
+              .call(any(that: isA<GetAllCheckoutPartsParams>())))
+          .thenAnswer((_) async => Right<Failure, List<CheckedOutEntity>>(
+              valuesForTest.createCheckedOutList()));
+      when(() => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
+          .thenAnswer((invocation) async =>
+              Right<Failure, List<PartEntity>>(valuesForTest.parts()));
+    }
+
+    //test
+    test('part List should be returned ', () async {
+      //expectations
+      mockSetup();
+
+      //use the then() since the functions evoked in the cubit return before completing their tasks
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.loading,
+            ManageInventoryStateStatus.fetchedDataSuccessfully,
+            ManageInventoryStateStatus.fetchedDataSuccessfully,
+            ManageInventoryStateStatus.fetchedDataSuccessfully,
+          ])).then((_) {
+        //verify that both usecases were only called once each
+        verify(() =>
+                mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
+            .called(1);
+        verify(() => mockGetAllCheckoutParts
+            .call(any(that: isA<GetAllCheckoutPartsParams>()))).called(1);
+        verify(() => mockGetAllPartOrdersUsecase
+            .call(any(that: isA<GetAllPartOrdersParams>()))).called(1);
+      });
+      sut.init();
+    });
+  });
   group('.loadParts', () {
     void mockSetup(GetAllPartParams params) {
       when(() => mockGetAllCheckoutParts
@@ -120,185 +161,225 @@ void main() {
               valuesForTest.createCheckedOutList()));
       when(() => mockGetAllPartUsecase.call(params)).thenAnswer(
           (_) async => Right<Failure, List<PartEntity>>(valuesForTest.parts()));
-
-      when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
-          (invocation) async =>
-              Right<Failure, int>(valuesForTest.parts().length));
     }
 
-    test('should emit the first 10 in the set', () {
-      var expectedPartList = valuesForTest.parts();
-
+    test('should emit the FetchDataSuccessfully 10', () {
       //setup
       GetAllPartParams params = GetAllPartParams(
-          pageIndex: sut.state.databaseLength + sut.state.fetchPartAmount,
-          startIndex: sut.state.databaseLength);
+          fetchAmount: sut.state.fetchPartAmount,
+          currentDatabaseLength: sut.state.allParts.length);
       mockSetup(params);
+      //expect that the state is later emitted with the status
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder(
+              [ManageInventoryStateStatus.fetchedDataSuccessfully])).then((_) {
+        //usecase should only be called once
+        var captured = verify(
+          () => mockGetAllPartUsecase
+              .call(captureAny(that: isA<GetAllPartParams>())),
+        ).captured;
+
+        var capturedParams = captured.first as GetAllPartParams;
+        expect(capturedParams.currentDatabaseLength, 0);
+        expect(capturedParams.fetchAmount, sut.state.fetchPartAmount);
+        expect(sut.state.allParts.length, valuesForTest.parts().length);
+      });
       //evoke the function
       sut.loadParts();
-      //usecase should only be called once
-      verify(
-        () => mockGetAllPartUsecase.call(params),
-      ).called(1);
-
-      //expect that the state is emitted with the parts gotten from the usecase
-      expectLater(sut.stream.map((state) => state.parts),
-          emitsInOrder([expectedPartList]));
-      //expect that the state is later emitted with the status
-      expectLater(sut.stream.map((state) => state.status),
-          emitsInOrder([ManageInventoryStateStatus.fetchedDataSuccessfully]));
     });
 
-    test('should emit error message', () {
+    test('should emit status as FetchDataUnsuccessfully', () {
       //setup
       GetAllPartParams params = GetAllPartParams(
-          pageIndex: sut.state.databaseLength + sut.state.fetchPartAmount,
-          startIndex: sut.state.databaseLength);
+          currentDatabaseLength: sut.state.allParts.length,
+          fetchAmount: sut.state.fetchPartAmount);
       when(() => mockGetAllPartUsecase.call(params)).thenAnswer(
           (invocation) async =>
               const Left<Failure, List<PartModel>>(ReadDataFailure()));
+      //expect that the state is later emitted with the status
+      expectLater(
+              sut.stream.map((state) => state.status),
+              emitsInOrder(
+                  [ManageInventoryStateStatus.fetchedDataUnsuccessfully]))
+          .then((_) {
+        //usecase should only be called once
+        var captured = verify(
+          () => mockGetAllPartUsecase
+              .call(captureAny(that: isA<GetAllPartParams>())),
+        ).captured;
+
+        var capturedParams = captured.first as GetAllPartParams;
+        expect(capturedParams.currentDatabaseLength, 0);
+        expect(capturedParams.fetchAmount, sut.state.fetchPartAmount);
+        expect(sut.state.allParts.length, 0);
+      });
       //evoke the function
       sut.loadParts();
-      //usecase should only be called once
-      verify(
-        () => mockGetAllPartUsecase.call(params),
-      ).called(1);
-
-      //expect that the state is emitted with the error message from the Failure
-      expectLater(sut.stream.map((state) => state.error),
-          emitsInOrder([const ReadDataFailure().errorMessage]));
-      //expect that the state is later emitted with the status
-      expectLater(sut.stream.map((state) => state.status),
-          emitsInOrder([ManageInventoryStateStatus.fetchedDataUnsuccessfully]));
     });
   });
 
-  group('.init()', () {
-    void mockSetup() {
+  group('.loadCheckedOutParts()', () {
+    test('should emit the FetchDataSuccessfully', () {
+      //setup
       when(() => mockGetAllCheckoutParts
               .call(any(that: isA<GetAllCheckoutPartsParams>())))
           .thenAnswer((_) async => Right<Failure, List<CheckedOutEntity>>(
               valuesForTest.createCheckedOutList()));
-      when(() => mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, List<PartEntity>>(valuesForTest.parts()));
 
-      when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
-          (invocation) async =>
-              Right<Failure, int>(valuesForTest.parts().length));
-    }
-
-    //test
-    test('part List should be returned ', () async {
-      //expectations
-      mockSetup();
-      sut.init();
-      //use the then() since the functions evoked in the cubit return before completing their tasks
-      expectLater(
-          sut.stream.map((state) => state.databaseLength),
-          emitsInOrder([
-            valuesForTest.getPartList().length,
-            valuesForTest.getPartList().length,
-          ])).then((_) {
-        //verify that both usecases were only called once each
-        verify(() =>
-                mockGetAllPartUsecase.call(any(that: isA<GetAllPartParams>())))
-            .called(1);
-        verify(() => mockGetDatabaseLength.call(NoParams())).called(1);
-      });
-
-      //verify that the correct statues were emitted
+      //expect that the state is later emitted with the status
       expectLater(
           sut.stream.map((state) => state.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.loading,
-            ManageInventoryStateStatus.fetchedDataSuccessfully
-          ]));
+          emitsInOrder(
+              [ManageInventoryStateStatus.fetchedDataSuccessfully])).then((_) {
+        //usecase should only be called once
+        var captured = verify(
+          () => mockGetAllCheckoutParts
+              .call(captureAny(that: isA<GetAllCheckoutPartsParams>())),
+        ).captured;
+
+        var capturedParams = captured.first as GetAllCheckoutPartsParams;
+        expect(capturedParams.currentListLength, 0);
+        expect(capturedParams.fetchAmount, sut.state.fetchPartAmount);
+        expect(sut.state.checkedOutParts.length,
+            valuesForTest.createCheckedOutList().length);
+      });
+      //evoke the function
+      sut.loadCheckedOutParts();
     });
 
-    test('state should emit 0 when getDatabaseLength returns an error', () {
-//setup
+    test('should emit status as FetchDataUnsuccessfully', () {
+      //setup
 
-      mockSetup();
-
-      when(() => mockGetDatabaseLength.call(NoParams())).thenAnswer(
-          (invocation) async => const Left<Failure, int>(ReadDataFailure()));
-      sut.init();
-
-      expectLater(sut.stream.map((state) => state.databaseLength),
-          emitsInOrder([0, 0]));
-    });
-  });
-
-  group('.filterUnverifiedParts()', () {
-    void mockSetup() {
-      sut.emit(sut.state.copyWith(
-          parts: valuesForTest.parts(),
-          checkedOutParts: valuesForTest.createCheckedOutList(),
-          newlyVerifiedParts: [],
-          unverifiedParts: []));
       when(() => mockGetAllCheckoutParts
               .call(any(that: isA<GetAllCheckoutPartsParams>())))
           .thenAnswer((invocation) async =>
-              Right<Failure, List<CheckedOutEntity>>(
-                  valuesForTest.createCheckedOutList()));
-    }
-
-    test(
-        'should update the quantity discrepancy for edited checkout part in the checkoutPartList',
-        () async {
-      mockSetup();
+              const Left<Failure, List<CheckedOutEntity>>(ReadDataFailure()));
+      //expect that the state is later emitted with the status
       expectLater(
-          sut.stream
-              .map((state) => state.checkedOutParts[0].quantityDiscrepancy),
-          emitsInOrder([
-            -1,
-            -2,
-            -2,
-          ]));
+              sut.stream.map((state) => state.status),
+              emitsInOrder(
+                  [ManageInventoryStateStatus.fetchedDataUnsuccessfully]))
+          .then((_) {
+        //usecase should only be called once
+        var captured = verify(
+          () => mockGetAllCheckoutParts
+              .call(captureAny(that: isA<GetAllCheckoutPartsParams>())),
+        ).captured;
 
-      expectLater(
-          sut.stream.map((state) => state.checkedOutParts[0].isVerified),
-          emitsInOrder([
-            false,
-            false,
-            true,
-          ]));
-
-      expectLater(
-          sut.stream.map((state) =>
-              state.parts[state.checkedOutParts[0].partEntityIndex].quantity),
-          emitsInOrder([30, 30, 32]));
-
-      sut.updateCheckoutQuantity(
-          checkoutPart: sut.state.checkedOutParts[0], quantityChange: -1);
-      sut.updateCheckoutQuantity(
-          checkoutPart: sut.state.checkedOutParts[0], quantityChange: -1);
-      sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[0]);
-    });
-    test('should filter the list', () async {
-      sut.emit(sut.state.copyWith(
-          parts: valuesForTest.parts(),
-          checkedOutParts: [],
-          newlyVerifiedParts: [],
-          unverifiedParts: []));
-      when(() => mockGetAllCheckoutParts
-              .call(any(that: isA<GetAllCheckoutPartsParams>())))
-          .thenAnswer((invocation) async =>
-              Right<Failure, List<CheckedOutEntity>>(
-                  valuesForTest.createCheckedOutList()));
-      expectLater(sut.stream.map((state) => state.unverifiedParts.length),
-          emitsInOrder([10]));
+        var capturedParams = captured.first as GetAllCheckoutPartsParams;
+        expect(capturedParams.currentListLength, 0);
+        expect(capturedParams.fetchAmount, sut.state.fetchPartAmount);
+        expect(sut.state.checkedOutParts.length, 0);
+      });
+      //evoke the function
       sut.loadCheckedOutParts();
     });
   });
 
+  group('.loadPartOrders()', () {
+    test('should emit the FetchDataSuccessfully', () {
+      //setup
+      when(() => mockGetAllPartOrdersUsecase
+              .call(any(that: isA<GetAllPartOrdersParams>())))
+          .thenAnswer((_) async =>
+              Right<Failure, List<OrderEntity>>(valuesForTest.getOrders()));
+
+      //expect that the state is later emitted with the status
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder(
+              [ManageInventoryStateStatus.fetchedDataSuccessfully])).then((_) {
+        //usecase should only be called once
+        var captured = verify(
+          () => mockGetAllPartOrdersUsecase
+              .call(captureAny(that: isA<GetAllPartOrdersParams>())),
+        ).captured;
+
+        var capturedParams = captured.first as GetAllPartOrdersParams;
+        expect(capturedParams.currentOrderListLength, 0);
+        expect(capturedParams.fetchAmount, sut.state.fetchPartAmount);
+        expect(
+            sut.state.allPartOrders.length, valuesForTest.getOrders().length);
+      });
+      //evoke the function
+      sut.loadPartOrders();
+    });
+
+    test('should emit status as FetchDataUnsuccessfully', () {
+      //setup
+      when(() => mockGetAllPartOrdersUsecase
+              .call(any(that: isA<GetAllPartOrdersParams>())))
+          .thenAnswer((_) async =>
+              const Left<Failure, List<OrderEntity>>(ReadDataFailure()));
+
+      //expect that the state is later emitted with the status
+      expectLater(
+              sut.stream.map((state) => state.status),
+              emitsInOrder(
+                  [ManageInventoryStateStatus.fetchedDataUnsuccessfully]))
+          .then((_) {
+        //usecase should only be called once
+        var captured = verify(
+          () => mockGetAllPartOrdersUsecase
+              .call(captureAny(that: isA<GetAllPartOrdersParams>())),
+        ).captured;
+
+        var capturedParams = captured.first as GetAllPartOrdersParams;
+        expect(capturedParams.currentOrderListLength, 0);
+        expect(capturedParams.fetchAmount, sut.state.fetchPartAmount);
+        expect(sut.state.allPartOrders.length, 0);
+      });
+      //evoke the function
+      sut.loadPartOrders();
+    });
+  });
+
+  group('.filterLowQuantityParts()', () {
+    test(
+        'should return list where part.quantity is less than requisition point',
+        () {
+      var returnedList = sut.filterLowQuantityParts(valuesForTest.parts());
+      expect(returnedList.length, 4);
+    });
+
+    test('should return an empty list', () {
+      var returnedList = sut.filterLowQuantityParts([]);
+      expect(returnedList.length, 0);
+    });
+  });
+  group('.filterUnverifiedParts()', () {
+    test('should return list where checkoutPart.isVerified is false or null',
+        () {
+      var returnedList =
+          sut.filterUnverifiedParts(valuesForTest.createCheckedOutList());
+      expect(returnedList.length, 10);
+    });
+
+    test('should return an empty list', () {
+      var returnedList = sut.filterUnverifiedParts([]);
+      expect(returnedList.length, 0);
+    });
+  });
+
+  group('.filterUnfulfilledPartOrders()', () {
+    test('should return list where partOrder.isFulfilled is false', () {
+      var returnedList =
+          sut.filterUnfulfilledPartOrders(valuesForTest.getOrders());
+      expect(returnedList.length, 6);
+    });
+
+    test('should return an empty list', () {
+      var returnedList = sut.filterUnfulfilledPartOrders([]);
+      expect(returnedList.length, 0);
+    });
+  });
   group('updateCheckoutQuantity', () {
     void mockSetup() {
       sut.emit(sut.state.copyWith(
           checkedOutParts: valuesForTest.createCheckedOutList(),
           newlyVerifiedParts: [],
-          parts: valuesForTest.parts()));
+          allParts: valuesForTest.parts()));
     }
 
     test('should update the check out quantity when subtracting 1', () async {
@@ -338,7 +419,7 @@ void main() {
   group('.verifyPart()', () {
     void mockSetup() {
       sut.emit(sut.state.copyWith(
-          parts: valuesForTest.parts(),
+          allParts: valuesForTest.parts(),
           newlyVerifiedParts: [],
           checkedOutParts: valuesForTest.createCheckedOutList()));
     }
@@ -350,7 +431,7 @@ void main() {
       expectLater(
           sut.stream.map((state) => state.checkedOutParts[0].isVerified),
           emitsInOrder([false, false, true])).then((_) {
-        expect(sut.state.parts[checkoutPart.partEntityIndex].quantity,
+        expect(sut.state.allParts[checkoutPart.partEntityIndex].quantity,
             valuesForTest.parts()[checkoutPart.partEntityIndex].quantity + 2);
       });
 
@@ -372,7 +453,7 @@ void main() {
       expectLater(
           sut.stream.map((state) => state.checkedOutParts[0].isVerified),
           emitsInOrder([false, false, false, false, true])).then((_) {
-        expect(sut.state.parts[checkoutPart.partEntityIndex].quantity,
+        expect(sut.state.allParts[checkoutPart.partEntityIndex].quantity,
             valuesForTest.parts()[checkoutPart.partEntityIndex].quantity + 2);
       });
       sut.updateCheckoutQuantity(
@@ -388,68 +469,37 @@ void main() {
       sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[index]);
     });
   });
-  group('.updateDatabase()', () {
+
+  group('.fulfillPartOrder()', () {
     void mockSetup() {
-      when(() => mockFulfillPartOrders
-              .call(any(that: isA<FulfillPartOrdersParams>())))
-          .thenAnswer((invocation) async => const Right<Failure, void>(null));
       sut.emit(sut.state.copyWith(
-          newlyVerifiedParts: valuesForTest.createCheckedOutList(),
-          newlyFulfilledPartOrders: [
-            OrderEntity(
-                index: 0,
-                partEntityIndex: 0,
-                orderAmount: 23,
-                orderDate: DateTime.now())
-          ]));
+        allPartOrders: valuesForTest.getOrders(),
+        allParts: valuesForTest.parts(),
+      ));
     }
 
-    test('should emit a new part list', () {});
-    test('should emit verifiedSuccessfully', () async {
-      //setup
-      mockSetup();
-      when(() => mockVerifyCheckOutPart(
-              any(that: isA<VerifyCheckoutPartParams>())))
-          .thenAnswer((invocation) async => const Right<Failure, void>(null));
-
+    test('should emit the part order as fulfilled', () async {
       expectLater(
-          sut.stream.map((state) => state.status),
+          sut.stream.map((state) => state.allParts[0].quantity),
           emitsInOrder([
-            ManageInventoryStateStatus.verifyingPart,
-          ])).then((value) => verify(
-            () => mockVerifyCheckOutPart
-                .call(any(that: isA<VerifyCheckoutPartParams>())),
-          ).called(1));
-
-      await sut.updateDatabase();
-    });
-
-    test('should emit verifiedUnsuccessfully', () async {
-      //setup
+            valuesForTest.parts()[0].quantity,
+            valuesForTest.parts()[0].quantity +
+                valuesForTest.getOrders()[0].orderAmount
+          ])).then((_) {
+        expect(sut.state.newlyFulfilledPartOrders.length, 1);
+        expect(sut.state.allPartOrders[0].isFulfilled, true);
+      });
       mockSetup();
-      when(() =>
-          mockVerifyCheckOutPart(
-              any(that: isA<VerifyCheckoutPartParams>()))).thenAnswer(
-          (invocation) async => const Left<Failure, void>(ReadDataFailure()));
-
-      expectLater(
-          sut.stream.map((state) => state.status),
-          emitsInOrder([
-            ManageInventoryStateStatus.verifyingPart,
-          ])).then((value) => verify(
-            () => mockVerifyCheckOutPart
-                .call(any(that: isA<VerifyCheckoutPartParams>())),
-          ).called(1));
-      await sut.updateDatabase();
+      sut.fulfillPartOrder(orderEntity: sut.state.allPartOrders[0]);
     });
   });
-
   group('.orderPart()', () {
     void mockSetup() {
       sut.emit(sut.state.copyWith());
       when(() =>
               mockCreatePartOrder.call(any(that: isA<CreatePartOrderParams>())))
-          .thenAnswer((_) async => const Right<Failure, void>(null));
+          .thenAnswer((_) async =>
+              Right<Failure, OrderEntity>(valuesForTest.getOrders()[0]));
     }
 
     test('should return right', () async {
@@ -481,7 +531,8 @@ void main() {
       mockSetup();
       when(() =>
               mockCreatePartOrder.call(any(that: isA<CreatePartOrderParams>())))
-          .thenAnswer((_) async => const Left<Failure, void>(GetFailure()));
+          .thenAnswer(
+              (_) async => const Left<Failure, OrderEntity>(GetFailure()));
       CreatePartOrderParams params = CreatePartOrderParams(
           orderEntity: OrderEntity(
               index: 0,
@@ -506,28 +557,98 @@ void main() {
     });
   });
 
-  group('.fulfillPartOrder()', () {
+  group('.deletePartOrder()', () {
+    test('should emit .deletedPartOrderSuccessfully', () {
+      //setup
+      var orderList = valuesForTest.getOrders();
+      sut.emit(sut.state.copyWith(allPartOrders: orderList));
+      var deleteOrderEntity = orderList[2];
+      when(() => mockDeletePartOrderUsecase
+              .call(any(that: isA<DeletePartOrderParams>())))
+          .thenAnswer((_) async => const Right(null));
+
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.deletingPartOrder,
+            ManageInventoryStateStatus.deletedPartOrderSuccessfully
+          ])).then((_) {
+        verify(() => mockDeletePartOrderUsecase
+            .call(any(that: isA<DeletePartOrderParams>()))).called(1);
+        expect(sut.state.allPartOrders.contains(deleteOrderEntity), false);
+        expect(sut.state.allPartOrders.length, orderList.length - 1);
+        expect(orderList.contains(deleteOrderEntity), true);
+      });
+
+      //evoke
+      sut.deletePartOrder(orderEntity: deleteOrderEntity);
+    });
+
+    test('should emit .deletedPartOrderUnsuccessfully', () {
+      //setup
+      var orderList = valuesForTest.getOrders();
+      sut.emit(sut.state.copyWith(allPartOrders: orderList));
+      var deleteOrderEntity = orderList[2];
+      when(() => mockDeletePartOrderUsecase
+              .call(any(that: isA<DeletePartOrderParams>())))
+          .thenAnswer((_) async => const Left(GetFailure()));
+
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.deletingPartOrder,
+            ManageInventoryStateStatus.deletedPartOrderUnsuccessfully
+          ])).then((_) {
+        verify(() => mockDeletePartOrderUsecase
+            .call(any(that: isA<DeletePartOrderParams>()))).called(1);
+        expect(sut.state.allPartOrders.contains(deleteOrderEntity), true);
+        expect(sut.state.allPartOrders.length, orderList.length);
+        expect(orderList.contains(deleteOrderEntity), true);
+      });
+
+      //evoke
+      sut.deletePartOrder(orderEntity: deleteOrderEntity);
+    });
+  });
+
+  group('.close()', () {
     void mockSetup() {
-      sut.emit(sut.state.copyWith(
-        allUnfulfilledPartOrders: valuesForTest
-            .getOrders()
-            .where((order) => !order.isFulfilled)
-            .toList(),
-        allPartOrders: valuesForTest.getOrders(),
-        parts: valuesForTest.parts(),
-      ));
+      when(() => mockVerifyCheckOutPartUsecase
+              .call(any(that: isA<VerifyCheckoutPartParams>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
+      when(() => mockFulfillPartOrdersUsecase
+              .call(any(that: isA<FulfillPartOrdersParams>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
     }
 
-    test('should emit the part order as fulfilled', () async {
-      expectLater(
-          sut.stream.map((state) => state.allUnfulfilledPartOrders.length),
-          emitsInOrder([6, 5])).then((_) {
-        expect(sut.state.parts[0].quantity, 50);
-        expect(sut.state.newlyFulfilledPartOrders.length, 1);
-        expect(sut.state.allPartOrders[0].isFulfilled, true);
-      });
+    test('should evoke _updateDatabase() ', () async {
       mockSetup();
-      sut.fulfillPartOrder(orderEntityIndex: 0);
+
+      var expectedFulfilledList = valuesForTest.getOrders();
+      var expectedVerifiedList = valuesForTest.createCheckedOutList();
+
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.loading,
+            ManageInventoryStateStatus.verifyingPart
+          ]));
+
+      //setup state
+      sut.emit(sut.state.copyWith(
+          newlyFulfilledPartOrders: expectedFulfilledList,
+          newlyVerifiedParts: expectedVerifiedList));
+      await sut.close();
+      var verifyCapture = verify(() => mockVerifyCheckOutPartUsecase
+          .call(captureAny(that: isA<VerifyCheckoutPartParams>()))).captured;
+      var fulfillCapture = verify(() => mockFulfillPartOrdersUsecase
+          .call(captureAny(that: isA<FulfillPartOrdersParams>()))).captured;
+
+      var verifyList = verifyCapture.first as VerifyCheckoutPartParams;
+      var fulfillList = fulfillCapture.first as FulfillPartOrdersParams;
+
+      expect(verifyList.checkedOutEntityList, expectedVerifiedList);
+      expect(fulfillList.fulfillmentEntities, expectedFulfilledList);
     });
   });
 }
