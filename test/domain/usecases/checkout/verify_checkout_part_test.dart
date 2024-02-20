@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
@@ -29,19 +30,28 @@ void main() {
     unverifiedCheckoutPart = valuesForTest.createCheckedOutList();
 
     registerFallbackValue(unverifiedCheckoutPart[0]);
+    registerFallbackValue(valuesForTest.parts()[0]);
   });
 
   group('.call()', () {
-    test('should return a void  when editPartUsecase returns void', () async {
+    void mockSetup() {
+      when(() => mockCheckoutPartRepository
+              .editCheckedOutItem(any(that: isA<CheckedOutEntity>())))
+          .thenAnswer((_) async => const Right<Failure, void>(null));
+      when(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
+          .thenAnswer((_) async =>
+              Right<Failure, PartEntity>(valuesForTest.parts()[0]));
+
+      when(() => mockPartRepository.editPart(any(that: isA<PartEntity>())))
+          .thenAnswer((_) async => const Right<Failure, void>(null));
+    }
+
+    test('should return a Right', () async {
+      mockSetup();
       VerifyCheckoutPartParams params = VerifyCheckoutPartParams(
           checkedOutEntityList: unverifiedCheckoutPart);
 
       //setup
-
-      when(
-        () => mockCheckoutPartRepository
-            .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
-      ).thenAnswer((invocation) async => const Right<Failure, void>(null));
 
       var results = await sut.call(params);
 
@@ -49,34 +59,38 @@ void main() {
 
       verify(() => mockCheckoutPartRepository
               .editCheckedOutItem(any(that: isA<CheckedOutEntity>())))
+          .called(unverifiedCheckoutPart.length);
+      verify(() => mockPartRepository.editPart(any(that: isA<PartEntity>())))
+          .called(unverifiedCheckoutPart.length);
+      verify(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
           .called(unverifiedCheckoutPart.length);
     });
 
-    test('should return null when successful', () async {
-      VerifyCheckoutPartParams params = VerifyCheckoutPartParams(
-          checkedOutEntityList: unverifiedCheckoutPart);
+    test('should return Right when list is null', () async {
+      mockSetup();
+      VerifyCheckoutPartParams params =
+          const VerifyCheckoutPartParams(checkedOutEntityList: []);
 
       //setup
-
-      when(
-        () => mockCheckoutPartRepository
-            .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
-      ).thenAnswer((invocation) async => const Right<Failure, void>(null));
 
       var results = await sut.call(params);
 
       expect(results, isA<Right<Failure, void>>());
 
-      verify(() => mockCheckoutPartRepository
-              .editCheckedOutItem(any(that: isA<CheckedOutEntity>())))
-          .called(unverifiedCheckoutPart.length);
+      verifyNever(() => mockCheckoutPartRepository
+          .editCheckedOutItem(any(that: isA<CheckedOutEntity>())));
+      verifyNever(
+          () => mockPartRepository.editPart(any(that: isA<PartEntity>())));
+      verifyNever(
+          () => mockPartRepository.getSpecificPart(any(that: isA<int>())));
     });
 
     test(
-        'should return UpdateDataFailure() when an error occurs in the checkoutPartRepository',
+        'should return Right and rollback the part entity to the original value',
         () async {
+      mockSetup();
       VerifyCheckoutPartParams params = VerifyCheckoutPartParams(
-          checkedOutEntityList: unverifiedCheckoutPart);
+          checkedOutEntityList: [unverifiedCheckoutPart[0]]);
 
       //setup
 
@@ -87,38 +101,63 @@ void main() {
           (invocation) async => const Left<Failure, void>(UpdateDataFailure()));
 
       var results = await sut.call(params);
-      Failure failure = const GetFailure();
-      results.fold((fail) => failure = fail, (right) => null);
-      expect(results, isA<Left<Failure, void>>());
-      expect(failure, const UpdateDataFailure());
 
       verify(() => mockCheckoutPartRepository
           .editCheckedOutItem(any(that: isA<CheckedOutEntity>()))).called(1);
+      var captured = verify(() =>
+              mockPartRepository.editPart(captureAny(that: isA<PartEntity>())))
+          .captured;
+      verify(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
+          .called(1);
+      var part = captured.first as PartEntity;
+      expect(part.quantity, valuesForTest.parts()[0].quantity);
+      expect(results, const Right<Failure, void>(null));
     });
 
     test(
-        'should return UpdateDataFailure() when an error occurs in the editPartUsecase',
+        'should not call checkoutPartReo.editCheckoutItem() when an error occurs when editing the part',
         () async {
-      VerifyCheckoutPartParams params = VerifyCheckoutPartParams(
-          checkedOutEntityList: unverifiedCheckoutPart);
+      mockSetup();
+      when(() => mockPartRepository.editPart(any(that: isA<PartEntity>())))
+          .thenAnswer((_) async => const Left<Failure, void>(GetFailure()));
+      VerifyCheckoutPartParams params =
+          VerifyCheckoutPartParams(checkedOutEntityList: [
+        unverifiedCheckoutPart[0],
+      ]);
 
       //setup
 
-      when(
-        () => mockCheckoutPartRepository
-            .editCheckedOutItem(any(that: isA<CheckedOutEntity>())),
-      ).thenAnswer((invocation) async => const Right<Failure, void>(null));
-
       var results = await sut.call(params);
-      Failure failure = const GetFailure();
-      results.fold((fail) => failure = fail, (right) => null);
-      expect(results, isA<Left<Failure, void>>());
-      expect(failure, const UpdateDataFailure());
+      expect(results, isA<Right<Failure, void>>());
 
       verifyNever(() => mockCheckoutPartRepository
           .editCheckedOutItem(any(that: isA<CheckedOutEntity>())));
-      // verify(() => mockPartRepository.call(any(that: isA<EditPartParams>())))
-      //     .called(1);
+      verify(() => mockPartRepository.editPart(any(that: isA<PartEntity>())))
+          .called(1);
+      verify(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
+          .called(1);
+    });
+
+    test(
+        'should not call partRepo.editPart or checkOutPartRepo.editCheckOutItem()',
+        () async {
+      mockSetup();
+      when(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
+          .thenAnswer(
+              (_) async => const Left<Failure, PartEntity>(GetFailure()));
+      VerifyCheckoutPartParams params =
+          VerifyCheckoutPartParams(checkedOutEntityList: [
+        unverifiedCheckoutPart[0],
+      ]);
+      var results = await sut.call(params);
+      expect(results, isA<Right<Failure, void>>());
+
+      verifyNever(() => mockCheckoutPartRepository
+          .editCheckedOutItem(any(that: isA<CheckedOutEntity>())));
+      verifyNever(
+          () => mockPartRepository.editPart(any(that: isA<PartEntity>())));
+      verify(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
+          .called(1);
     });
   });
 }
