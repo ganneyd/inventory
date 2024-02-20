@@ -18,17 +18,16 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
-            deletePartOrderUsecase: locator<DeletePartOrderUsecase>(),
-            getAllPartOrdersUsecase: locator<GetAllPartOrdersUsecase>(),
-            createPartOrderUsecase: locator<CreatePartOrderUsecase>(),
-            fulfillPartOrdersUsecase: locator<FulfillPartOrdersUsecase>(),
-            verifyCheckoutPartUsecase: locator<VerifyCheckoutPart>(),
-            getLowQuantityParts: locator<GetLowQuantityParts>(),
-            getAllCheckoutParts: locator<GetAllCheckoutParts>(),
-            getUnverifiedCheckoutParts: locator<GetUnverifiedCheckoutParts>(),
-            getAllPartsUsecase: locator<GetAllPartsUsecase>(),
-            getDatabaseLength: locator<GetDatabaseLength>())
-          ..init(),
+              deletePartOrderUsecase: locator<DeletePartOrderUsecase>(),
+              getAllPartOrdersUsecase: locator<GetAllPartOrdersUsecase>(),
+              createPartOrderUsecase: locator<CreatePartOrderUsecase>(),
+              fulfillPartOrdersUsecase: locator<FulfillPartOrdersUsecase>(),
+              verifyCheckoutPartUsecase: locator<VerifyCheckoutPart>(),
+              getLowQuantityParts: locator<GetLowQuantityParts>(),
+              getAllCheckoutParts: locator<GetAllCheckoutParts>(),
+              getUnverifiedCheckoutParts: locator<GetUnverifiedCheckoutParts>(),
+              getAllPartsUsecase: locator<GetAllPartsUsecase>(),
+            )..init(),
         child: BlocBuilder<ManageInventoryCubit, ManageInventoryState>(
           builder: (context, state) {
             if (state.status == ManageInventoryStateStatus.loading) {
@@ -152,21 +151,17 @@ class ManageInventory extends StatelessWidget {
                     body: TabBarView(
                       children: [
                         PartsPageView(
-                            allParts: state.parts,
-                            lowQuantityParts: state.lowQuantityParts,
+                            allParts: state.allParts,
                             cubit:
                                 BlocProvider.of<ManageInventoryCubit>(context)),
                         CheckoutPartPageView(
-                            allParts: state.parts,
+                            allParts: state.allParts,
                             allCheckedOutParts: state.checkedOutParts,
-                            allUnverifiedCheckedOutParts: state.unverifiedParts,
                             cubit:
                                 BlocProvider.of<ManageInventoryCubit>(context)),
                         PartOrdersPageView(
                             allPartOrders: state.allPartOrders,
-                            unfulfilledPartOrders:
-                                state.allUnfulfilledPartOrders,
-                            allParts: state.parts,
+                            allParts: state.allParts,
                             cubit:
                                 BlocProvider.of<ManageInventoryCubit>(context))
                       ],

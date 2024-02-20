@@ -7,12 +7,13 @@ import 'package:inventory_v1/presentation/widgets/buttons/small_button_widget.da
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 
 class PartOrdersPageView extends StatefulWidget {
-  const PartOrdersPageView(
+  PartOrdersPageView(
       {required this.allPartOrders,
-      required this.unfulfilledPartOrders,
       required this.allParts,
       required this.cubit})
-      : super(key: const Key('part-orders-page-view'));
+      : unfulfilledPartOrders =
+            cubit.filterUnfulfilledPartOrders(allPartOrders),
+        super(key: const Key('part-orders-page-view'));
 
   final List<OrderEntity> allPartOrders;
   final List<OrderEntity> unfulfilledPartOrders;

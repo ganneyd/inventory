@@ -7,12 +7,13 @@ import 'package:inventory_v1/presentation/widgets/buttons/small_button_widget.da
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 
 class CheckoutPartPageView extends StatefulWidget {
-  const CheckoutPartPageView(
+  CheckoutPartPageView(
       {required this.allCheckedOutParts,
-      required this.allUnverifiedCheckedOutParts,
       required this.allParts,
       required this.cubit})
-      : super(key: const Key('checkout-page-view'));
+      : allUnverifiedCheckedOutParts =
+            cubit.filterUnverifiedParts(allCheckedOutParts),
+        super(key: const Key('checkout-page-view'));
 
   final List<CheckedOutEntity> allCheckedOutParts;
   final List<CheckedOutEntity> allUnverifiedCheckedOutParts;
