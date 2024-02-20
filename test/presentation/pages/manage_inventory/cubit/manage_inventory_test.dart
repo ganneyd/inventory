@@ -6,6 +6,7 @@ import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
@@ -21,6 +22,13 @@ class MockGetLowQuantityParts extends Mock implements GetLowQuantityParts {}
 
 class MockVerifyCheckOutPart extends Mock implements VerifyCheckoutPart {}
 
+class MockFulfillPartOrders extends Mock implements FulfillPartOrdersUsecase {}
+
+class MockCreatePartOrder extends Mock implements CreatePartOrderUsecase {}
+
+class MockGetAllPartOrdersUsecase extends Mock
+    implements GetAllPartOrdersUsecase {}
+
 class MockGetUnverifiedParts extends Mock
     implements GetUnverifiedCheckoutParts {}
 
@@ -31,18 +39,23 @@ class MockScrollController extends Mock implements ScrollController {}
 class MockScrollPosition extends Mock implements ScrollPosition {}
 
 void main() {
+  late MockGetAllPartOrdersUsecase mockGetAllPartOrdersUsecase;
   late MockVerifyCheckOutPart mockVerifyCheckOutPart;
   late MockGetAllPartUsecase mockGetAllPartUsecase;
   late MockGetDatabaseLength mockGetDatabaseLength;
   late MockGetLowQuantityParts mockGetLowQuantityParts;
   late MockGetUnverifiedParts mockGetUnverifiedParts;
   late MockGetAllCheckoutParts mockGetAllCheckoutParts;
-
+  late MockCreatePartOrder mockCreatePartOrder;
+  late MockFulfillPartOrders mockFulfillPartOrders;
   late ValuesForTest valuesForTest;
   late ManageInventoryCubit sut;
 
   setUp(() {
     valuesForTest = ValuesForTest();
+    mockGetAllPartOrdersUsecase = MockGetAllPartOrdersUsecase();
+    mockCreatePartOrder = MockCreatePartOrder();
+    mockFulfillPartOrders = MockFulfillPartOrders();
     mockVerifyCheckOutPart = MockVerifyCheckOutPart();
     mockGetAllPartUsecase = MockGetAllPartUsecase();
     mockGetDatabaseLength = MockGetDatabaseLength();
@@ -51,6 +64,9 @@ void main() {
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
 
     sut = ManageInventoryCubit(
+        getAllPartOrdersUsecase: mockGetAllPartOrdersUsecase,
+        createPartOrderUsecase: mockCreatePartOrder,
+        fulfillPartOrdersUsecase: mockFulfillPartOrders,
         verifyCheckoutPartUsecase: mockVerifyCheckOutPart,
         getAllCheckoutParts: mockGetAllCheckoutParts,
         getLowQuantityParts: mockGetLowQuantityParts,
@@ -67,6 +83,20 @@ void main() {
     registerFallbackValue(GetAllPartParams(
         pageIndex: sut.state.parts.length + sut.state.fetchPartAmount,
         startIndex: sut.state.parts.length));
+    registerFallbackValue(FulfillPartOrdersParams(fulfillmentEntities: [
+      OrderEntity(
+          index: 0,
+          partEntityIndex: 0,
+          orderAmount: 23,
+          orderDate: DateTime.now())
+    ]));
+
+    registerFallbackValue(CreatePartOrderParams(
+        orderEntity: OrderEntity(
+            index: 0,
+            partEntityIndex: 0,
+            orderAmount: 23,
+            orderDate: DateTime.now())));
   });
 
   group('ManageInventoryCubit()', () {
@@ -358,10 +388,20 @@ void main() {
       sut.verifyPart(checkedOutEntity: sut.state.checkedOutParts[index]);
     });
   });
-  group('.updateDatabaseWithVerifiedParts()', () {
+  group('.updateDatabase()', () {
     void mockSetup() {
-      sut.emit(sut.state
-          .copyWith(newlyVerifiedParts: valuesForTest.createCheckedOutList()));
+      when(() => mockFulfillPartOrders
+              .call(any(that: isA<FulfillPartOrdersParams>())))
+          .thenAnswer((invocation) async => const Right<Failure, void>(null));
+      sut.emit(sut.state.copyWith(
+          newlyVerifiedParts: valuesForTest.createCheckedOutList(),
+          newlyFulfilledPartOrders: [
+            OrderEntity(
+                index: 0,
+                partEntityIndex: 0,
+                orderAmount: 23,
+                orderDate: DateTime.now())
+          ]));
     }
 
     test('should emit a new part list', () {});
@@ -381,11 +421,12 @@ void main() {
                 .call(any(that: isA<VerifyCheckoutPartParams>())),
           ).called(1));
 
-      await sut.updateDatabaseWithVerifiedParts();
+      await sut.updateDatabase();
     });
 
     test('should emit verifiedUnsuccessfully', () async {
       //setup
+      mockSetup();
       when(() =>
           mockVerifyCheckOutPart(
               any(that: isA<VerifyCheckoutPartParams>()))).thenAnswer(
@@ -399,7 +440,94 @@ void main() {
             () => mockVerifyCheckOutPart
                 .call(any(that: isA<VerifyCheckoutPartParams>())),
           ).called(1));
-      await sut.updateDatabaseWithVerifiedParts();
+      await sut.updateDatabase();
+    });
+  });
+
+  group('.orderPart()', () {
+    void mockSetup() {
+      sut.emit(sut.state.copyWith());
+      when(() =>
+              mockCreatePartOrder.call(any(that: isA<CreatePartOrderParams>())))
+          .thenAnswer((_) async => const Right<Failure, void>(null));
+    }
+
+    test('should return right', () async {
+      mockSetup();
+      CreatePartOrderParams params = CreatePartOrderParams(
+          orderEntity: OrderEntity(
+              index: 0,
+              partEntityIndex: 0,
+              orderAmount: 20,
+              orderDate: DateTime.now()));
+
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.creatingPartOrder,
+            ManageInventoryStateStatus.createdPartOrderSuccessfully
+          ])).then((_) {
+        expect(sut.state.allPartOrders.length, 1);
+        verify(() => mockCreatePartOrder
+            .call(any(that: isA<CreatePartOrderParams>()))).called(1);
+      });
+
+      sut.orderPart(
+          orderAmount: params.orderEntity.orderAmount,
+          partEntityIndex: params.orderEntity.partEntityIndex);
+    });
+
+    test('should emit createdPartOrderUnsuccessfully', () async {
+      mockSetup();
+      when(() =>
+              mockCreatePartOrder.call(any(that: isA<CreatePartOrderParams>())))
+          .thenAnswer((_) async => const Left<Failure, void>(GetFailure()));
+      CreatePartOrderParams params = CreatePartOrderParams(
+          orderEntity: OrderEntity(
+              index: 0,
+              partEntityIndex: 0,
+              orderAmount: 20,
+              orderDate: DateTime.now()));
+
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.creatingPartOrder,
+            ManageInventoryStateStatus.createdPartOrderUnsuccessfully
+          ])).then((_) {
+        expect(sut.state.allPartOrders.length, 0);
+        verify(() => mockCreatePartOrder
+            .call(any(that: isA<CreatePartOrderParams>()))).called(1);
+      });
+
+      sut.orderPart(
+          orderAmount: params.orderEntity.orderAmount,
+          partEntityIndex: params.orderEntity.partEntityIndex);
+    });
+  });
+
+  group('.fulfillPartOrder()', () {
+    void mockSetup() {
+      sut.emit(sut.state.copyWith(
+        allUnfulfilledPartOrders: valuesForTest
+            .getOrders()
+            .where((order) => !order.isFulfilled)
+            .toList(),
+        allPartOrders: valuesForTest.getOrders(),
+        parts: valuesForTest.parts(),
+      ));
+    }
+
+    test('should emit the part order as fulfilled', () async {
+      expectLater(
+          sut.stream.map((state) => state.allUnfulfilledPartOrders.length),
+          emitsInOrder([6, 5])).then((_) {
+        expect(sut.state.parts[0].quantity, 50);
+        expect(sut.state.newlyFulfilledPartOrders.length, 1);
+        expect(sut.state.allPartOrders[0].isFulfilled, true);
+      });
+      mockSetup();
+      sut.fulfillPartOrder(orderEntityIndex: 0);
     });
   });
 }
