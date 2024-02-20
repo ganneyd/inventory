@@ -17,18 +17,12 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ManageInventoryState {
   int get fetchPartAmount => throw _privateConstructorUsedError;
-  int get databaseLength => throw _privateConstructorUsedError;
-  List<PartEntity> get parts => throw _privateConstructorUsedError;
-  List<PartEntity> get lowQuantityParts => throw _privateConstructorUsedError;
-  List<CheckedOutEntity> get unverifiedParts =>
-      throw _privateConstructorUsedError;
+  List<PartEntity> get allParts => throw _privateConstructorUsedError;
   List<CheckedOutEntity> get newlyVerifiedParts =>
       throw _privateConstructorUsedError;
   List<CheckedOutEntity> get checkedOutParts =>
       throw _privateConstructorUsedError;
   List<OrderEntity> get allPartOrders => throw _privateConstructorUsedError;
-  List<OrderEntity> get allUnfulfilledPartOrders =>
-      throw _privateConstructorUsedError;
   List<OrderEntity> get newlyFulfilledPartOrders =>
       throw _privateConstructorUsedError;
   dynamic get error => throw _privateConstructorUsedError;
@@ -48,14 +42,10 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
   @useResult
   $Res call(
       {int fetchPartAmount,
-      int databaseLength,
-      List<PartEntity> parts,
-      List<PartEntity> lowQuantityParts,
-      List<CheckedOutEntity> unverifiedParts,
+      List<PartEntity> allParts,
       List<CheckedOutEntity> newlyVerifiedParts,
       List<CheckedOutEntity> checkedOutParts,
       List<OrderEntity> allPartOrders,
-      List<OrderEntity> allUnfulfilledPartOrders,
       List<OrderEntity> newlyFulfilledPartOrders,
       dynamic error,
       ManageInventoryStateStatus status});
@@ -77,14 +67,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? fetchPartAmount = null,
-    Object? databaseLength = null,
-    Object? parts = null,
-    Object? lowQuantityParts = null,
-    Object? unverifiedParts = null,
+    Object? allParts = null,
     Object? newlyVerifiedParts = null,
     Object? checkedOutParts = null,
     Object? allPartOrders = null,
-    Object? allUnfulfilledPartOrders = null,
     Object? newlyFulfilledPartOrders = null,
     Object? error = freezed,
     Object? status = null,
@@ -94,22 +80,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
           ? _value.fetchPartAmount
           : fetchPartAmount // ignore: cast_nullable_to_non_nullable
               as int,
-      databaseLength: null == databaseLength
-          ? _value.databaseLength
-          : databaseLength // ignore: cast_nullable_to_non_nullable
-              as int,
-      parts: null == parts
-          ? _value.parts
-          : parts // ignore: cast_nullable_to_non_nullable
+      allParts: null == allParts
+          ? _value.allParts
+          : allParts // ignore: cast_nullable_to_non_nullable
               as List<PartEntity>,
-      lowQuantityParts: null == lowQuantityParts
-          ? _value.lowQuantityParts
-          : lowQuantityParts // ignore: cast_nullable_to_non_nullable
-              as List<PartEntity>,
-      unverifiedParts: null == unverifiedParts
-          ? _value.unverifiedParts
-          : unverifiedParts // ignore: cast_nullable_to_non_nullable
-              as List<CheckedOutEntity>,
       newlyVerifiedParts: null == newlyVerifiedParts
           ? _value.newlyVerifiedParts
           : newlyVerifiedParts // ignore: cast_nullable_to_non_nullable
@@ -121,10 +95,6 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
       allPartOrders: null == allPartOrders
           ? _value.allPartOrders
           : allPartOrders // ignore: cast_nullable_to_non_nullable
-              as List<OrderEntity>,
-      allUnfulfilledPartOrders: null == allUnfulfilledPartOrders
-          ? _value.allUnfulfilledPartOrders
-          : allUnfulfilledPartOrders // ignore: cast_nullable_to_non_nullable
               as List<OrderEntity>,
       newlyFulfilledPartOrders: null == newlyFulfilledPartOrders
           ? _value.newlyFulfilledPartOrders
@@ -152,14 +122,10 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {int fetchPartAmount,
-      int databaseLength,
-      List<PartEntity> parts,
-      List<PartEntity> lowQuantityParts,
-      List<CheckedOutEntity> unverifiedParts,
+      List<PartEntity> allParts,
       List<CheckedOutEntity> newlyVerifiedParts,
       List<CheckedOutEntity> checkedOutParts,
       List<OrderEntity> allPartOrders,
-      List<OrderEntity> allUnfulfilledPartOrders,
       List<OrderEntity> newlyFulfilledPartOrders,
       dynamic error,
       ManageInventoryStateStatus status});
@@ -178,14 +144,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? fetchPartAmount = null,
-    Object? databaseLength = null,
-    Object? parts = null,
-    Object? lowQuantityParts = null,
-    Object? unverifiedParts = null,
+    Object? allParts = null,
     Object? newlyVerifiedParts = null,
     Object? checkedOutParts = null,
     Object? allPartOrders = null,
-    Object? allUnfulfilledPartOrders = null,
     Object? newlyFulfilledPartOrders = null,
     Object? error = freezed,
     Object? status = null,
@@ -195,22 +157,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
           ? _value.fetchPartAmount
           : fetchPartAmount // ignore: cast_nullable_to_non_nullable
               as int,
-      databaseLength: null == databaseLength
-          ? _value.databaseLength
-          : databaseLength // ignore: cast_nullable_to_non_nullable
-              as int,
-      parts: null == parts
-          ? _value._parts
-          : parts // ignore: cast_nullable_to_non_nullable
+      allParts: null == allParts
+          ? _value._allParts
+          : allParts // ignore: cast_nullable_to_non_nullable
               as List<PartEntity>,
-      lowQuantityParts: null == lowQuantityParts
-          ? _value._lowQuantityParts
-          : lowQuantityParts // ignore: cast_nullable_to_non_nullable
-              as List<PartEntity>,
-      unverifiedParts: null == unverifiedParts
-          ? _value._unverifiedParts
-          : unverifiedParts // ignore: cast_nullable_to_non_nullable
-              as List<CheckedOutEntity>,
       newlyVerifiedParts: null == newlyVerifiedParts
           ? _value._newlyVerifiedParts
           : newlyVerifiedParts // ignore: cast_nullable_to_non_nullable
@@ -222,10 +172,6 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
       allPartOrders: null == allPartOrders
           ? _value._allPartOrders
           : allPartOrders // ignore: cast_nullable_to_non_nullable
-              as List<OrderEntity>,
-      allUnfulfilledPartOrders: null == allUnfulfilledPartOrders
-          ? _value._allUnfulfilledPartOrders
-          : allUnfulfilledPartOrders // ignore: cast_nullable_to_non_nullable
               as List<OrderEntity>,
       newlyFulfilledPartOrders: null == newlyFulfilledPartOrders
           ? _value._newlyFulfilledPartOrders
@@ -246,59 +192,30 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
 class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
       {this.fetchPartAmount = 20,
-      this.databaseLength = 0,
-      final List<PartEntity> parts = const <PartEntity>[],
-      final List<PartEntity> lowQuantityParts = const <PartEntity>[],
-      final List<CheckedOutEntity> unverifiedParts = const <CheckedOutEntity>[],
+      final List<PartEntity> allParts = const <PartEntity>[],
       final List<CheckedOutEntity> newlyVerifiedParts =
           const <CheckedOutEntity>[],
       final List<CheckedOutEntity> checkedOutParts = const <CheckedOutEntity>[],
       final List<OrderEntity> allPartOrders = const <OrderEntity>[],
-      final List<OrderEntity> allUnfulfilledPartOrders = const <OrderEntity>[],
       final List<OrderEntity> newlyFulfilledPartOrders = const <OrderEntity>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
-      : _parts = parts,
-        _lowQuantityParts = lowQuantityParts,
-        _unverifiedParts = unverifiedParts,
+      : _allParts = allParts,
         _newlyVerifiedParts = newlyVerifiedParts,
         _checkedOutParts = checkedOutParts,
         _allPartOrders = allPartOrders,
-        _allUnfulfilledPartOrders = allUnfulfilledPartOrders,
         _newlyFulfilledPartOrders = newlyFulfilledPartOrders;
 
   @override
   @JsonKey()
   final int fetchPartAmount;
+  final List<PartEntity> _allParts;
   @override
   @JsonKey()
-  final int databaseLength;
-  final List<PartEntity> _parts;
-  @override
-  @JsonKey()
-  List<PartEntity> get parts {
-    if (_parts is EqualUnmodifiableListView) return _parts;
+  List<PartEntity> get allParts {
+    if (_allParts is EqualUnmodifiableListView) return _allParts;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_parts);
-  }
-
-  final List<PartEntity> _lowQuantityParts;
-  @override
-  @JsonKey()
-  List<PartEntity> get lowQuantityParts {
-    if (_lowQuantityParts is EqualUnmodifiableListView)
-      return _lowQuantityParts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_lowQuantityParts);
-  }
-
-  final List<CheckedOutEntity> _unverifiedParts;
-  @override
-  @JsonKey()
-  List<CheckedOutEntity> get unverifiedParts {
-    if (_unverifiedParts is EqualUnmodifiableListView) return _unverifiedParts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_unverifiedParts);
+    return EqualUnmodifiableListView(_allParts);
   }
 
   final List<CheckedOutEntity> _newlyVerifiedParts;
@@ -329,16 +246,6 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
     return EqualUnmodifiableListView(_allPartOrders);
   }
 
-  final List<OrderEntity> _allUnfulfilledPartOrders;
-  @override
-  @JsonKey()
-  List<OrderEntity> get allUnfulfilledPartOrders {
-    if (_allUnfulfilledPartOrders is EqualUnmodifiableListView)
-      return _allUnfulfilledPartOrders;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_allUnfulfilledPartOrders);
-  }
-
   final List<OrderEntity> _newlyFulfilledPartOrders;
   @override
   @JsonKey()
@@ -358,7 +265,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, databaseLength: $databaseLength, parts: $parts, lowQuantityParts: $lowQuantityParts, unverifiedParts: $unverifiedParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, allPartOrders: $allPartOrders, allUnfulfilledPartOrders: $allUnfulfilledPartOrders, newlyFulfilledPartOrders: $newlyFulfilledPartOrders, error: $error, status: $status)';
+    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, allParts: $allParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, allPartOrders: $allPartOrders, newlyFulfilledPartOrders: $newlyFulfilledPartOrders, error: $error, status: $status)';
   }
 
   @override
@@ -368,21 +275,13 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
             other is _$ManageInventoryStateImpl &&
             (identical(other.fetchPartAmount, fetchPartAmount) ||
                 other.fetchPartAmount == fetchPartAmount) &&
-            (identical(other.databaseLength, databaseLength) ||
-                other.databaseLength == databaseLength) &&
-            const DeepCollectionEquality().equals(other._parts, _parts) &&
-            const DeepCollectionEquality()
-                .equals(other._lowQuantityParts, _lowQuantityParts) &&
-            const DeepCollectionEquality()
-                .equals(other._unverifiedParts, _unverifiedParts) &&
+            const DeepCollectionEquality().equals(other._allParts, _allParts) &&
             const DeepCollectionEquality()
                 .equals(other._newlyVerifiedParts, _newlyVerifiedParts) &&
             const DeepCollectionEquality()
                 .equals(other._checkedOutParts, _checkedOutParts) &&
             const DeepCollectionEquality()
                 .equals(other._allPartOrders, _allPartOrders) &&
-            const DeepCollectionEquality().equals(
-                other._allUnfulfilledPartOrders, _allUnfulfilledPartOrders) &&
             const DeepCollectionEquality().equals(
                 other._newlyFulfilledPartOrders, _newlyFulfilledPartOrders) &&
             const DeepCollectionEquality().equals(other.error, error) &&
@@ -394,14 +293,10 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   int get hashCode => Object.hash(
       runtimeType,
       fetchPartAmount,
-      databaseLength,
-      const DeepCollectionEquality().hash(_parts),
-      const DeepCollectionEquality().hash(_lowQuantityParts),
-      const DeepCollectionEquality().hash(_unverifiedParts),
+      const DeepCollectionEquality().hash(_allParts),
       const DeepCollectionEquality().hash(_newlyVerifiedParts),
       const DeepCollectionEquality().hash(_checkedOutParts),
       const DeepCollectionEquality().hash(_allPartOrders),
-      const DeepCollectionEquality().hash(_allUnfulfilledPartOrders),
       const DeepCollectionEquality().hash(_newlyFulfilledPartOrders),
       const DeepCollectionEquality().hash(error),
       status);
@@ -419,14 +314,10 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
       {final int fetchPartAmount,
-      final int databaseLength,
-      final List<PartEntity> parts,
-      final List<PartEntity> lowQuantityParts,
-      final List<CheckedOutEntity> unverifiedParts,
+      final List<PartEntity> allParts,
       final List<CheckedOutEntity> newlyVerifiedParts,
       final List<CheckedOutEntity> checkedOutParts,
       final List<OrderEntity> allPartOrders,
-      final List<OrderEntity> allUnfulfilledPartOrders,
       final List<OrderEntity> newlyFulfilledPartOrders,
       final dynamic error,
       final ManageInventoryStateStatus status}) = _$ManageInventoryStateImpl;
@@ -434,21 +325,13 @@ abstract class _ManageInventoryState implements ManageInventoryState {
   @override
   int get fetchPartAmount;
   @override
-  int get databaseLength;
-  @override
-  List<PartEntity> get parts;
-  @override
-  List<PartEntity> get lowQuantityParts;
-  @override
-  List<CheckedOutEntity> get unverifiedParts;
+  List<PartEntity> get allParts;
   @override
   List<CheckedOutEntity> get newlyVerifiedParts;
   @override
   List<CheckedOutEntity> get checkedOutParts;
   @override
   List<OrderEntity> get allPartOrders;
-  @override
-  List<OrderEntity> get allUnfulfilledPartOrders;
   @override
   List<OrderEntity> get newlyFulfilledPartOrders;
   @override
