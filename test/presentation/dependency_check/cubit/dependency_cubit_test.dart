@@ -3,9 +3,12 @@ import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
+import 'package:inventory_v1/data/repositories/part_order_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/repositories/part_order_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/dependency_check/cubit/dependency_check_cubit.dart';
@@ -19,29 +22,38 @@ class MockPathProviderPlatform extends Mock implements PathProviderPlatform {}
 
 class MockPartRepo extends Mock implements PartRepository {}
 
+class MockPartOrderRepo extends Mock implements PartOrderRepository {}
+
 class MockCheckoutPartRepo extends Mock implements CheckedOutPartRepository {}
 
 class MockBox extends Mock implements Box<PartModel> {}
+
+class MockPartOrderBox extends Mock implements Box<OrderModel> {}
 
 class MockCheckoutBox extends Mock implements Box<CheckedOutModel> {}
 
 void main() {
   late DependencyCheckCubit sut;
   late MockGetIt mockGetIt;
+  late MockPartOrderRepo mockPartOrderRepo;
+
   late MockPathProviderPlatform mockPathProviderPlatform;
   late MockPartRepo mockPartRepo;
   late MockCheckoutPartRepo mockCheckoutPartRepo;
   late MockBox mockBox;
   late MockCheckoutBox mockCheckoutBox;
+  late MockPartOrderBox mockPartOrderBox;
   Future<void> dependencyInjection() async {
     mockGetIt = MockGetIt();
   }
 
   setUp(() async {
     await dependencyInjection();
+    mockPartOrderRepo = MockPartOrderRepo();
     mockPathProviderPlatform = MockPathProviderPlatform();
     mockBox = MockBox();
     mockCheckoutBox = MockCheckoutBox();
+    mockPartOrderBox = MockPartOrderBox();
     mockPartRepo = MockPartRepo();
     mockCheckoutPartRepo = MockCheckoutPartRepo();
     sut = DependencyCheckCubit(
@@ -62,6 +74,8 @@ void main() {
       when(() => mockGetIt<CheckedOutPartRepository>()).thenAnswer(
           (invocation) =>
               CheckedOutPartRepositoryImplementation(mockCheckoutBox));
+      when(() => mockGetIt<PartOrderRepository>()).thenAnswer(
+          (_) => PartOrderRepositoryImplementation(mockPartOrderBox));
       //usecases mock
       when(() => mockGetIt<AddPartUsecase>())
           .thenAnswer((invocation) => AddPartUsecase(mockPartRepo));
@@ -91,6 +105,21 @@ void main() {
           (invocation) => GetUnverifiedCheckoutParts(mockCheckoutPartRepo));
       when(() => mockGetIt<GetLowQuantityParts>())
           .thenAnswer((invocation) => GetLowQuantityParts(mockPartRepo));
+      //order
+      when(() => mockGetIt<CreatePartOrderUsecase>())
+          .thenAnswer((_) => CreatePartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<DeletePartOrderUsecase>())
+          .thenAnswer((_) => DeletePartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<EditPartOrderUsecase>())
+          .thenAnswer((_) => EditPartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<FulfillPartOrdersUsecase>()).thenAnswer(
+          (_) => FulfillPartOrdersUsecase(mockPartRepo, mockPartOrderRepo));
+      when(() => mockGetIt<GetAllPartOrdersUsecase>())
+          .thenAnswer((_) => GetAllPartOrdersUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<GetPartOrderUsecase>())
+          .thenAnswer((_) => GetPartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<DiscontinuePartUsecase>()).thenAnswer(
+          (_) => DiscontinuePartUsecase(mockPartOrderRepo, mockPartRepo));
     }
 
     test('initial state is correct', () {
@@ -325,6 +354,21 @@ void main() {
           (invocation) => GetUnverifiedCheckoutParts(mockCheckoutPartRepo));
       when(() => mockGetIt<GetLowQuantityParts>())
           .thenAnswer((invocation) => GetLowQuantityParts(mockPartRepo));
+      //order
+      when(() => mockGetIt<CreatePartOrderUsecase>())
+          .thenAnswer((_) => CreatePartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<DeletePartOrderUsecase>())
+          .thenAnswer((_) => DeletePartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<EditPartOrderUsecase>())
+          .thenAnswer((_) => EditPartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<FulfillPartOrdersUsecase>()).thenAnswer(
+          (_) => FulfillPartOrdersUsecase(mockPartRepo, mockPartOrderRepo));
+      when(() => mockGetIt<GetAllPartOrdersUsecase>())
+          .thenAnswer((_) => GetAllPartOrdersUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<GetPartOrderUsecase>())
+          .thenAnswer((_) => GetPartOrderUsecase(mockPartOrderRepo));
+      when(() => mockGetIt<DiscontinuePartUsecase>()).thenAnswer(
+          (_) => DiscontinuePartUsecase(mockPartOrderRepo, mockPartRepo));
     }
 
     test('Usecases are initialized', () async {

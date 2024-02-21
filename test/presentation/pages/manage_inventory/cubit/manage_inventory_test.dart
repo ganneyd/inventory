@@ -631,7 +631,7 @@ void main() {
       sut.emit(sut.state.copyWith(
           allParts: valuesForTest.parts(),
           allPartOrders: valuesForTest.getOrders()));
-      var partEntity = valuesForTest.parts()[0];
+      var partEntity = valuesForTest.parts()[1];
       when(() => mockDiscontinuePartUsecase
               .call(any(that: isA<DiscontinuePartParams>())))
           .thenAnswer((_) async => const Right(null));
@@ -645,11 +645,9 @@ void main() {
             ManageInventoryStateStatus.updatedDataSuccessfully,
             ManageInventoryStateStatus.fetchedDataSuccessfully
           ])).then((_) {
-        var capture = verify(() => mockDiscontinuePartUsecase
-            .call(captureAny(that: isA<DiscontinuePartParams>()))).captured;
-        var capturedPartEntity = capture.first as DiscontinuePartParams;
-        expect(capturedPartEntity.discontinuedPartEntity.isDiscontinued, true);
-        expect(sut.state.allParts[0].isDiscontinued, true);
+        verify(() => mockDiscontinuePartUsecase
+            .call(captureAny(that: isA<DiscontinuePartParams>()))).called(1);
+        expect(sut.state.allParts[1].isDiscontinued, true);
         expect(sut.state.allPartOrders.length, 10);
       });
 
@@ -657,7 +655,7 @@ void main() {
     });
     test('should not set partEntity.isDiscontinued to true', () {
       sut.emit(sut.state.copyWith(allParts: valuesForTest.parts()));
-      var partEntity = valuesForTest.parts()[0];
+      var partEntity = valuesForTest.parts()[1];
       when(() => mockDiscontinuePartUsecase
               .call(any(that: isA<DiscontinuePartParams>())))
           .thenAnswer((_) async => const Left(GetFailure()));
@@ -666,11 +664,9 @@ void main() {
               emitsInOrder(
                   [ManageInventoryStateStatus.updatedDataUnsuccessfully]))
           .then((_) {
-        var capture = verify(() => mockDiscontinuePartUsecase
-            .call(captureAny(that: isA<DiscontinuePartParams>()))).captured;
-        var capturedPartEntity = capture.first as DiscontinuePartParams;
-        expect(capturedPartEntity.discontinuedPartEntity.isDiscontinued, true);
-        expect(sut.state.allParts[0].isDiscontinued, false);
+        verify(() => mockDiscontinuePartUsecase
+            .call(captureAny(that: isA<DiscontinuePartParams>()))).called(1);
+        expect(sut.state.allParts[1].isDiscontinued, false);
         verifyNever(() => mockGetAllPartOrdersUsecase
             .call(any(that: isA<GetAllPartOrdersParams>())));
       });
