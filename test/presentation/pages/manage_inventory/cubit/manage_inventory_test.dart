@@ -6,7 +6,6 @@ import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
-import 'package:inventory_v1/domain/usecases/discontinue_part.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
