@@ -6,6 +6,7 @@ import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
+import 'package:inventory_v1/domain/usecases/discontinue_part.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
@@ -18,6 +19,11 @@ class MockGetAllPartUsecase extends Mock implements GetAllPartsUsecase {}
 class MockGetLowQuantityParts extends Mock implements GetLowQuantityParts {}
 
 class MockVerifyCheckOutPart extends Mock implements VerifyCheckoutPart {}
+
+class MockEditPartUsecase extends Mock implements EditPartUsecase {}
+
+class MockDiscontinuePartUsecase extends Mock
+    implements DiscontinuePartUsecase {}
 
 class MockDeletePartOrderUsecase extends Mock
     implements DeletePartOrderUsecase {}
@@ -39,6 +45,7 @@ class MockScrollController extends Mock implements ScrollController {}
 class MockScrollPosition extends Mock implements ScrollPosition {}
 
 void main() {
+  late MockDiscontinuePartUsecase mockDiscontinuePartUsecase;
   late MockDeletePartOrderUsecase mockDeletePartOrderUsecase;
   late MockGetAllPartOrdersUsecase mockGetAllPartOrdersUsecase;
   late MockVerifyCheckOutPart mockVerifyCheckOutPartUsecase;
@@ -53,6 +60,8 @@ void main() {
 
   setUp(() {
     valuesForTest = ValuesForTest();
+    mockDiscontinuePartUsecase = MockDiscontinuePartUsecase();
+
     mockDeletePartOrderUsecase = MockDeletePartOrderUsecase();
     mockGetAllPartOrdersUsecase = MockGetAllPartOrdersUsecase();
     mockCreatePartOrder = MockCreatePartOrder();
@@ -64,6 +73,7 @@ void main() {
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
 
     sut = ManageInventoryCubit(
+      discontinuePartUsecase: mockDiscontinuePartUsecase,
       deletePartOrderUsecase: mockDeletePartOrderUsecase,
       getAllPartOrdersUsecase: mockGetAllPartOrdersUsecase,
       createPartOrderUsecase: mockCreatePartOrder,
@@ -87,8 +97,12 @@ void main() {
     registerFallbackValue(FulfillPartOrdersParams(
         fulfillmentEntities: valuesForTest.getOrders()));
 
+    registerFallbackValue(DiscontinuePartParams(
+        discontinuedPartEntity: valuesForTest.parts()[0]));
+
     registerFallbackValue(const GetAllPartOrdersParams(
         currentOrderListLength: 0, fetchAmount: 20));
+    registerFallbackValue(EditPartParams(partEntity: valuesForTest.parts()[0]));
     registerFallbackValue(
         DeletePartOrderParams(orderEntity: valuesForTest.getOrders()[0]));
     registerFallbackValue(CreatePartOrderParams(
@@ -611,6 +625,58 @@ void main() {
     });
   });
 
+  group('.discontinuePart()', () {
+    test('should set partEntity.isDiscontinued to true', () {
+      sut.emit(sut.state.copyWith(
+          allParts: valuesForTest.parts(),
+          allPartOrders: valuesForTest.getOrders()));
+      var partEntity = valuesForTest.parts()[0];
+      when(() => mockDiscontinuePartUsecase
+              .call(any(that: isA<DiscontinuePartParams>())))
+          .thenAnswer((_) async => const Right(null));
+      when(() => mockGetAllPartOrdersUsecase
+              .call(any(that: isA<GetAllPartOrdersParams>())))
+          .thenAnswer((_) async =>
+              Right<Failure, List<OrderEntity>>(valuesForTest.getOrders()));
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInOrder([
+            ManageInventoryStateStatus.updatedDataSuccessfully,
+            ManageInventoryStateStatus.fetchedDataSuccessfully
+          ])).then((_) {
+        var capture = verify(() => mockDiscontinuePartUsecase
+            .call(captureAny(that: isA<DiscontinuePartParams>()))).captured;
+        var capturedPartEntity = capture.first as DiscontinuePartParams;
+        expect(capturedPartEntity.discontinuedPartEntity.isDiscontinued, true);
+        expect(sut.state.allParts[0].isDiscontinued, true);
+        expect(sut.state.allPartOrders.length, 10);
+      });
+
+      sut.discontinuePart(partEntity: partEntity);
+    });
+    test('should not set partEntity.isDiscontinued to true', () {
+      sut.emit(sut.state.copyWith(allParts: valuesForTest.parts()));
+      var partEntity = valuesForTest.parts()[0];
+      when(() => mockDiscontinuePartUsecase
+              .call(any(that: isA<DiscontinuePartParams>())))
+          .thenAnswer((_) async => const Left(GetFailure()));
+      expectLater(
+              sut.stream.map((state) => state.status),
+              emitsInOrder(
+                  [ManageInventoryStateStatus.updatedDataUnsuccessfully]))
+          .then((_) {
+        var capture = verify(() => mockDiscontinuePartUsecase
+            .call(captureAny(that: isA<DiscontinuePartParams>()))).captured;
+        var capturedPartEntity = capture.first as DiscontinuePartParams;
+        expect(capturedPartEntity.discontinuedPartEntity.isDiscontinued, true);
+        expect(sut.state.allParts[0].isDiscontinued, false);
+        verifyNever(() => mockGetAllPartOrdersUsecase
+            .call(any(that: isA<GetAllPartOrdersParams>())));
+      });
+
+      sut.discontinuePart(partEntity: partEntity);
+    });
+  });
   group('.close()', () {
     void mockSetup() {
       when(() => mockVerifyCheckOutPartUsecase

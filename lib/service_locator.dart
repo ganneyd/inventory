@@ -110,6 +110,8 @@ Future<void> setupLocator() async {
       () => GetAllPartOrdersUsecase(locator<PartOrderRepository>()));
   locator.registerFactory<GetPartOrderUsecase>(
       () => GetPartOrderUsecase(locator<PartOrderRepository>()));
+  locator.registerFactory<DiscontinuePartUsecase>(() => DiscontinuePartUsecase(
+      locator<PartOrderRepository>(), locator<PartRepository>()));
 
   //!Presentation Layer
 //!Pages
