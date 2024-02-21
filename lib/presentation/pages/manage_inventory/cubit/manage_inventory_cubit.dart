@@ -167,10 +167,11 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     );
 
     newCheckoutPartList[indexInList] = newCheckoutPart;
-
-    var partEntity = newPartEntityList[checkedOutEntity.partEntityIndex];
+    var partIndex = newPartEntityList
+        .indexWhere((part) => part.index == checkedOutEntity.partEntityIndex);
+    var partEntity = newPartEntityList[partIndex];
     //reflect change in the parts list
-    newPartEntityList[checkedOutEntity.partEntityIndex] = partEntity.copyWith(
+    newPartEntityList[partIndex] = partEntity.copyWith(
         quantity: partEntity.quantity - newCheckoutPart.quantityDiscrepancy);
     //add checkout part to verified list
     newVerifiedList.add(newCheckoutPart);
@@ -190,12 +191,15 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     var fulfilledOrder = allPartOrders[index]
         .copyWith(fulfillmentDate: DateTime.now(), isFulfilled: true);
     allPartOrders[index] = fulfilledOrder;
-    var partEntity = allParts[fulfilledOrder.partEntityIndex];
+    var partIndex = allParts
+        .indexWhere((part) => part.index == fulfilledOrder.partEntityIndex);
+
+    var partEntity = allParts[partIndex];
 
     partEntity = partEntity.copyWith(
         quantity: partEntity.quantity + fulfilledOrder.orderAmount);
 
-    allParts[partEntity.index] = partEntity;
+    allParts[partIndex] = partEntity;
 
     newlyFulfilledPartOrders.add(fulfilledOrder);
 
@@ -233,7 +237,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
   void discontinuePart({required PartEntity partEntity}) async {
     var allParts = state.allParts.toList();
-    var index = allParts.indexOf(partEntity);
+    var index = allParts.indexWhere((part) => part.index == partEntity.index);
     if (index >= 0) {
       var results = await _discontinuePartUsecase
           .call(DiscontinuePartParams(discontinuedPartEntity: allParts[index]));
@@ -286,8 +290,9 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
             status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
         (r) {
       var allParts = state.allParts.toList();
-
-      allParts[partEntity.index] = restockedPart;
+      var partIndex =
+          allParts.indexWhere((part) => part.index == partEntity.index);
+      allParts[partIndex] = restockedPart;
       emit(state.copyWith(
           status: ManageInventoryStateStatus.updatedDataSuccessfully,
           allParts: allParts));
