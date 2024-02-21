@@ -17,9 +17,11 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       required this.fulfillPartOrdersUsecase,
       required this.createPartOrderUsecase,
       required this.getAllPartOrdersUsecase,
+      required EditPartUsecase editPartUsecase,
       required DiscontinuePartUsecase discontinuePartUsecase,
       required DeletePartOrderUsecase deletePartOrderUsecase})
       : _logger = Logger('manage-inv-cubit'),
+        _editPartUsecase = editPartUsecase,
         _deletePartOrderUsecase = deletePartOrderUsecase,
         _discontinuePartUsecase = discontinuePartUsecase,
         super(ManageInventoryState(fetchPartAmount: fetchPartAmount));
@@ -35,6 +37,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final GetAllPartOrdersUsecase getAllPartOrdersUsecase;
   final DeletePartOrderUsecase _deletePartOrderUsecase;
   final DiscontinuePartUsecase _discontinuePartUsecase;
+  final EditPartUsecase _editPartUsecase;
   //for debugging
   final Logger _logger;
 //initialization method
@@ -267,6 +270,27 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         status: ManageInventoryStateStatus.deletedPartOrderSuccessfully,
         allPartOrders: partOrders,
       ));
+    });
+  }
+
+  void restockPart(
+      {required PartEntity partEntity, required int newQuantity}) async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.updatingData));
+    var restockedPart =
+        partEntity.copyWith(isDiscontinued: false, quantity: newQuantity);
+    var results =
+        await _editPartUsecase.call(EditPartParams(partEntity: restockedPart));
+
+    results.fold(
+        (l) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
+        (r) {
+      var allParts = state.allParts.toList();
+
+      allParts[partEntity.index] = restockedPart;
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.updatedDataSuccessfully,
+          allParts: allParts));
     });
   }
 

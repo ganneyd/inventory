@@ -44,6 +44,7 @@ class MockScrollController extends Mock implements ScrollController {}
 class MockScrollPosition extends Mock implements ScrollPosition {}
 
 void main() {
+  late MockEditPartUsecase mockEditPartUsecase;
   late MockDiscontinuePartUsecase mockDiscontinuePartUsecase;
   late MockDeletePartOrderUsecase mockDeletePartOrderUsecase;
   late MockGetAllPartOrdersUsecase mockGetAllPartOrdersUsecase;
@@ -60,7 +61,7 @@ void main() {
   setUp(() {
     valuesForTest = ValuesForTest();
     mockDiscontinuePartUsecase = MockDiscontinuePartUsecase();
-
+    mockEditPartUsecase = MockEditPartUsecase();
     mockDeletePartOrderUsecase = MockDeletePartOrderUsecase();
     mockGetAllPartOrdersUsecase = MockGetAllPartOrdersUsecase();
     mockCreatePartOrder = MockCreatePartOrder();
@@ -72,6 +73,7 @@ void main() {
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
 
     sut = ManageInventoryCubit(
+      editPartUsecase: mockEditPartUsecase,
       discontinuePartUsecase: mockDiscontinuePartUsecase,
       deletePartOrderUsecase: mockDeletePartOrderUsecase,
       getAllPartOrdersUsecase: mockGetAllPartOrdersUsecase,
@@ -674,6 +676,64 @@ void main() {
       });
 
       sut.discontinuePart(partEntity: partEntity);
+    });
+  });
+
+  group('.restockPart()', () {
+    void mockSetup() {
+      sut.emit(sut.state.copyWith(allParts: valuesForTest.parts()));
+      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
+          .thenAnswer((invocation) async => const Right(null));
+    }
+
+    test('should emit updatedDataSuccessfully', () {
+      //setup
+      mockSetup();
+
+      var restockPart =
+          valuesForTest.parts()[0].copyWith(isDiscontinued: true, quantity: 0);
+      var newQuantity = 10;
+      //verifications
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInAnyOrder([
+            ManageInventoryStateStatus.updatingData,
+            ManageInventoryStateStatus.updatedDataSuccessfully
+          ])).then((_) {
+        var capture = verify(() => mockEditPartUsecase
+            .call(captureAny(that: isA<EditPartParams>()))).captured;
+        var capturedPart = capture.first as EditPartParams;
+        expect(capturedPart.partEntity.isDiscontinued, false);
+        expect(capturedPart.partEntity.quantity, newQuantity);
+        expect(sut.state.allParts[restockPart.index].isDiscontinued, false);
+        expect(sut.state.allParts[restockPart.index].quantity, newQuantity);
+      });
+      sut.restockPart(partEntity: restockPart, newQuantity: newQuantity);
+    });
+
+    test('should emit updatedDataUnsuccessfully', () {
+      //setup
+      mockSetup();
+      when(() => mockEditPartUsecase.call(any(that: isA<EditPartParams>())))
+          .thenAnswer((invocation) async => const Left(GetFailure()));
+      var restockPart =
+          valuesForTest.parts()[0].copyWith(isDiscontinued: true, quantity: 0);
+      var newQuantity = 10;
+      //verifications
+      expectLater(
+          sut.stream.map((state) => state.status),
+          emitsInAnyOrder([
+            ManageInventoryStateStatus.updatingData,
+            ManageInventoryStateStatus.updatedDataUnsuccessfully
+          ])).then((_) {
+        var capture = verify(() => mockEditPartUsecase
+            .call(captureAny(that: isA<EditPartParams>()))).captured;
+        var capturedPart = capture.first as EditPartParams;
+        expect(capturedPart.partEntity.isDiscontinued, false);
+        expect(capturedPart.partEntity.quantity, newQuantity);
+        expect(sut.state.allParts[restockPart.index].isDiscontinued, true);
+      });
+      sut.restockPart(partEntity: restockPart, newQuantity: newQuantity);
     });
   });
   group('.close()', () {
