@@ -82,29 +82,37 @@ class _PartsPageViewState extends State<PartsPageView> {
               ? null
               : part.quantity <= part.requisitionPoint * .2
                   ? Colors.red
-                  : Colors.amber,
+                  : part.isDiscontinued
+                      ? Colors.blueGrey
+                      : Colors.amber,
           left: part.nsn,
           center: part.name,
           right: "Part #${part.index} Location: ${part.location}",
           bottom: isExpandedList[index]
               ? ''
-              : 'In Stock: ${part.quantity} ${part.unitOfIssue.displayValue}'),
+              : part.isDiscontinued
+                  ? 'Discontinued'
+                  : 'In Stock: ${part.quantity} ${part.unitOfIssue.displayValue}'),
       children: [
         Row(
           children: [Text(part.partNumber), Text(part.serialNumber)],
         ),
         Row(
           children: [
-            Text(
-                'Currently in stock: ${part.quantity} ${part.unitOfIssue.displayValue}')
+            part.isDiscontinued
+                ? const Text('Discontinued')
+                : Text(
+                    'Currently in stock: ${part.quantity} ${part.unitOfIssue.displayValue}')
           ],
         ),
-        Row(
-          children: [
-            Text('Requisition Point: ${part.requisitionPoint}'),
-            Text('Requisition Quantity: ${part.requisitionQuantity}')
-          ],
-        ),
+        part.isDiscontinued
+            ? Container()
+            : Row(
+                children: [
+                  Text('Requisition Point: ${part.requisitionPoint}'),
+                  Text('Requisition Quantity: ${part.requisitionQuantity}')
+                ],
+              ),
         Row(
           children: [
             SmallButton(
@@ -123,7 +131,12 @@ class _PartsPageViewState extends State<PartsPageView> {
                         );
                       });
                 }),
-            SmallButton(buttonName: 'Discontinue', onPressed: () {})
+            part.isDiscontinued
+                ? SmallButton(buttonName: 'Re-Stock', onPressed: () {})
+                : SmallButton(
+                    buttonName: 'Discontinue',
+                    onPressed: () =>
+                        widget.cubit.discontinuePart(partEntity: part))
           ],
         ),
       ],
