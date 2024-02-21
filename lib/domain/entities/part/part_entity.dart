@@ -15,7 +15,7 @@ class PartEntity {
       required this.serialNumber,
       required this.unitOfIssue,
       required this.checksum,
-      this.isDiscontinued = false});
+      required this.isDiscontinued});
 
   ///The document ID of the part as specified by the database
   final int index;
@@ -83,6 +83,7 @@ extension PartEntityExtension on PartEntity {
 
   PartEntity updateChecksum() {
     return PartEntity(
+        isDiscontinued: isDiscontinued,
         index: index,
         name: name,
         nsn: nsn,

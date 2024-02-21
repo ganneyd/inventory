@@ -106,6 +106,7 @@ class AddPartCubit extends Cubit<AddPartState> {
 //method to extrapolate part from form
   PartEntity _getPart() {
     return PartEntity(
+        isDiscontinued: false,
         checksum: 0,
         name: state.nomenclatureController.text,
         serialNumber: state.serialNumberController.text.isEmpty

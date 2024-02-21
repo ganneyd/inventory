@@ -6,6 +6,7 @@ class PartEntityToModelAdapter {
   ///class is used to bridge the structures.
   static PartModel fromEntity(PartEntity partEntity) {
     return PartModel(
+        isDiscontinued: partEntity.isDiscontinued,
         index: partEntity.index,
         name: partEntity.name,
         nsn: partEntity.nsn,
