@@ -28,7 +28,7 @@ void main() {
       when(() => mockCheckOutBox.getAt(any(that: isA<int>())))
           .thenAnswer((invocation) {
         var index = invocation.positionalArguments[0] as int;
-        print('index is $index');
+
         return sut
             .toCheckoutPartModel(valuesForTest.createCheckedOutList()[index]);
       });
