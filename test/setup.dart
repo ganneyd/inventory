@@ -16,6 +16,7 @@ class ValuesForTest {
       'requisitionQuantity': 34,
       'serialNumber': 'SY13938',
       'unitOfIssue': 'HD',
+      'isDiscontinued': true
     },
     {
       'name': 'BOLT, HEX',
