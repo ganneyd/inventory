@@ -63,6 +63,28 @@ void main() {
       expect(partIndex, discontinuedPart.index);
       expect(editedPart.isDiscontinued, true);
     });
+    test('should return Right when returned list is empty', () async {
+      mockSetup();
+      when(() => mockPartOrderRepository
+              .getEveryOrderThatMatchesPart(any(that: isA<int>())))
+          .thenAnswer((_) async => const Right<Failure, List<OrderEntity>>([]));
+      var discontinuedPart = valuesForTest.parts()[0];
+      var results = await sut.call(
+          DiscontinuePartParams(discontinuedPartEntity: discontinuedPart));
+
+      expect(results, const Right<Failure, void>(null));
+      var captureMatch = verify(() => mockPartOrderRepository
+          .getEveryOrderThatMatchesPart(captureAny(that: isA<int>()))).captured;
+      var capturePartEntity = verify(() =>
+              mockPartRepository.editPart(captureAny(that: isA<PartEntity>())))
+          .captured;
+      verifyNever(() => mockPartOrderRepository
+          .deletePartOrder(any(that: isA<OrderEntity>())));
+      var partIndex = captureMatch.first as int;
+      var editedPart = capturePartEntity.first as PartEntity;
+      expect(partIndex, discontinuedPart.index);
+      expect(editedPart.isDiscontinued, true);
+    });
 
     test('should return Left when orderList results in Failure', () async {
       mockSetup();
