@@ -42,7 +42,6 @@ class VerifyCheckoutPart implements UseCase<void, VerifyCheckoutPartParams> {
                     updatedPart.quantity - checkoutPart.quantityDiscrepancy));
 
         isEditPartLeft = editPartResults.isLeft();
-        print('edit part res is ${editPartResults.isLeft()}');
       });
 
       if (isEditPartLeft) {
