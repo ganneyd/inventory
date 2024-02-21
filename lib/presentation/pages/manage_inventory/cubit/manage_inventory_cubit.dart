@@ -17,9 +17,11 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       required this.fulfillPartOrdersUsecase,
       required this.createPartOrderUsecase,
       required this.getAllPartOrdersUsecase,
+      required DiscontinuePartUsecase discontinuePartUsecase,
       required DeletePartOrderUsecase deletePartOrderUsecase})
       : _logger = Logger('manage-inv-cubit'),
         _deletePartOrderUsecase = deletePartOrderUsecase,
+        _discontinuePartUsecase = discontinuePartUsecase,
         super(ManageInventoryState(fetchPartAmount: fetchPartAmount));
 
   //usecase init
@@ -32,6 +34,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final CreatePartOrderUsecase createPartOrderUsecase;
   final GetAllPartOrdersUsecase getAllPartOrdersUsecase;
   final DeletePartOrderUsecase _deletePartOrderUsecase;
+  final DiscontinuePartUsecase _discontinuePartUsecase;
   //for debugging
   final Logger _logger;
 //initialization method
@@ -223,6 +226,29 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         allPartOrders: partOrders,
       ));
     });
+  }
+
+  void discontinuePart({required PartEntity partEntity}) async {
+    var allParts = state.allParts.toList();
+    var index = allParts.indexOf(partEntity);
+    if (index >= 0) {
+      allParts[index] = partEntity.copyWith(isDiscontinued: true);
+      var results = await _discontinuePartUsecase
+          .call(DiscontinuePartParams(discontinuedPartEntity: allParts[index]));
+      results.fold(
+          (failure) => emit(state.copyWith(
+              error: failure.errorMessage,
+              status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
+          (_) {
+        //remove all current orders for this discontinued part and add it to the list to be deleted
+
+        emit(state.copyWith(
+            allPartOrders: [],
+            allParts: allParts,
+            status: ManageInventoryStateStatus.updatedDataSuccessfully));
+        loadPartOrders();
+      });
+    }
   }
 
   void deletePartOrder({required OrderEntity orderEntity}) async {

@@ -111,4 +111,20 @@ class PartOrderRepositoryImplementation extends PartOrderRepository {
       return const Left<Failure, OrderEntity>(ReadDataFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<OrderEntity>>> getEveryOrderThatMatchesPart(
+      int partEntityIndex) async {
+    try {
+      var orderList = _localDatasource.values
+          .where((order) =>
+              order.partModelIndex == partEntityIndex &&
+              !order.isFulfilledModel)
+          .toList();
+
+      return Right<Failure, List<OrderEntity>>(orderList);
+    } catch (e) {
+      return const Left<Failure, List<OrderEntity>>(ReadDataFailure());
+    }
+  }
 }

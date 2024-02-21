@@ -21,7 +21,10 @@ enum ManageInventoryStateStatus {
   createdPartOrderUnsuccessfully,
   deletingPartOrder,
   deletedPartOrderSuccessfully,
-  deletedPartOrderUnsuccessfully
+  deletedPartOrderUnsuccessfully,
+  updatingData,
+  updatedDataSuccessfully,
+  updatedDataUnsuccessfully,
 }
 
 @freezed

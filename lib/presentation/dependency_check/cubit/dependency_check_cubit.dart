@@ -145,6 +145,7 @@ class DependencyCheckCubit extends Cubit<DependencyCheckState> {
       sl<GetUnverifiedCheckoutParts>();
       sl<GetLowQuantityParts>();
 
+      sl<DiscontinuePartUsecase>();
       return true;
     } catch (e) {
       return false;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/domain/usecases/discontinue_part.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
@@ -18,6 +19,7 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+              discontinuePartUsecase: locator<DiscontinuePartUsecase>(),
               deletePartOrderUsecase: locator<DeletePartOrderUsecase>(),
               getAllPartOrdersUsecase: locator<GetAllPartOrdersUsecase>(),
               createPartOrderUsecase: locator<CreatePartOrderUsecase>(),

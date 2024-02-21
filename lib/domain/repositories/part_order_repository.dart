@@ -19,4 +19,7 @@ abstract class PartOrderRepository {
 
   ///deletes the particular orderEntity in the database
   Future<Either<Failure, void>> deletePartOrder(OrderEntity orderEntity);
+
+  Future<Either<Failure, List<OrderEntity>>> getEveryOrderThatMatchesPart(
+      int partEntityIndex);
 }
