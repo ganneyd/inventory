@@ -18,7 +18,7 @@ class RouteGenerator {
       case '/add_part':
         return getRoute(const AddPartView());
       case '/manage_inventory':
-        return getRoute(ManageInventory());
+        return getRoute(const ManageInventory());
       case '/search_parts':
         final String searchKey = settings.arguments as String;
         return getRoute(SearchResults(
