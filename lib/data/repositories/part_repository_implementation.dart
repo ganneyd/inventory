@@ -49,9 +49,11 @@ class PartRepositoryImplementation extends PartRepository {
   @override
   Future<Either<Failure, void>> editPart(PartEntity partEntity) async {
     try {
+      _logger.finest(partEntity.isDiscontinued);
       var updatePart =
           PartEntityToModelAdapter.fromEntity(partEntity.updateChecksum());
-
+      _logger.finest(
+          'updating part with index ${updatePart.index} is discontinued is ${updatePart.isDiscontinued}');
       return Right<Failure, void>(
           await _localDataSource.putAt(partEntity.index, updatePart));
     } on UpdateDataException {
