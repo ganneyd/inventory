@@ -232,7 +232,6 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     var allParts = state.allParts.toList();
     var index = allParts.indexOf(partEntity);
     if (index >= 0) {
-      allParts[index] = partEntity.copyWith(isDiscontinued: true);
       var results = await _discontinuePartUsecase
           .call(DiscontinuePartParams(discontinuedPartEntity: allParts[index]));
       results.fold(
@@ -241,7 +240,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
               status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
           (_) {
         //remove all current orders for this discontinued part and add it to the list to be deleted
-
+        allParts[index] = partEntity.copyWith(isDiscontinued: true);
         emit(state.copyWith(
             allPartOrders: [],
             allParts: allParts,

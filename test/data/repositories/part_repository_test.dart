@@ -23,6 +23,7 @@ void main() {
     valuesForTest = ValuesForTest();
     typicalPart = PartModel.fromJson(valuesForTest.getPartList()[0]);
     typicalPartEntity = PartEntity(
+        isDiscontinued: false,
         checksum: 0,
         index: typicalPart.index,
         nsn: typicalPart.nsn,
