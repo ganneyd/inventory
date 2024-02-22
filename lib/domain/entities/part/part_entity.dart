@@ -96,4 +96,8 @@ extension PartEntityExtension on PartEntity {
         unitOfIssue: unitOfIssue,
         checksum: checksum + 1);
   }
+
+  int compareTo(PartEntity otherPartEntity) {
+    return location.compareTo(otherPartEntity.location);
+  }
 }

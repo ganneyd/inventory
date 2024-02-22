@@ -135,6 +135,18 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     return unfilteredList.where((order) => !order.isFulfilled).toList();
   }
 
+  List<PartEntity> filterByLocation() {
+    var list = state.allParts.toList();
+    list.sort((partA, partB) {
+      var comparator =
+          partA.location.toLowerCase().compareTo(partB.location.toLowerCase());
+
+      return comparator;
+    });
+
+    return list;
+  }
+
   void updateCheckoutQuantity({
     required CheckedOutEntity checkoutPart,
     required int quantityChange,
@@ -286,9 +298,10 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         await _editPartUsecase.call(EditPartParams(partEntity: restockedPart));
 
     results.fold(
-        (l) => emit(state.copyWith(
+        (failure) => emit(state.copyWith(
+            error: failure.errorMessage,
             status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
-        (r) {
+        (_) {
       var allParts = state.allParts.toList();
       var partIndex =
           allParts.indexWhere((part) => part.index == partEntity.index);
