@@ -8,12 +8,16 @@ import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart'
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
 class PartsPageView extends StatefulWidget {
-  PartsPageView({required this.allParts, required this.cubit})
-      : lowQuantityParts = cubit.filterLowQuantityParts(allParts),
+  PartsPageView({
+    required this.allParts,
+    required this.cubit,
+  })  : lowQuantityParts = cubit.filterLowQuantityParts(allParts),
+        filteredByLocation = cubit.filterByLocation(),
         super(key: const Key('parts-page-view'));
 
   final List<PartEntity> allParts;
   final List<PartEntity> lowQuantityParts;
+  final List<PartEntity> filteredByLocation;
   final ManageInventoryCubit cubit;
 
   @override
@@ -22,8 +26,10 @@ class PartsPageView extends StatefulWidget {
 
 class _PartsPageViewState extends State<PartsPageView> {
   bool showAllParts = true;
+  bool filterByLocation = false;
   List<bool> isExpandedList = [];
   final ScrollController controller = ScrollController();
+
   @override
   void initState() {
     controller.addListener(() {
@@ -45,16 +51,29 @@ class _PartsPageViewState extends State<PartsPageView> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  TextButton(
-                      onPressed: () => setState(() {
-                            showAllParts = true;
-                          }),
-                      child: const Text('All Parts')),
-                  TextButton(
-                      onPressed: () => setState(() {
-                            showAllParts = false;
-                          }),
-                      child: const Text('Low Quantity Parts'))
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          TextButton(
+                              onPressed: () => setState(() {
+                                    showAllParts = true;
+                                  }),
+                              child: const Text('All Parts')),
+                          TextButton(
+                              onPressed: () => setState(() {
+                                    showAllParts = false;
+                                  }),
+                              child: const Text('Low Quantity Parts')),
+                        ],
+                      ),
+                      Checkbox(
+                          value: filterByLocation,
+                          onChanged: (filter) => setState(() {
+                                filterByLocation = filter ?? false;
+                              }))
+                    ],
+                  )
                 ],
               ),
             )
@@ -63,13 +82,17 @@ class _PartsPageViewState extends State<PartsPageView> {
         body: ListView.builder(
             controller: controller,
             itemCount: showAllParts
-                ? widget.allParts.length
+                ? filterByLocation
+                    ? widget.filteredByLocation.length
+                    : widget.allParts.length
                 : widget.lowQuantityParts.length,
             itemBuilder: (context, index) {
               isExpandedList.add(false);
               return getAllPartExpansionTile(
                   showAllParts
-                      ? widget.allParts[index]
+                      ? filterByLocation
+                          ? widget.filteredByLocation[index]
+                          : widget.allParts[index]
                       : widget.lowQuantityParts[index],
                   index);
             }));
@@ -123,11 +146,15 @@ class _PartsPageViewState extends State<PartsPageView> {
                       context: context,
                       builder: (BuildContext dialogContext) {
                         return OrderPartDialog(
-                          part: widget.allParts[index],
-                          onOrder: (int quantity, int partEntityIndex) {
+                          part: showAllParts
+                              ? filterByLocation
+                                  ? widget.filteredByLocation[index]
+                                  : widget.allParts[index]
+                              : widget.lowQuantityParts[index],
+                          onOrder: (int quantity, PartEntity partEntity) {
                             widget.cubit.orderPart(
                                 orderAmount: quantity,
-                                partEntityIndex: partEntityIndex);
+                                partEntityIndex: partEntity.index);
                           },
                         );
                       });
@@ -139,11 +166,15 @@ class _PartsPageViewState extends State<PartsPageView> {
                         context: context,
                         builder: (BuildContext dialogContext) {
                           return RestockPartDialog(
-                            part: widget.allParts[index],
-                            onOrder: (int quantity, int partEntityIndex) {
+                            part: showAllParts
+                                ? filterByLocation
+                                    ? widget.filteredByLocation[index]
+                                    : widget.allParts[index]
+                                : widget.lowQuantityParts[index],
+                            onOrder: (int quantity, PartEntity partEntity) {
                               widget.cubit.restockPart(
                                   newQuantity: quantity,
-                                  partEntity: widget.allParts[partEntityIndex]);
+                                  partEntity: partEntity);
                             },
                           );
                         }))
