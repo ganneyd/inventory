@@ -5,7 +5,7 @@ import 'package:inventory_v1/presentation/utils/number_input_formatter.dart';
 class OrderPartDialog extends StatelessWidget {
   final PartEntity part;
 
-  final void Function(int quantity, int partEntityIndex) onOrder;
+  final void Function(int quantity, PartEntity partEntity) onOrder;
 
   const OrderPartDialog({
     required this.part,
@@ -81,7 +81,7 @@ class OrderPartDialog extends StatelessWidget {
               child: const Text('Order'),
               onPressed: () {
                 // Use the local 'quantity' variable when 'Add' is pressed
-                onOrder(quantity, part.index);
+                onOrder(quantity, part);
                 Navigator.of(context).pop(); // Close the dialog
               },
             ),
