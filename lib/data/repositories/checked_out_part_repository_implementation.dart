@@ -17,6 +17,10 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
 
   CheckedOutModel toCheckoutPartModel(CheckedOutEntity checkedOutEntity) {
     return CheckedOutModel(
+        sectionModel: checkedOutEntity.section,
+        taskNameModel: checkedOutEntity.taskName,
+        checkoutUserModel: checkedOutEntity.checkoutUser,
+        aircraftTailNumberModel: checkedOutEntity.aircraftTailNumber,
         quantityDiscrepancyModel: checkedOutEntity.quantityDiscrepancy,
         indexModel: checkedOutEntity.index,
         checkedOutAmount: checkedOutEntity.checkedOutQuantity,
@@ -36,6 +40,7 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       await _localDatasource.add(toCheckoutPartModel(checkedOutEntity));
       return const Right<Failure, void>(null);
     } catch (exception) {
+      _logger.warning('failed to create checkout part ${exception.toString()}');
       return const Left<Failure, void>(CreateDataFailure());
     }
   }
