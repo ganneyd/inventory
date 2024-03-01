@@ -11,6 +11,7 @@ class PartForm extends StatefulWidget {
     PartEntity? partEntity,
     required this.formKey,
     required this.addPart,
+    this.buttonName = 'Add Part',
   })  : nsnController = TextEditingController(text: partEntity?.nsn),
         nomenclatureController = TextEditingController(text: partEntity?.name),
         partNumberController =
@@ -26,6 +27,7 @@ class PartForm extends StatefulWidget {
             text: partEntity?.requisitionQuantity.toString());
 
   final GlobalKey<FormState> formKey;
+  final String buttonName;
   final TextEditingController nsnController;
   final TextEditingController nomenclatureController;
   final TextEditingController partNumberController;
@@ -56,7 +58,7 @@ class _PartFormState extends State<PartForm> {
   final double paddingValue = 200.0;
   bool isFormValid = false;
 
-  UnitOfIssue unitOfIssue = UnitOfIssue.NOT_SPECIFIED;
+  UnitOfIssue unitOfIssue = UnitOfIssue.EA;
   //method to return the text fields wrapped in a padding along with a sized box
   Widget _wrapWithPadding(List<Widget> widgets, double paddingValue) {
     List<Widget> wrappedWidgets = [];
@@ -153,10 +155,10 @@ class _PartFormState extends State<PartForm> {
               controller: widget.serialNumberController,
               hintText: 'SERIAL NUMBER'),
           DropdownMenu<UnitOfIssue>(
-              initialSelection: UnitOfIssue.EA,
+              initialSelection: unitOfIssue,
               onSelected: (value) {
                 setState(() {
-                  unitOfIssue = value ?? UnitOfIssue.NOT_SPECIFIED;
+                  unitOfIssue = value ?? UnitOfIssue.EA;
                 });
               },
               dropdownMenuEntries:
@@ -179,7 +181,7 @@ class _PartFormState extends State<PartForm> {
         _wrapWithPadding([
           SmallButton(
               isDisabled: !isFormValid,
-              buttonName: 'Add Part',
+              buttonName: widget.buttonName,
               onPressed: () {
                 widget.addPart(
                   nsn: widget.nsnController.text,
