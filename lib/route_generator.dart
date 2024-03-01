@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
+import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/pages/add_part/view/add_part_view.dart';
 import 'package:inventory_v1/presentation/pages/checkout/view/checkout_view.dart';
+import 'package:inventory_v1/presentation/pages/edit_part/view/edit_part_view.dart';
 import 'package:inventory_v1/presentation/pages/home_page/view/home_page_view.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/manage_inventory_view.dart';
 import 'package:inventory_v1/presentation/pages/search_results/view/search_results_view.dart';
@@ -17,6 +19,9 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => HomePageView());
       case '/add_part':
         return getRoute(const AddPartView());
+      case '/edit-part':
+        final PartEntity partEntity = settings.arguments as PartEntity;
+        return getRoute(EditPartView(partEntity: partEntity));
       case '/manage_inventory':
         return getRoute(const ManageInventory());
       case '/search_parts':
