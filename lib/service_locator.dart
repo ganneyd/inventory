@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
@@ -36,6 +37,7 @@ Future<void> initHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(PartModelAdapter());
   Hive.registerAdapter(UnitOfIssueAdapter());
+  Hive.registerAdapter(MaintenanceSectionAdapter());
   Hive.registerAdapter(CheckedOutModelAdapter());
   Hive.registerAdapter(OrderModelAdapter());
   await Hive.openBox<OrderModel>(partOrdersBox);
@@ -43,7 +45,7 @@ Future<void> initHive() async {
   await Hive.openBox<CheckedOutModel>(checkoutPartBox);
 
   // Hive.box<PartModel>(boxName).clear();
-  // Hive.box<CheckedOutModel>(checkoutPartBox).clear();
+  //Hive.box<CheckedOutModel>(checkoutPartBox).clear();
 
   serviceLocatorLogger.finest('initialized hive');
 }
