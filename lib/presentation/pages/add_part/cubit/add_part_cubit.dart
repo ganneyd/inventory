@@ -78,7 +78,6 @@ class AddPartCubit extends Cubit<AddPartState> {
         //is valid now
         emit(state.copyWith(
             isFormValid: true,
-            part: _getPart(),
             addPartStateStatus: AddPartStateStatus.loadedSuccessfully));
         //if its not valid emit new status
       } else {
@@ -104,23 +103,30 @@ class AddPartCubit extends Cubit<AddPartState> {
   }
 
 //method to extrapolate part from form
-  PartEntity _getPart() {
+  PartEntity _getPart({
+    required String nsn,
+    required String name,
+    required String partNumber,
+    required String location,
+    required String quantity,
+    required String requisitionPoint,
+    required String requisitionQuantity,
+    required String serialNumber,
+    required UnitOfIssue unitOfIssue,
+  }) {
     return PartEntity(
         isDiscontinued: false,
         checksum: 0,
-        name: state.nomenclatureController.text,
-        serialNumber: state.serialNumberController.text.isEmpty
-            ? 'N/A'
-            : state.serialNumberController.text,
-        requisitionPoint: int.parse(state.requisitionPointController.text),
-        requisitionQuantity:
-            int.parse(state.requisitionQuantityController.text),
-        quantity: int.parse(state.quantityController.text),
-        nsn: state.nsnController.text,
-        partNumber: state.partNumberController.text,
+        name: name,
+        serialNumber: serialNumber,
+        requisitionPoint: int.parse(requisitionPoint),
+        requisitionQuantity: int.parse(requisitionQuantity),
+        quantity: int.parse(quantity),
+        nsn: nsn,
+        partNumber: partNumber,
         index: 0,
-        location: state.locationController.text,
-        unitOfIssue: state.unitOfIssue);
+        location: location,
+        unitOfIssue: unitOfIssue);
   }
 
 //method to reset the form after the user inputted values
@@ -137,5 +143,47 @@ class AddPartCubit extends Cubit<AddPartState> {
       requisitionQuantityController: state.requisitionQuantityController
         ..clear(),
     ));
+  }
+
+  void addPart({
+    required String nsn,
+    required String name,
+    required String partNumber,
+    required String location,
+    required String quantity,
+    required String requisitionPoint,
+    required String requisitionQuantity,
+    required String serialNumber,
+    required UnitOfIssue unitOfIssue,
+  }) async {
+    var partEntity = _getPart(
+        nsn: nsn,
+        name: name,
+        partNumber: partNumber,
+        location: location,
+        quantity: quantity,
+        requisitionPoint: requisitionPoint,
+        requisitionQuantity: requisitionQuantity,
+        serialNumber: serialNumber,
+        unitOfIssue: unitOfIssue);
+
+    var results =
+        await addPartUsecase.call(AddPartParams(partEntity: partEntity));
+
+    results.fold(
+        //emit failure
+        (l) => emit(state.copyWith(
+            isFormValid: false,
+            error: l.errorMessage,
+            addPartStateStatus: AddPartStateStatus.createdDataUnsuccessfully)),
+        (r) {
+      //clear form
+      _clearForm();
+      //emit success
+      emit(state.copyWith(
+          error: 'success creating part',
+          isFormValid: false,
+          addPartStateStatus: AddPartStateStatus.createdDataSuccessfully));
+    });
   }
 }

@@ -1,47 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_cubit.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
-import 'package:inventory_v1/presentation/utils/utils_bucket.dart';
+import 'package:inventory_v1/presentation/widgets/form/part_form_widget.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
-import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 import 'package:inventory_v1/service_locator.dart';
 
 class AddPartView extends StatelessWidget {
   const AddPartView() : super(key: const Key('add-part-view-constructor'));
-
-  final double paddingValue = 200.0;
-//method to return the text fields wrapped in a padding along with a sized box
-//between each text field
-// Function to wrap widgets with Padding and SizedBox
-  Widget _wrapWithPadding(List<Widget> widgets, double paddingValue) {
-    List<Widget> wrappedWidgets = [];
-
-    // Loop through the widgets and wrap each one with Padding and SizedBox
-    for (int i = 0; i < widgets.length; i++) {
-      wrappedWidgets.add(
-        Expanded(
-          flex: 3,
-          child: widgets[i],
-        ),
-      );
-
-      if (i != widgets.length - 1) {
-        wrappedWidgets.add(const Expanded(flex: 1, child: SizedBox()));
-      }
-    }
-
-    // Return a Column with the wrapped widgets
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: paddingValue),
-        child: Row(
-          //mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: wrappedWidgets,
-        ));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,80 +57,35 @@ class AddPartView extends StatelessWidget {
 
           return LayoutBuilder(builder: (builder, constraints) {
             return Scaffold(
-              appBar: const CustomAppBar(
-                  key: Key('add-part-app-bar'), title: 'Add Part'),
-              body: SizedBox(
+                appBar: const CustomAppBar(
+                    key: Key('add-part-app-bar'), title: 'Add Part'),
+                body: SizedBox(
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
-                  child: Form(
-                    key: state.formKey,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _wrapWithPadding([
-                            CustomTextField(
-                                maxLength: 16,
-                                inputFormatter: [NSNInputFormatter()],
-                                controller: state.nsnController,
-                                hintText: 'NSN'),
-                            CustomTextField(
-                                controller: state.nomenclatureController,
-                                hintText: 'NOMENCLATURE'),
-                          ], paddingValue),
-                          _wrapWithPadding([
-                            CustomTextField(
-                                controller: state.partNumberController,
-                                hintText: 'PART NO.'),
-                            CustomTextField(
-                                controller: state.locationController,
-                                hintText: 'LOCATION'),
-                          ], paddingValue),
-                          _wrapWithPadding([
-                            CustomTextField(
-                                validation: (value) => null,
-                                controller: state.serialNumberController,
-                                hintText: 'SERIAL NUMBER'),
-                            DropdownMenu<UnitOfIssue>(
-                                initialSelection: state.unitOfIssue,
-                                onSelected: (value) =>
-                                    BlocProvider.of<AddPartCubit>(context)
-                                        .dropDownMenuHandler(
-                                            value ?? UnitOfIssue.NOT_SPECIFIED),
-                                dropdownMenuEntries: UnitOfIssueExtension
-                                    .enumToDropDownEntries()),
-                          ], paddingValue),
-                          _wrapWithPadding([
-                            CustomTextField(
-                                isNumberInput: true,
-                                controller: state.quantityController,
-                                hintText: 'QUANTITY'),
-                            CustomTextField(
-                                isNumberInput: true,
-                                controller: state.requisitionQuantityController,
-                                hintText: 'REQUISITION OBJ'),
-                            CustomTextField(
-                                isNumberInput: true,
-                                controller: state.requisitionPointController,
-                                hintText: 'REQUISITION POINT'),
-                          ], paddingValue),
-                          _wrapWithPadding([
-                            SmallButton(
-                                isDisabled: !state.isFormValid,
-                                buttonName: 'Add Part',
-                                onPressed: () {
-                                  BlocProvider.of<AddPartCubit>(context)
-                                      .savePart();
-                                }),
-                            SmallButton(
-                                buttonName: 'Apply',
-                                onPressed: () {
-                                  BlocProvider.of<AddPartCubit>(context)
-                                      .applyPart();
-                                }),
-                          ], paddingValue)
-                        ]),
-                  )),
-            );
+                  child: PartForm(
+                      key: const Key('add-part-form'),
+                      formKey: GlobalKey<FormState>(),
+                      addPart: (
+                              {required location,
+                              required name,
+                              required nsn,
+                              required partNumber,
+                              required quantity,
+                              required requisitionPoint,
+                              required requisitionQuantity,
+                              required serialNumber,
+                              required unitOfIssue}) =>
+                          BlocProvider.of<AddPartCubit>(context).addPart(
+                              nsn: nsn,
+                              name: name,
+                              partNumber: partNumber,
+                              location: location,
+                              quantity: quantity,
+                              requisitionPoint: requisitionPoint,
+                              requisitionQuantity: requisitionQuantity,
+                              serialNumber: serialNumber,
+                              unitOfIssue: unitOfIssue)),
+                ));
           });
         }));
   }
