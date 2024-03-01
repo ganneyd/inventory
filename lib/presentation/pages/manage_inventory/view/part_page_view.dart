@@ -102,6 +102,10 @@ class _PartsPageViewState extends State<PartsPageView> {
     return ExpansionTile(
       initiallyExpanded: isExpandedList[index],
       title: PartCardDisplay(
+          actionButton: IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => Navigator.of(context)
+                  .pushNamed('/edit-part', arguments: part)),
           color: showAllParts
               ? null
               : part.quantity <= part.requisitionPoint * .2
