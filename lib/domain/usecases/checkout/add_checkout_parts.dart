@@ -25,18 +25,21 @@ class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
       return const Right<Failure, void>(null);
     }
     for (var cartItem in params.cartItems) {
-      _logger.finest('adding ${cartItem.checkedOutEntity} to checkout box');
+      _logger.finest(
+          'adding ${cartItem.checkedOutEntity.checkoutUser} to checkout box');
       var editPartResults = await _partRepository.editPart(cartItem.partEntity
           .copyWith(
               quantity: cartItem.partEntity.quantity -
                   cartItem.checkedOutEntity.checkedOutQuantity));
       if (editPartResults.isLeft()) {
+        _logger.warning('failed to edit part');
         continue;
       }
       var results = await _checkedOutPartRepository.createCheckOut(
           cartItem.checkedOutEntity.copyWith(dateTime: DateTime.now()));
 
       if (results.isLeft()) {
+        _logger.warning('failed to create checkout entity');
         return const Left<Failure, void>(CreateDataFailure());
       }
     }
