@@ -24,13 +24,17 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       isVerifiedModel: fields[3] as bool,
       verifiedDateModel: fields[4] as DateTime,
       quantityDiscrepancyModel: fields[6] as int,
+      aircraftTailNumberModel: fields[9] as String,
+      checkoutUserModel: fields[8] as String,
+      sectionModel: fields[10] as MaintenanceSection,
+      taskNameModel: fields[7] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, CheckedOutModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.partModelIndex)
       ..writeByte(1)
@@ -44,7 +48,15 @@ class CheckedOutModelAdapter extends TypeAdapter<CheckedOutModel> {
       ..writeByte(5)
       ..write(obj.indexModel)
       ..writeByte(6)
-      ..write(obj.quantityDiscrepancyModel);
+      ..write(obj.quantityDiscrepancyModel)
+      ..writeByte(7)
+      ..write(obj.taskNameModel)
+      ..writeByte(8)
+      ..write(obj.checkoutUserModel)
+      ..writeByte(9)
+      ..write(obj.aircraftTailNumberModel)
+      ..writeByte(10)
+      ..write(obj.sectionModel);
   }
 
   @override

@@ -52,3 +52,5 @@ lib/data/models/part_order/part_order_model.g.dart
 lib/data/models/part/part_model.freezed.dart
 lib/data/models/part/part_model.g.dart
 lib/presentation/pages/edit_part/cubit/edit_part_state.freezed.dart
+lib/core/util/main_section_enum.g.dart
+lib/data/models/checked-out/checked_out_model.g.dart
