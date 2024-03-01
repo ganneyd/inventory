@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ManageInventoryState {
   int get fetchPartAmount => throw _privateConstructorUsedError;
+  List<PartEntity> get editedParts => throw _privateConstructorUsedError;
   List<PartEntity> get allParts => throw _privateConstructorUsedError;
   List<CheckedOutEntity> get newlyVerifiedParts =>
       throw _privateConstructorUsedError;
@@ -41,6 +42,7 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
   @useResult
   $Res call(
       {int fetchPartAmount,
+      List<PartEntity> editedParts,
       List<PartEntity> allParts,
       List<CheckedOutEntity> newlyVerifiedParts,
       List<CheckedOutEntity> checkedOutParts,
@@ -65,6 +67,7 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? fetchPartAmount = null,
+    Object? editedParts = null,
     Object? allParts = null,
     Object? newlyVerifiedParts = null,
     Object? checkedOutParts = null,
@@ -78,6 +81,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
           ? _value.fetchPartAmount
           : fetchPartAmount // ignore: cast_nullable_to_non_nullable
               as int,
+      editedParts: null == editedParts
+          ? _value.editedParts
+          : editedParts // ignore: cast_nullable_to_non_nullable
+              as List<PartEntity>,
       allParts: null == allParts
           ? _value.allParts
           : allParts // ignore: cast_nullable_to_non_nullable
@@ -120,6 +127,7 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {int fetchPartAmount,
+      List<PartEntity> editedParts,
       List<PartEntity> allParts,
       List<CheckedOutEntity> newlyVerifiedParts,
       List<CheckedOutEntity> checkedOutParts,
@@ -141,6 +149,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? fetchPartAmount = null,
+    Object? editedParts = null,
     Object? allParts = null,
     Object? newlyVerifiedParts = null,
     Object? checkedOutParts = null,
@@ -154,6 +163,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
           ? _value.fetchPartAmount
           : fetchPartAmount // ignore: cast_nullable_to_non_nullable
               as int,
+      editedParts: null == editedParts
+          ? _value._editedParts
+          : editedParts // ignore: cast_nullable_to_non_nullable
+              as List<PartEntity>,
       allParts: null == allParts
           ? _value._allParts
           : allParts // ignore: cast_nullable_to_non_nullable
@@ -188,6 +201,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
 class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
       {this.fetchPartAmount = 20,
+      final List<PartEntity> editedParts = const <PartEntity>[],
       final List<PartEntity> allParts = const <PartEntity>[],
       final List<CheckedOutEntity> newlyVerifiedParts =
           const <CheckedOutEntity>[],
@@ -196,7 +210,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
       final List<OrderEntity> newlyFulfilledPartOrders = const <OrderEntity>[],
       this.error = 'no error',
       this.status = ManageInventoryStateStatus.loading})
-      : _allParts = allParts,
+      : _editedParts = editedParts,
+        _allParts = allParts,
         _newlyVerifiedParts = newlyVerifiedParts,
         _checkedOutParts = checkedOutParts,
         _allPartOrders = allPartOrders,
@@ -205,6 +220,15 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   @override
   @JsonKey()
   final int fetchPartAmount;
+  final List<PartEntity> _editedParts;
+  @override
+  @JsonKey()
+  List<PartEntity> get editedParts {
+    if (_editedParts is EqualUnmodifiableListView) return _editedParts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_editedParts);
+  }
+
   final List<PartEntity> _allParts;
   @override
   @JsonKey()
@@ -261,7 +285,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, allParts: $allParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, allPartOrders: $allPartOrders, newlyFulfilledPartOrders: $newlyFulfilledPartOrders, error: $error, status: $status)';
+    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, editedParts: $editedParts, allParts: $allParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, allPartOrders: $allPartOrders, newlyFulfilledPartOrders: $newlyFulfilledPartOrders, error: $error, status: $status)';
   }
 
   @override
@@ -271,6 +295,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
             other is _$ManageInventoryStateImpl &&
             (identical(other.fetchPartAmount, fetchPartAmount) ||
                 other.fetchPartAmount == fetchPartAmount) &&
+            const DeepCollectionEquality()
+                .equals(other._editedParts, _editedParts) &&
             const DeepCollectionEquality().equals(other._allParts, _allParts) &&
             const DeepCollectionEquality()
                 .equals(other._newlyVerifiedParts, _newlyVerifiedParts) &&
@@ -288,6 +314,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   int get hashCode => Object.hash(
       runtimeType,
       fetchPartAmount,
+      const DeepCollectionEquality().hash(_editedParts),
       const DeepCollectionEquality().hash(_allParts),
       const DeepCollectionEquality().hash(_newlyVerifiedParts),
       const DeepCollectionEquality().hash(_checkedOutParts),
@@ -308,6 +335,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
       {final int fetchPartAmount,
+      final List<PartEntity> editedParts,
       final List<PartEntity> allParts,
       final List<CheckedOutEntity> newlyVerifiedParts,
       final List<CheckedOutEntity> checkedOutParts,
@@ -318,6 +346,8 @@ abstract class _ManageInventoryState implements ManageInventoryState {
 
   @override
   int get fetchPartAmount;
+  @override
+  List<PartEntity> get editedParts;
   @override
   List<PartEntity> get allParts;
   @override
