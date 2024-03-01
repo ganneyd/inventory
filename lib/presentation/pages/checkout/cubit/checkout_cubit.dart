@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
@@ -63,5 +64,38 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     List<CartCheckoutEntity> newCartList = state.cartItems.toList();
     newCartList[cartItemIndex] = newCartItem;
     emit(state.copyWith(cartItems: newCartList));
+  }
+
+  void addCheckoutUser(
+      {required MaintenanceSection section,
+      required String tailNumber,
+      required String taskName,
+      required String checkoutUser}) {
+    bool addedUserSuccess = false;
+    var cartItems = state.cartItems.toList();
+
+    cartItems = cartItems
+        .map((item) => CartCheckoutEntity(
+            checkedOutEntity: CheckedOutEntity(
+                index: item.checkedOutEntity.index,
+                quantityDiscrepancy: item.checkedOutEntity.quantityDiscrepancy,
+                checkedOutQuantity: item.checkedOutEntity.checkedOutQuantity,
+                dateTime: item.checkedOutEntity.dateTime,
+                partEntityIndex: item.checkedOutEntity.partEntityIndex,
+                aircraftTailNumber: tailNumber,
+                checkoutUser: checkoutUser,
+                section: section,
+                taskName: taskName),
+            partEntity: item.partEntity))
+        .toList();
+    state.cartItems.map((e) =>
+        addedUserSuccess = e.checkedOutEntity.checkoutUser != checkoutUser);
+    if (addedUserSuccess) {
+      emit(state.copyWith(status: CheckoutStateStatus.addedUserUnsuccessfully));
+    } else {
+      emit(state.copyWith(
+          cartItems: cartItems,
+          status: CheckoutStateStatus.addedUserSuccessfully));
+    }
   }
 }
