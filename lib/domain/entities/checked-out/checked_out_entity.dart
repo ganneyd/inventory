@@ -1,3 +1,5 @@
+import 'package:inventory_v1/core/util/main_section_enum.dart';
+
 class CheckedOutEntity {
   ///Specify which part was taken out, how much and when
   CheckedOutEntity({
@@ -6,6 +8,10 @@ class CheckedOutEntity {
     required this.checkedOutQuantity,
     required this.dateTime,
     required this.partEntityIndex,
+    required this.aircraftTailNumber,
+    required this.checkoutUser,
+    required this.section,
+    required this.taskName,
     this.isVerified,
     this.verifiedDate,
   });
@@ -28,6 +34,14 @@ class CheckedOutEntity {
 
   ///The date time when the checked out instance was verified
   final DateTime? verifiedDate;
+
+  final String checkoutUser;
+
+  final String taskName;
+
+  final String aircraftTailNumber;
+
+  final MaintenanceSection section;
 
   @override
   bool operator ==(Object other) {
@@ -66,6 +80,10 @@ extension CheckedOutEntityExtension on CheckedOutEntity {
       DateTime? dateTime,
       int? quantityDiscrepancy}) {
     return CheckedOutEntity(
+        section: section,
+        taskName: taskName,
+        checkoutUser: checkoutUser,
+        aircraftTailNumber: aircraftTailNumber,
         quantityDiscrepancy: quantityDiscrepancy ?? this.quantityDiscrepancy,
         index: index ?? this.index,
         checkedOutQuantity: checkedOutQuantity ?? this.checkedOutQuantity,
