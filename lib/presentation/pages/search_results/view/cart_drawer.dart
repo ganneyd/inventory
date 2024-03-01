@@ -89,13 +89,15 @@ Widget buildDrawer(
         cartItems.isEmpty
             ? Container()
             : Flex(direction: Axis.horizontal, children: [
-                SmallButton(
-                    buttonName: 'Checkout',
-                    onPressed: () {
-                      BlocProvider.of<SearchPartCubit>(context).checkout();
-                      Navigator.of(context)
-                          .pushNamed('/checkout', arguments: cartItems);
-                    })
+                Expanded(
+                  child: SmallButton(
+                      buttonName: 'Checkout',
+                      onPressed: () {
+                        BlocProvider.of<SearchPartCubit>(context).checkout();
+                        Navigator.of(context)
+                            .pushNamed('/checkout', arguments: cartItems);
+                      }),
+                )
               ]),
       ],
     ),
