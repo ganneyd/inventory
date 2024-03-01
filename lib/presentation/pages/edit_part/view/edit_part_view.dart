@@ -58,6 +58,7 @@ class EditPartView extends StatelessWidget {
                     width: constraints.maxWidth,
                     height: constraints.maxHeight,
                     child: PartForm(
+                      buttonName: 'Update',
                       partEntity: state.partEntity,
                       key: const Key('edit-part-form'),
                       formKey: GlobalKey<FormState>(),
