@@ -11,16 +11,14 @@ class SmallButton extends StatelessWidget {
       this.isDisabled = false});
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0.0))),
-          onPressed: isDisabled ? null : onPressed,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.all(10),
-            child: Text(buttonName),
-          )),
-    );
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0))),
+        onPressed: isDisabled ? null : onPressed,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.all(10),
+          child: Text(buttonName),
+        ));
   }
 }
