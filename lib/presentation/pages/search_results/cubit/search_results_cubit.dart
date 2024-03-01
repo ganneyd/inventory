@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
@@ -119,7 +120,10 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
   }
 
   ///add parts to the checkout list
-  void addPartToCart(PartEntity addPart, int quantity) {
+  void addPartToCart(
+    PartEntity addPart,
+    int quantity,
+  ) {
     List<CartCheckoutEntity> cartCheckoutEntities = state.cartItems.toList();
     bool isPartInCart = false;
 
@@ -131,6 +135,10 @@ class SearchPartCubit extends Cubit<SearchResultsState> {
 
     if (quantity > 0 && !isPartInCart) {
       var newCartEntry = CheckedOutEntity(
+          section: MaintenanceSection.unknown,
+          taskName: '',
+          aircraftTailNumber: '',
+          checkoutUser: '',
           index: -1,
           checkedOutQuantity: quantity,
           dateTime: DateTime.now(),
