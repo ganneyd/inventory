@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_cubit.dart';
 import 'package:inventory_v1/presentation/pages/checkout/cubit/checkout_state.dart';
+import 'package:inventory_v1/presentation/pages/checkout/view/checkout_part_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/dialogs/go_to_homeview_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
@@ -28,6 +30,14 @@ class CheckOutView extends StatelessWidget {
           BlocBuilder<CheckoutCubit, CheckoutState>(builder: (context, state) {
         // Post-frame callbacks for showing SnackBars based on state
         SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (state.status == CheckoutStateStatus.addedUserUnsuccessfully) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Unable to add user ${state.error}'),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
           if (state.status == CheckoutStateStatus.loadedUnsuccessfully) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -152,9 +162,30 @@ class CheckOutView extends StatelessWidget {
                                   .partRetrievalCompleted())
                       : SmallButton(
                           buttonName: 'Checkout',
-                          onPressed: () =>
-                              BlocProvider.of<CheckoutCubit>(context)
-                                  .checkoutCart())
+                          onPressed: state.status ==
+                                  CheckoutStateStatus.addedUserSuccessfully
+                              ? () => BlocProvider.of<CheckoutCubit>(context)
+                                  .checkoutCart()
+                              : () => showDialog(
+                                  context: context,
+                                  builder: ((dialogContext) {
+                                    return CheckoutPartDialog(
+                                        updateCheckout: (
+                                                {required MaintenanceSection
+                                                    section,
+                                                required String tailNumber,
+                                                required String taskName,
+                                                required String
+                                                    checkoutUser}) =>
+                                            BlocProvider.of<CheckoutCubit>(
+                                                    context)
+                                                .addCheckoutUser(
+                                                    section: section,
+                                                    tailNumber: tailNumber,
+                                                    taskName: taskName,
+                                                    checkoutUser:
+                                                        checkoutUser));
+                                  })))
                 ],
               ),
             ],

@@ -10,7 +10,9 @@ enum CheckoutStateStatus {
   checkingOut,
   checkedOutSuccessfully,
   checkedOutUnsuccessfully,
-  completed
+  completed,
+  addedUserSuccessfully,
+  addedUserUnsuccessfully,
 }
 
 @freezed
