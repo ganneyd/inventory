@@ -1,3 +1,4 @@
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
@@ -144,6 +145,10 @@ class ValuesForTest {
   List<CheckedOutEntity> createCheckedOutList() {
     return [
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 0,
         checkedOutQuantity: 2,
         quantityDiscrepancy: 0,
@@ -153,6 +158,10 @@ class ValuesForTest {
         verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 1,
         checkedOutQuantity: 3,
         quantityDiscrepancy: 0,
@@ -162,6 +171,10 @@ class ValuesForTest {
         verifiedDate: DateTime.now().subtract(const Duration(days: 1)),
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 2,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -172,6 +185,10 @@ class ValuesForTest {
       ),
 
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 3,
         checkedOutQuantity: 3,
         quantityDiscrepancy: 0,
@@ -181,6 +198,10 @@ class ValuesForTest {
         verifiedDate: DateTime.now().subtract(const Duration(days: 6)),
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 4,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -190,6 +211,10 @@ class ValuesForTest {
         verifiedDate: null,
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 5,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -199,6 +224,10 @@ class ValuesForTest {
         verifiedDate: null,
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 6,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -208,6 +237,10 @@ class ValuesForTest {
         verifiedDate: null,
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 7,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -217,6 +250,10 @@ class ValuesForTest {
         verifiedDate: null,
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 8,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -226,6 +263,10 @@ class ValuesForTest {
         verifiedDate: null,
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 9,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
@@ -235,6 +276,10 @@ class ValuesForTest {
         verifiedDate: null,
       ),
       CheckedOutEntity(
+        section: MaintenanceSection.aH,
+        checkoutUser: '',
+        aircraftTailNumber: '',
+        taskName: '',
         index: 10,
         checkedOutQuantity: 10,
         quantityDiscrepancy: 0,
