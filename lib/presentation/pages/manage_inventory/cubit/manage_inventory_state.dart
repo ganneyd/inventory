@@ -31,6 +31,7 @@ enum ManageInventoryStateStatus {
 class ManageInventoryState with _$ManageInventoryState {
   factory ManageInventoryState({
     @Default(20) int fetchPartAmount,
+    @Default(<PartEntity>[]) List<PartEntity> editedParts,
     @Default(<PartEntity>[]) List<PartEntity> allParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> newlyVerifiedParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> checkedOutParts,
