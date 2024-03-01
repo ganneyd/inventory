@@ -13,9 +13,12 @@ class CustomCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
       const Padding(padding: EdgeInsets.only(left: 10)),
-      Text(checkBoxName),
       Checkbox(value: value, onChanged: onChanged),
       const Padding(padding: EdgeInsets.only(right: 10)),
+      Text(
+        checkBoxName,
+        style: Theme.of(context).textTheme.labelMedium,
+      ),
     ]);
   }
 }
