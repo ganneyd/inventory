@@ -5,12 +5,14 @@ class PartCardDisplay extends StatelessWidget {
   final String center;
   final String right;
   final String bottom;
+  final Widget? actionButton;
   final bool centerBottom;
   final VoidCallback? callback;
   final Color? color;
   const PartCardDisplay(
       {super.key,
       this.callback,
+      this.actionButton,
       required this.left,
       required this.center,
       required this.right,
@@ -36,7 +38,8 @@ class PartCardDisplay extends StatelessWidget {
               Text(
                 right,
                 style: Theme.of(context).textTheme.titleSmall,
-              )
+              ),
+              actionButton ?? Container(),
             ],
           ),
           subtitle: centerBottom ? Text(bottom) : null,
