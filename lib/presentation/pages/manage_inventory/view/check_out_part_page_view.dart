@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
@@ -94,6 +95,7 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
   ExpansionTile getAllCheckedOutPartExpansionTiles(
       CheckedOutEntity checkedOutPart, PartEntity part, int index) {
     return ExpansionTile(
+      expandedAlignment: Alignment.center,
       initiallyExpanded: isExpandedList[index],
       title: PartCardDisplay(
           color: checkedOutPart.isVerified ?? false ? null : Colors.amber,
@@ -106,6 +108,20 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
                   ? 'Verified'
                   : 'Not Verified'),
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text('Checked out by: ${checkedOutPart.checkoutUser}'),
+            Text('Task: ${checkedOutPart.taskName}')
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text('ACFT: ${checkedOutPart.aircraftTailNumber}'),
+            Text('Section: ${checkedOutPart.section.enumToString()}')
+          ],
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
