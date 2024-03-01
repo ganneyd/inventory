@@ -14,6 +14,12 @@ Widget buildSection(
   if (parts.isEmpty) {
     return Container();
   }
+
+  parts = parts
+      .where(
+        (element) => element.quantity >= 1,
+      )
+      .toList();
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
