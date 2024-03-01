@@ -155,37 +155,42 @@ class CheckOutView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   state.isCheckoutCompleted
-                      ? SmallButton(
-                          buttonName: 'Retrieved All My Parts',
-                          onPressed: () =>
-                              BlocProvider.of<CheckoutCubit>(context)
-                                  .partRetrievalCompleted())
-                      : SmallButton(
-                          buttonName: 'Checkout',
-                          onPressed: state.status ==
-                                  CheckoutStateStatus.addedUserSuccessfully
-                              ? () => BlocProvider.of<CheckoutCubit>(context)
-                                  .checkoutCart()
-                              : () => showDialog(
-                                  context: context,
-                                  builder: ((dialogContext) {
-                                    return CheckoutPartDialog(
-                                        updateCheckout: (
-                                                {required MaintenanceSection
-                                                    section,
-                                                required String tailNumber,
-                                                required String taskName,
-                                                required String
-                                                    checkoutUser}) =>
-                                            BlocProvider.of<CheckoutCubit>(
-                                                    context)
-                                                .addCheckoutUser(
-                                                    section: section,
-                                                    tailNumber: tailNumber,
-                                                    taskName: taskName,
-                                                    checkoutUser:
-                                                        checkoutUser));
-                                  })))
+                      ? Expanded(
+                          child: SmallButton(
+                              buttonName: 'Retrieved All My Parts',
+                              onPressed: () =>
+                                  BlocProvider.of<CheckoutCubit>(context)
+                                      .partRetrievalCompleted()),
+                        )
+                      : Expanded(
+                          child: SmallButton(
+                              buttonName: 'Checkout',
+                              onPressed: state.status ==
+                                      CheckoutStateStatus.addedUserSuccessfully
+                                  ? () =>
+                                      BlocProvider.of<CheckoutCubit>(context)
+                                          .checkoutCart()
+                                  : () => showDialog(
+                                      context: context,
+                                      builder: ((dialogContext) {
+                                        return CheckoutPartDialog(
+                                            updateCheckout: (
+                                                    {required MaintenanceSection
+                                                        section,
+                                                    required String tailNumber,
+                                                    required String taskName,
+                                                    required String
+                                                        checkoutUser}) =>
+                                                BlocProvider.of<CheckoutCubit>(
+                                                        context)
+                                                    .addCheckoutUser(
+                                                        section: section,
+                                                        tailNumber: tailNumber,
+                                                        taskName: taskName,
+                                                        checkoutUser:
+                                                            checkoutUser));
+                                      }))),
+                        )
                 ],
               ),
             ],

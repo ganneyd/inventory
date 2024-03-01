@@ -147,6 +147,18 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     return list;
   }
 
+  void updatePart(PartEntity partEntity) {
+    var editedList = state.editedParts.toList();
+    var partsList = state.allParts.toList();
+    editedList.add(partEntity);
+    var index =
+        partsList.indexWhere((element) => element.index == partEntity.index);
+    if (index >= 0) {
+      partsList[index] = partEntity;
+    }
+    emit(state.copyWith(editedParts: editedList, allParts: partsList));
+  }
+
   void updateCheckoutQuantity({
     required CheckedOutEntity checkoutPart,
     required int quantityChange,
@@ -316,6 +328,9 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     _logger.finest('placing verified parts in the database');
     emit(state.copyWith(status: ManageInventoryStateStatus.verifyingPart));
 
+    for (var part in state.editedParts) {
+      _editPartUsecase.call(EditPartParams(partEntity: part));
+    }
     await verifyCheckoutPartUsecase.call(VerifyCheckoutPartParams(
         checkedOutEntityList: state.newlyVerifiedParts));
     await fulfillPartOrdersUsecase.call(FulfillPartOrdersParams(
