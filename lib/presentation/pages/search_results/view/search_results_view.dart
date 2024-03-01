@@ -7,6 +7,7 @@ import 'package:inventory_v1/presentation/pages/search_results/cubit/search_resu
 import 'package:inventory_v1/presentation/pages/search_results/view/cart_drawer.dart';
 import 'package:inventory_v1/presentation/pages/search_results/view/part_not_found.dart';
 import 'package:inventory_v1/presentation/pages/search_results/view/search_results_section.dart';
+import 'package:inventory_v1/presentation/widgets/buttons/checkbox_widget.dart';
 import 'package:inventory_v1/presentation/widgets/dialogs/go_to_homeview_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
@@ -26,6 +27,10 @@ class SearchResults extends StatefulWidget {
 class _SearchResultsState extends State<SearchResults> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late FocusNode _focusNode; // Declare a FocusNode
+  bool showPartsByNsn = true;
+  bool showPartsByName = true;
+  bool showPartsBySerialNumber = true;
+  bool showPartsByPartNumber = true;
 
   @override
   void initState() {
@@ -90,7 +95,6 @@ class _SearchResultsState extends State<SearchResults> {
                 }),
             appBar: CustomAppBar(
               key: const Key('search-results-app-bar'),
-              // Directly use AppBar here
               title: 'Search Results',
               backButtonCallback: () async {
                 if (state.cartItems.isNotEmpty) {
@@ -109,7 +113,7 @@ class _SearchResultsState extends State<SearchResults> {
               },
               actions: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 30, top: 20),
+                  padding: const EdgeInsets.only(right: 30, top: 15),
                   child: Badge(
                     label: Text('${state.cartItems.length}'),
                     child: IconButton(
@@ -120,21 +124,62 @@ class _SearchResultsState extends State<SearchResults> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 20.0),
+                const SizedBox(width: 50.0),
               ],
               bottom: PreferredSize(
                 // Wrap your CustomSearchBar in PreferredSize
                 preferredSize: const Size.fromHeight(
-                    kToolbarHeight), // You can adjust the height as needed
-                child: CustomSearchBar(
-                  textFieldKey: const Key('search-results-search-bar'),
-                  controller: state.searchBarController,
-                  focusNode:
-                      _focusNode, // Assign the FocusNode to the CustomSearchBar
-                  onPressed:
-                      state.status == SearchResultsStateStatus.textFieldNotEmpty
+                    kToolbarHeight + 30), // You can adjust the height as needed
+                child: Column(
+                  children: [
+                    CustomSearchBar(
+                      textFieldKey: const Key('search-results-search-bar'),
+                      controller: state.searchBarController,
+                      focusNode:
+                          _focusNode, // Assign the FocusNode to the CustomSearchBar
+                      onPressed: state.status ==
+                              SearchResultsStateStatus.textFieldNotEmpty
                           ? () => context.read<SearchPartCubit>().searchPart()
                           : null,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        state.partsByNsn.isNotEmpty
+                            ? CustomCheckbox(
+                                onChanged: (value) => setState(() {
+                                      showPartsByNsn = value ?? false;
+                                    }),
+                                checkBoxName: 'NSN',
+                                value: showPartsByNsn)
+                            : Container(),
+                        state.partsByName.isNotEmpty
+                            ? CustomCheckbox(
+                                onChanged: (value) => setState(() {
+                                      showPartsByName = value ?? false;
+                                    }),
+                                checkBoxName: 'Name',
+                                value: showPartsByName)
+                            : Container(),
+                        state.partsByPartNumber.isNotEmpty
+                            ? CustomCheckbox(
+                                onChanged: (value) => setState(() {
+                                      showPartsByPartNumber = value ?? false;
+                                    }),
+                                checkBoxName: 'Part Number',
+                                value: showPartsByPartNumber)
+                            : Container(),
+                        state.partsBySerialNumber.isNotEmpty
+                            ? CustomCheckbox(
+                                onChanged: (value) => setState(() {
+                                      showPartsBySerialNumber = value ?? false;
+                                    }),
+                                checkBoxName: 'Serial Number',
+                                value: showPartsBySerialNumber)
+                            : Container()
+                      ],
+                    )
+                  ],
                 ),
               ),
             ),
@@ -145,14 +190,22 @@ class _SearchResultsState extends State<SearchResults> {
                       ? const PartNotFound()
                       : ListView(
                           children: [
-                            buildSection(
-                                'Parts by NSN', state.partsByNsn, context),
-                            buildSection(
-                                'Parts by Name', state.partsByName, context),
-                            buildSection('Parts by Part Number',
-                                state.partsByPartNumber, context),
-                            buildSection('Parts by Serial Number',
-                                state.partsBySerialNumber, context),
+                            showPartsByNsn
+                                ? buildSection(
+                                    'Parts by NSN', state.partsByNsn, context)
+                                : Container(),
+                            showPartsByName
+                                ? buildSection(
+                                    'Parts by Name', state.partsByName, context)
+                                : Container(),
+                            showPartsByPartNumber
+                                ? buildSection('Parts by Part Number',
+                                    state.partsByPartNumber, context)
+                                : Container(),
+                            showPartsBySerialNumber
+                                ? buildSection('Parts by Serial Number',
+                                    state.partsBySerialNumber, context)
+                                : Container(),
                           ],
                         ),
                 ),
