@@ -4,6 +4,8 @@ import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/order_part_alert_dialog.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/restock_part_alert_dialog.dart';
+import 'package:inventory_v1/presentation/widgets/buttons/checkbox_widget.dart';
+import 'package:inventory_v1/presentation/widgets/form/part_form_widget.dart';
 import 'package:inventory_v1/presentation/widgets/part_display_card_widget.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
@@ -65,13 +67,14 @@ class _PartsPageViewState extends State<PartsPageView> {
                                     showAllParts = false;
                                   }),
                               child: const Text('Low Quantity Parts')),
+                          CustomCheckbox(
+                              onChanged: (value) => setState(() {
+                                    filterByLocation = value ?? false;
+                                  }),
+                              checkBoxName: 'Sort by Location',
+                              value: filterByLocation)
                         ],
                       ),
-                      Checkbox(
-                          value: filterByLocation,
-                          onChanged: (filter) => setState(() {
-                                filterByLocation = filter ?? false;
-                              }))
                     ],
                   )
                 ],
@@ -100,12 +103,56 @@ class _PartsPageViewState extends State<PartsPageView> {
 
   ExpansionTile getAllPartExpansionTile(PartEntity part, int index) {
     return ExpansionTile(
+      expandedAlignment: Alignment.center,
+      expandedCrossAxisAlignment: CrossAxisAlignment.center,
       initiallyExpanded: isExpandedList[index],
       title: PartCardDisplay(
           actionButton: IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => Navigator.of(context)
-                  .pushNamed('/edit-part', arguments: part)),
+            icon: const Icon(Icons.edit),
+            onPressed: () => showDialog(
+                context: context,
+                builder: (dialogContext) {
+                  return SizedBox(
+                    width: MediaQuery.of(dialogContext).size.width * 0.3,
+                    child: Dialog(
+                      child: PartForm(
+                        buttonName: 'Update',
+                        partEntity: part,
+                        key: const Key('edit-part-form'),
+                        formKey: GlobalKey<FormState>(),
+                        addPart: (
+                            {required location,
+                            required name,
+                            required nsn,
+                            required partNumber,
+                            required quantity,
+                            required requisitionPoint,
+                            required requisitionQuantity,
+                            required serialNumber,
+                            required unitOfIssue}) {
+                          widget.cubit.updatePart(PartEntity(
+                              isDiscontinued: part.isDiscontinued,
+                              checksum: part.checksum,
+                              index: part.index,
+                              nsn: nsn,
+                              name: name,
+                              partNumber: partNumber,
+                              location: location,
+                              quantity: int.tryParse(quantity) ?? -1,
+                              requisitionPoint:
+                                  int.tryParse(requisitionPoint) ?? -1,
+                              requisitionQuantity:
+                                  int.tryParse(requisitionQuantity) ?? -1,
+                              serialNumber: serialNumber,
+                              unitOfIssue: unitOfIssue));
+
+                          Navigator.of(dialogContext).pop();
+                        },
+                      ),
+                    ),
+                  );
+                }),
+          ),
           color: showAllParts
               ? null
               : part.quantity <= part.requisitionPoint * .2
@@ -123,9 +170,11 @@ class _PartsPageViewState extends State<PartsPageView> {
                   : 'In Stock: ${part.quantity} ${part.unitOfIssue.displayValue}'),
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [Text(part.partNumber), Text(part.serialNumber)],
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             part.isDiscontinued
                 ? const Text('Discontinued')
@@ -136,56 +185,64 @@ class _PartsPageViewState extends State<PartsPageView> {
         part.isDiscontinued
             ? Container()
             : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text('Requisition Point: ${part.requisitionPoint}'),
                   Text('Requisition Quantity: ${part.requisitionQuantity}')
                 ],
               ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            SmallButton(
-                buttonName: showAllParts ? 'Order More' : 'On-Order',
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext dialogContext) {
-                        return OrderPartDialog(
-                          part: showAllParts
-                              ? filterByLocation
-                                  ? widget.filteredByLocation[index]
-                                  : widget.allParts[index]
-                              : widget.lowQuantityParts[index],
-                          onOrder: (int quantity, PartEntity partEntity) {
-                            widget.cubit.orderPart(
-                                orderAmount: quantity,
-                                partEntityIndex: partEntity.index);
-                          },
-                        );
-                      });
-                }),
-            part.isDiscontinued
-                ? SmallButton(
-                    buttonName: 'Re-Stock',
-                    onPressed: () => showDialog(
+            Expanded(
+              child: SmallButton(
+                  buttonName: showAllParts ? 'Order More' : 'On-Order',
+                  onPressed: () {
+                    showDialog(
                         context: context,
                         builder: (BuildContext dialogContext) {
-                          return RestockPartDialog(
+                          return OrderPartDialog(
                             part: showAllParts
                                 ? filterByLocation
                                     ? widget.filteredByLocation[index]
                                     : widget.allParts[index]
                                 : widget.lowQuantityParts[index],
                             onOrder: (int quantity, PartEntity partEntity) {
-                              widget.cubit.restockPart(
-                                  newQuantity: quantity,
-                                  partEntity: partEntity);
+                              widget.cubit.orderPart(
+                                  orderAmount: quantity,
+                                  partEntityIndex: partEntity.index);
                             },
                           );
-                        }))
-                : SmallButton(
-                    buttonName: 'Discontinue',
-                    onPressed: () =>
-                        widget.cubit.discontinuePart(partEntity: part))
+                        });
+                  }),
+            ),
+            part.isDiscontinued
+                ? Expanded(
+                    child: SmallButton(
+                        buttonName: 'Re-Stock',
+                        onPressed: () => showDialog(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return RestockPartDialog(
+                                part: showAllParts
+                                    ? filterByLocation
+                                        ? widget.filteredByLocation[index]
+                                        : widget.allParts[index]
+                                    : widget.lowQuantityParts[index],
+                                onOrder: (int quantity, PartEntity partEntity) {
+                                  widget.cubit.restockPart(
+                                      newQuantity: quantity,
+                                      partEntity: partEntity);
+                                },
+                              );
+                            })),
+                  )
+                : Expanded(
+                    child: SmallButton(
+                        buttonName: 'Discontinue',
+                        onPressed: () =>
+                            widget.cubit.discontinuePart(partEntity: part)),
+                  )
           ],
         ),
       ],
