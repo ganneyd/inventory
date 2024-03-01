@@ -61,7 +61,9 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
                             //controller.jumpTo(controller.initialScrollOffset);
                             showAllCheckedOutParts = true;
                           }),
-                      child: const Text('Checked Out Parts')),
+                      child: const Text(
+                        'Checked Out Parts',
+                      )),
                   TextButton(
                       onPressed: () => setState(() {
                             // controller.jumpTo(controller.initialScrollOffset);
@@ -161,10 +163,12 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
           children: [
             checkedOutPart.isVerified ?? false
                 ? Container()
-                : SmallButton(
-                    buttonName: 'Verify',
-                    onPressed: () => widget.cubit
-                        .verifyPart(checkedOutEntity: checkedOutPart)),
+                : Expanded(
+                    child: SmallButton(
+                        buttonName: 'Verify',
+                        onPressed: () => widget.cubit
+                            .verifyPart(checkedOutEntity: checkedOutPart)),
+                  ),
           ],
         ),
       ],
@@ -186,7 +190,7 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
         ),
         IconButton(
             icon: const Icon(Icons.add),
-            onPressed: part.quantity - 1 >= 0
+            onPressed: part.quantity - checkedOutEntity.quantityDiscrepancy > 0
                 ? () => widget.cubit.updateCheckoutQuantity(
                     checkoutPart: checkedOutEntity, quantityChange: 1)
                 : null),
