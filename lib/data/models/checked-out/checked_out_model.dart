@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:inventory_v1/core/util/main_section_enum.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 
 part 'checked_out_model.g.dart';
@@ -14,7 +15,15 @@ class CheckedOutModel extends CheckedOutEntity {
     required this.isVerifiedModel,
     required this.verifiedDateModel,
     required this.quantityDiscrepancyModel,
+    required this.aircraftTailNumberModel,
+    required this.checkoutUserModel,
+    required this.sectionModel,
+    required this.taskNameModel,
   }) : super(
+            section: sectionModel,
+            taskName: taskNameModel,
+            checkoutUser: checkoutUserModel,
+            aircraftTailNumber: aircraftTailNumberModel,
             quantityDiscrepancy: quantityDiscrepancyModel,
             index: indexModel,
             checkedOutQuantity: checkedOutAmount,
@@ -46,4 +55,13 @@ class CheckedOutModel extends CheckedOutEntity {
 
   @HiveField(6)
   final int quantityDiscrepancyModel;
+
+  @HiveField(7)
+  final String taskNameModel;
+  @HiveField(8)
+  final String checkoutUserModel;
+  @HiveField(9)
+  final String aircraftTailNumberModel;
+  @HiveField(10)
+  final MaintenanceSection sectionModel;
 }
