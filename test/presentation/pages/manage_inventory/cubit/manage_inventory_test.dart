@@ -21,6 +21,14 @@ class MockVerifyCheckOutPart extends Mock implements VerifyCheckoutPart {}
 
 class MockEditPartUsecase extends Mock implements EditPartUsecase {}
 
+class MockExportExcelUsecase extends Mock implements ExportToExcelUsecase {}
+
+class MockImportFromExcelUsecase extends Mock
+    implements ImportFromExcelUsecase {}
+
+class MockGetSpecificPartUsecase extends Mock
+    implements GetPartByIndexUsecase {}
+
 class MockDiscontinuePartUsecase extends Mock
     implements DiscontinuePartUsecase {}
 
@@ -44,6 +52,9 @@ class MockScrollController extends Mock implements ScrollController {}
 class MockScrollPosition extends Mock implements ScrollPosition {}
 
 void main() {
+  late MockGetSpecificPartUsecase mockGetSpecificPartUsecase;
+  late MockImportFromExcelUsecase mockImportFromExcelUsecase;
+  late MockExportExcelUsecase mockExportExcelUsecase;
   late MockEditPartUsecase mockEditPartUsecase;
   late MockDiscontinuePartUsecase mockDiscontinuePartUsecase;
   late MockDeletePartOrderUsecase mockDeletePartOrderUsecase;
@@ -60,6 +71,8 @@ void main() {
 
   setUp(() {
     valuesForTest = ValuesForTest();
+    mockGetSpecificPartUsecase = MockGetSpecificPartUsecase();
+    mockImportFromExcelUsecase = MockImportFromExcelUsecase();
     mockDiscontinuePartUsecase = MockDiscontinuePartUsecase();
     mockEditPartUsecase = MockEditPartUsecase();
     mockDeletePartOrderUsecase = MockDeletePartOrderUsecase();
@@ -71,8 +84,12 @@ void main() {
     mockGetLowQuantityParts = MockGetLowQuantityParts();
     mockGetUnverifiedParts = MockGetUnverifiedParts();
     mockGetAllCheckoutParts = MockGetAllCheckoutParts();
+    mockExportExcelUsecase = MockExportExcelUsecase();
 
     sut = ManageInventoryCubit(
+      getPartByIndexUsecase: mockGetSpecificPartUsecase,
+      importFromExcelUsecase: mockImportFromExcelUsecase,
+      exportToExcelUsecase: mockExportExcelUsecase,
       editPartUsecase: mockEditPartUsecase,
       discontinuePartUsecase: mockDiscontinuePartUsecase,
       deletePartOrderUsecase: mockDeletePartOrderUsecase,

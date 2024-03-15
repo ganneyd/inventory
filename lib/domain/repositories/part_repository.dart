@@ -31,7 +31,7 @@ abstract class PartRepository {
   ///Creates a part in the inventory database using the [partEntity] passed
   Future<Either<Failure, void>> createPart(PartEntity partEntity);
 
-  Future<Either<Failure, PartEntity>> getSpecificPart(int index);
+  Either<Failure, PartEntity> getSpecificPart(int index);
 
   ///Retrieves the entire part inventory
   Future<Either<Failure, List<PartEntity>>> getAllParts(

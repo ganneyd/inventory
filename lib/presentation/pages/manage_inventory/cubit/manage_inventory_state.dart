@@ -25,6 +25,9 @@ enum ManageInventoryStateStatus {
   updatingData,
   updatedDataSuccessfully,
   updatedDataUnsuccessfully,
+  exportingData,
+  exportedDataSuccessfully,
+  exportedDataUnsuccessfully,
 }
 
 @freezed

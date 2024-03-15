@@ -39,8 +39,8 @@ void main() {
               .editCheckedOutItem(any(that: isA<CheckedOutEntity>())))
           .thenAnswer((_) async => const Right<Failure, void>(null));
       when(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
-          .thenAnswer((_) async =>
-              Right<Failure, PartEntity>(valuesForTest.parts()[0]));
+          .thenAnswer(
+              (_) => Right<Failure, PartEntity>(valuesForTest.parts()[0]));
 
       when(() => mockPartRepository.editPart(any(that: isA<PartEntity>())))
           .thenAnswer((_) async => const Right<Failure, void>(null));
@@ -143,8 +143,7 @@ void main() {
         () async {
       mockSetup();
       when(() => mockPartRepository.getSpecificPart(any(that: isA<int>())))
-          .thenAnswer(
-              (_) async => const Left<Failure, PartEntity>(GetFailure()));
+          .thenAnswer((_) => const Left<Failure, PartEntity>(GetFailure()));
       VerifyCheckoutPartParams params =
           VerifyCheckoutPartParams(checkedOutEntityList: [
         unverifiedCheckoutPart[0],

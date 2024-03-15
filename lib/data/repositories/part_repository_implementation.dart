@@ -182,7 +182,7 @@ class PartRepositoryImplementation extends PartRepository {
   }
 
   @override
-  Future<Either<Failure, PartEntity>> getSpecificPart(int index) async {
+  Either<Failure, PartEntity> getSpecificPart(int index) {
     try {
       if (index < 0) {
         throw IndexOutOfBounds();

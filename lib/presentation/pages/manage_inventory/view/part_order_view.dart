@@ -84,7 +84,8 @@ class _PartOrdersPageViewState extends State<PartOrdersPageView> {
                   ? widget.allPartOrders[index]
                   : widget.unfulfilledPartOrders[index];
               var partEntity = widget.allParts.singleWhere(
-                  (element) => element.index == orderEntity.partEntityIndex);
+                  (element) => element.index == orderEntity.partEntityIndex,
+                  orElse: () => widget.allParts[0]);
 
               return getAllPartOrdersExpansionTiles(
                   orderEntity, partEntity, index);

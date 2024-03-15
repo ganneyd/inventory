@@ -7,9 +7,11 @@ import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
+import 'package:inventory_v1/data/repositories/local_storage_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_order_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
+import 'package:inventory_v1/domain/repositories/local_storage_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_order_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
 import 'package:logging/logging.dart';
@@ -45,7 +47,8 @@ Future<void> initHive() async {
   await Hive.openBox<CheckedOutModel>(checkoutPartBox);
 
   // Hive.box<PartModel>(boxName).clear();
-  //Hive.box<CheckedOutModel>(checkoutPartBox).clear();
+  // Hive.box<CheckedOutModel>(checkoutPartBox).clear();
+  // Hive.box<OrderModel>(partOrdersBox).clear();
 
   serviceLocatorLogger.finest('initialized hive');
 }
@@ -64,6 +67,8 @@ Future<void> setupLocator() async {
           Hive.box<CheckedOutModel>(checkoutPartBox)));
   locator.registerLazySingleton<PartOrderRepository>(() =>
       PartOrderRepositoryImplementation(Hive.box<OrderModel>(partOrdersBox)));
+  locator.registerLazySingleton<LocalStorage>(
+      () => LocalStorageImplementation(box: Hive.box<PartModel>(boxName)));
   //!Usecases
   locator.registerFactory<AddPartUsecase>(
       () => AddPartUsecase(locator<PartRepository>()));
@@ -110,6 +115,13 @@ Future<void> setupLocator() async {
       () => GetPartOrderUsecase(locator<PartOrderRepository>()));
   locator.registerFactory<DiscontinuePartUsecase>(() => DiscontinuePartUsecase(
       locator<PartOrderRepository>(), locator<PartRepository>()));
+
+  locator.registerFactory<ExportToExcelUsecase>(
+      () => ExportToExcelUsecase(localStorage: locator<LocalStorage>()));
+  locator.registerFactory<ImportFromExcelUsecase>(() => ImportFromExcelUsecase(
+      locator<LocalStorage>(), Hive.box<PartModel>(boxName)));
+  locator.registerFactory<GetPartByIndexUsecase>(
+      () => GetPartByIndexUsecase(locator<PartRepository>()));
 
   //!Presentation Layer
 //!Pages

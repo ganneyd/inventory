@@ -75,23 +75,30 @@ class _CheckoutPartPageViewState extends State<CheckoutPartPageView> {
             )
           ];
         },
-        body: ListView.builder(
-            controller: controller,
-            itemCount: showAllCheckedOutParts
-                ? widget.allCheckedOutParts.length
-                : widget.allUnverifiedCheckedOutParts.length,
-            itemBuilder: (context, index) {
-              isExpandedList.add(false);
+        body: widget.allCheckedOutParts.isEmpty
+            ? const Center(
+                child: Text('No checked out parts to show'),
+              )
+            : ListView.builder(
+                controller: controller,
+                itemCount: showAllCheckedOutParts
+                    ? widget.allCheckedOutParts.length
+                    : widget.allUnverifiedCheckedOutParts.length,
+                itemBuilder: (context, index) {
+                  isExpandedList.add(false);
 
-              var thisCheckoutPart = showAllCheckedOutParts
-                  ? widget.allCheckedOutParts[index]
-                  : widget.allUnverifiedCheckedOutParts[index];
-              var part = widget.allParts.singleWhere((element) =>
-                  element.index == thisCheckoutPart.partEntityIndex);
+                  var thisCheckoutPart = showAllCheckedOutParts
+                      ? widget.allCheckedOutParts[index]
+                      : widget.allUnverifiedCheckedOutParts[index];
+                  var part = widget.allParts.singleWhere(
+                      (element) =>
+                          element.index == thisCheckoutPart.partEntityIndex,
+                      orElse: () => widget.cubit
+                          .getPart(thisCheckoutPart.partEntityIndex));
 
-              return getAllCheckedOutPartExpansionTiles(
-                  thisCheckoutPart, part, index);
-            }));
+                  return getAllCheckedOutPartExpansionTiles(
+                      thisCheckoutPart, part, index);
+                }));
   }
 
   ExpansionTile getAllCheckedOutPartExpansionTiles(
