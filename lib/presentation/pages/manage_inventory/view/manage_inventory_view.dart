@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,9 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+              getPartByIndexUsecase: locator<GetPartByIndexUsecase>(),
+              importFromExcelUsecase: locator<ImportFromExcelUsecase>(),
+              exportToExcelUsecase: locator<ExportToExcelUsecase>(),
               editPartUsecase: locator<EditPartUsecase>(),
               discontinuePartUsecase: locator<DiscontinuePartUsecase>(),
               deletePartOrderUsecase: locator<DeletePartOrderUsecase>(),
@@ -134,10 +138,47 @@ class ManageInventory extends StatelessWidget {
             return DefaultTabController(
                 length: 3,
                 child: Scaffold(
-                    appBar: const CustomAppBar(
-                        key: Key('manage-inventory-view-search-bar'),
+                    appBar: CustomAppBar(
+                        key: const Key('manage-inventory-view-search-bar'),
                         title: 'Manage Inventory',
-                        bottom: TabBar(
+                        actions: [
+                          IconButton(
+                              onPressed: () async {
+                                var results =
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.custom,
+                                  allowedExtensions: ['xlsx', 'numbers'],
+                                  dialogTitle:
+                                      'Choose the excel file to import from',
+                                );
+                                if (results != null) {
+                                  var path = results.files.single.path;
+
+                                  if (path != null) {
+                                    BlocProvider.of<ManageInventoryCubit>(
+                                            context)
+                                        .importFromExcel(path);
+                                  }
+                                }
+                              },
+                              icon: const Icon(Icons.save)),
+                          IconButton(
+                              onPressed: () async {
+                                var results =
+                                    await FilePicker.platform.getDirectoryPath(
+                                  dialogTitle:
+                                      'Choose a destination for export',
+                                );
+                                if (results != null) {
+                                  var path = results;
+
+                                  BlocProvider.of<ManageInventoryCubit>(context)
+                                      .exportToExcel("$path/export.xlsx");
+                                }
+                              },
+                              icon: const Icon(Icons.save))
+                        ],
+                        bottom: const TabBar(
                           tabs: [
                             Tab(
                               text: 'Parts',

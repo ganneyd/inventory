@@ -37,7 +37,7 @@ void main() {
   group('.call()', () {
     void mockSetup() {
       when(() => mockPartRepo.getSpecificPart(any(that: isA<int>())))
-          .thenAnswer((invocation) async =>
+          .thenAnswer((invocation) =>
               Right<Failure, PartEntity>(valuesForTest.parts()[0]));
       when(() => mockPartOrderRepo.editPartOrder(any(that: isA<OrderEntity>())))
           .thenAnswer((invocation) async {
@@ -78,7 +78,7 @@ void main() {
     test('Should return Right when .getSpecific() returns a left', () async {
       mockSetup();
       when(() => mockPartRepo.getSpecificPart(any(that: isA<int>())))
-          .thenAnswer((invocation) async {
+          .thenAnswer((invocation) {
         return const Left<Failure, PartEntity>(UpdateDataFailure());
       });
       FulfillPartOrdersParams params =

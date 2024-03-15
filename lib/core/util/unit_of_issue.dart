@@ -50,4 +50,23 @@ extension UnitOfIssueExtension on UnitOfIssue {
           value: value, label: value.displayValue);
     }).toList();
   }
+
+  static UnitOfIssue fromDisplayValue(String displayValue) {
+    switch (displayValue) {
+      case 'EA':
+        return UnitOfIssue.EA;
+      case 'HD':
+        return UnitOfIssue.HD;
+      case 'QT':
+        return UnitOfIssue.QT;
+      case 'PT':
+        return UnitOfIssue.PT;
+      case 'LB':
+        return UnitOfIssue.LB;
+      case 'FT':
+        return UnitOfIssue.FT;
+      default:
+        return UnitOfIssue.NOT_SPECIFIED;
+    }
+  }
 }

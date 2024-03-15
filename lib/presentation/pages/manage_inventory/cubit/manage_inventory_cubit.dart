@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
@@ -17,10 +18,16 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       required this.fulfillPartOrdersUsecase,
       required this.createPartOrderUsecase,
       required this.getAllPartOrdersUsecase,
+      required GetPartByIndexUsecase getPartByIndexUsecase,
+      required ImportFromExcelUsecase importFromExcelUsecase,
+      required ExportToExcelUsecase exportToExcelUsecase,
       required EditPartUsecase editPartUsecase,
       required DiscontinuePartUsecase discontinuePartUsecase,
       required DeletePartOrderUsecase deletePartOrderUsecase})
       : _logger = Logger('manage-inv-cubit'),
+        _getPartByIndexUsecase = getPartByIndexUsecase,
+        _importFromExcelUsecase = importFromExcelUsecase,
+        _exportToExcelUsecase = exportToExcelUsecase,
         _editPartUsecase = editPartUsecase,
         _deletePartOrderUsecase = deletePartOrderUsecase,
         _discontinuePartUsecase = discontinuePartUsecase,
@@ -38,6 +45,9 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final DeletePartOrderUsecase _deletePartOrderUsecase;
   final DiscontinuePartUsecase _discontinuePartUsecase;
   final EditPartUsecase _editPartUsecase;
+  final ExportToExcelUsecase _exportToExcelUsecase;
+  final ImportFromExcelUsecase _importFromExcelUsecase;
+  final GetPartByIndexUsecase _getPartByIndexUsecase;
   //for debugging
   final Logger _logger;
 //initialization method
@@ -115,6 +125,26 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         allPartOrders: allPartOrdersList,
       ));
     });
+  }
+
+  PartEntity getPart(int index) {
+    var results =
+        _getPartByIndexUsecase.call(GetPartByIndexParams(index: index));
+    return results.fold(
+        (l) => PartEntity(
+            index: index,
+            name: 'part not found',
+            nsn: 'part not found',
+            partNumber: 'part not found',
+            location: 'part not found',
+            quantity: -1,
+            requisitionPoint: -1,
+            requisitionQuantity: -1,
+            serialNumber: 'part not found',
+            unitOfIssue: UnitOfIssue.NOT_SPECIFIED,
+            checksum: 0,
+            isDiscontinued: true),
+        (part) => part);
   }
 
   List<PartEntity> filterLowQuantityParts(List<PartEntity> allParts) {
@@ -335,6 +365,27 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         checkedOutEntityList: state.newlyVerifiedParts));
     await fulfillPartOrdersUsecase.call(FulfillPartOrdersParams(
         fulfillmentEntities: state.newlyFulfilledPartOrders));
+  }
+
+  void exportToExcel(String path) async {
+    _logger.finest('path is $path');
+    emit(state.copyWith(status: ManageInventoryStateStatus.exportingData));
+    await _updateDatabase();
+    var results =
+        await _exportToExcelUsecase.call(ExportToExcelParams(path: path));
+    results.fold(
+        (l) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.exportedDataUnsuccessfully,
+            error: l.errorMessage)),
+        (r) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.exportedDataSuccessfully)));
+  }
+
+  void importFromExcel(String path) async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
+
+    await _importFromExcelUsecase.call(ImportFromExcelParams(path: path));
+    init();
   }
 
   @override

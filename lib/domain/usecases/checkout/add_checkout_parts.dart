@@ -7,6 +7,7 @@ import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
+
 import 'package:logging/logging.dart';
 
 class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
@@ -42,6 +43,8 @@ class AddCheckoutPart implements UseCase<void, AddCheckoutPartParams> {
         _logger.warning('failed to create checkout entity');
         return const Left<Failure, void>(CreateDataFailure());
       }
+      _logger.finest(
+          ' created checkout entity belonging to ${cartItem.checkedOutEntity.checkoutUser}');
     }
     return const Right<Failure, void>(null);
   }

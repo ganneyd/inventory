@@ -97,5 +97,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           cartItems: cartItems,
           status: CheckoutStateStatus.addedUserSuccessfully));
     }
+
+    _logger.finest('added ${state.cartItems}');
   }
 }

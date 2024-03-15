@@ -11,3 +11,5 @@ export 'get_low_quantity_parts.dart';
 export 'checkout/checkout_usecase_bucket.dart';
 export 'discontinue_part.dart';
 export 'order/order_usecases_bucket.dart';
+export 'get_part_by_index.dart';
+export 'local_storage/local_storage_bucket.dart';
