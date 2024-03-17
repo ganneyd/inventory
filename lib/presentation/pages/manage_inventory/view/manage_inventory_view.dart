@@ -6,6 +6,7 @@ import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/check_out_part_page_view.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/drawer_widget.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/part_order_view.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/part_page_view.dart';
 import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
@@ -19,6 +20,7 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+              clearDatabaseUsecase: locator<ClearDatabaseUsecase>(),
               getPartByIndexUsecase: locator<GetPartByIndexUsecase>(),
               importFromExcelUsecase: locator<ImportFromExcelUsecase>(),
               exportToExcelUsecase: locator<ExportToExcelUsecase>(),
@@ -138,45 +140,57 @@ class ManageInventory extends StatelessWidget {
             return DefaultTabController(
                 length: 3,
                 child: Scaffold(
+                    drawer: CustomDrawerWidget(
+                        clearDatabase: () =>
+                            BlocProvider.of<ManageInventoryCubit>(context)
+                                .clearDatabase(),
+                        importFromExcel: () async {
+                          var results = await FilePicker.platform.pickFiles(
+                            type: FileType.custom,
+                            allowedExtensions: ['xlsx', 'numbers'],
+                            dialogTitle: 'Choose the excel file to import from',
+                          );
+                          if (results != null) {
+                            var path = results.files.single.path;
+
+                            if (path != null) {
+                              BlocProvider.of<ManageInventoryCubit>(context)
+                                  .importFromExcel(path);
+                            }
+                          }
+                        },
+                        exportToExcel: () async {
+                          var results =
+                              await FilePicker.platform.getDirectoryPath(
+                            dialogTitle: 'Choose a destination for export',
+                          );
+                          if (results != null) {
+                            var path = results;
+
+                            BlocProvider.of<ManageInventoryCubit>(context)
+                                .exportToExcel("$path/export.xlsx");
+                          }
+                        },
+                        onPressed: () {
+                          BlocProvider.of<ManageInventoryCubit>(context)
+                              .filterByLocation();
+                        }),
                     appBar: CustomAppBar(
                         key: const Key('manage-inventory-view-search-bar'),
                         title: 'Manage Inventory',
                         actions: [
-                          IconButton(
-                              onPressed: () async {
-                                var results =
-                                    await FilePicker.platform.pickFiles(
-                                  type: FileType.custom,
-                                  allowedExtensions: ['xlsx', 'numbers'],
-                                  dialogTitle:
-                                      'Choose the excel file to import from',
-                                );
-                                if (results != null) {
-                                  var path = results.files.single.path;
-
-                                  if (path != null) {
-                                    BlocProvider.of<ManageInventoryCubit>(
-                                            context)
-                                        .importFromExcel(path);
-                                  }
-                                }
-                              },
-                              icon: const Icon(Icons.save)),
-                          IconButton(
-                              onPressed: () async {
-                                var results =
-                                    await FilePicker.platform.getDirectoryPath(
-                                  dialogTitle:
-                                      'Choose a destination for export',
-                                );
-                                if (results != null) {
-                                  var path = results;
-
-                                  BlocProvider.of<ManageInventoryCubit>(context)
-                                      .exportToExcel("$path/export.xlsx");
-                                }
-                              },
-                              icon: const Icon(Icons.save))
+                          Builder(
+                            builder: (BuildContext context) {
+                              return IconButton(
+                                icon: const Icon(Icons.menu),
+                                onPressed: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
+                                tooltip: MaterialLocalizations.of(context)
+                                    .openAppDrawerTooltip,
+                              );
+                            },
+                          ),
                         ],
                         bottom: const TabBar(
                           tabs: [
