@@ -127,6 +127,8 @@ Future<void> setupLocator() async {
   locator.registerFactory<GetPartByIndexUsecase>(
       () => GetPartByIndexUsecase(locator<PartRepository>()));
 
+  locator.registerFactory<ClearDatabaseUsecase>(
+      () => ClearDatabaseUsecase(localStorage: locator<LocalStorage>()));
   //!Presentation Layer
 //!Pages
 }

@@ -4,7 +4,9 @@ import 'package:excel/excel.dart';
 import 'package:hive/hive.dart';
 import 'package:inventory_v1/core/error/failures.dart';
 import 'package:inventory_v1/core/util/util.dart';
+import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
+import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/repositories/local_storage_repository.dart';
 import 'package:logging/logging.dart';
@@ -16,6 +18,9 @@ class LocalStorageImplementation extends LocalStorage {
 
   final Logger _logger;
   final Box<PartModel> _hiveBox;
+  final String boxName = 'parts_json';
+  final String checkoutPartBox = 'checkout_parts';
+  final String partOrdersBox = 'part_orders';
   @override
   Future<Either<Failure, void>> saveToExcel(String path) async {
     try {
@@ -117,6 +122,19 @@ class LocalStorageImplementation extends LocalStorage {
     } catch (e) {
       _logger.warning("exception occurred when reading from excel $e");
       return const Left<Failure, void>(CreateDataFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> clearDatabase() async {
+    try {
+      await saveToExcel('/desktop/lastResort${DateTime.now().minute}.xlsx');
+      Hive.box<PartModel>(boxName).clear();
+      Hive.box<CheckedOutModel>(checkoutPartBox).clear();
+      Hive.box<OrderModel>(partOrdersBox).clear();
+      return const Right<Failure, void>(null);
+    } on Exception catch (_) {
+      return const Left<Failure, void>(DeleteDataFailure());
     }
   }
 }
