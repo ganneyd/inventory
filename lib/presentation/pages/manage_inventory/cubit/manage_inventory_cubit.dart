@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
@@ -18,6 +20,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       required this.fulfillPartOrdersUsecase,
       required this.createPartOrderUsecase,
       required this.getAllPartOrdersUsecase,
+      required ClearDatabaseUsecase clearDatabaseUsecase,
       required GetPartByIndexUsecase getPartByIndexUsecase,
       required ImportFromExcelUsecase importFromExcelUsecase,
       required ExportToExcelUsecase exportToExcelUsecase,
@@ -25,6 +28,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       required DiscontinuePartUsecase discontinuePartUsecase,
       required DeletePartOrderUsecase deletePartOrderUsecase})
       : _logger = Logger('manage-inv-cubit'),
+        _clearDatabaseUsecase = clearDatabaseUsecase,
         _getPartByIndexUsecase = getPartByIndexUsecase,
         _importFromExcelUsecase = importFromExcelUsecase,
         _exportToExcelUsecase = exportToExcelUsecase,
@@ -48,6 +52,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final ExportToExcelUsecase _exportToExcelUsecase;
   final ImportFromExcelUsecase _importFromExcelUsecase;
   final GetPartByIndexUsecase _getPartByIndexUsecase;
+  final ClearDatabaseUsecase _clearDatabaseUsecase;
   //for debugging
   final Logger _logger;
 //initialization method
@@ -176,6 +181,8 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
     return list;
   }
+
+  void filterPartsByNsn({required String nsnQuery}) async {}
 
   void updatePart(PartEntity partEntity) {
     var editedList = state.editedParts.toList();
@@ -329,6 +336,18 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         allPartOrders: partOrders,
       ));
     });
+  }
+
+  void clearDatabase() async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
+    Future.delayed(Durations.short4);
+    var results = await _clearDatabaseUsecase.call(NoParams());
+    results.fold(
+        (l) => emit(state.copyWith(
+            error: l.errorMessage,
+            status: ManageInventoryStateStatus.loadedUnsuccessfully)),
+        (r) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.loadedSuccessfully)));
   }
 
   void restockPart(
