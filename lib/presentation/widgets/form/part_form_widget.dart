@@ -4,6 +4,7 @@ import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/presentation/utils/text_input_formatter.dart';
 import 'package:inventory_v1/presentation/widgets/buttons/small_button_widget.dart';
 import 'package:inventory_v1/presentation/widgets/form/form_fields_widget.dart';
+import 'package:logging/logging.dart';
 
 class PartForm extends StatefulWidget {
   PartForm({
@@ -11,6 +12,8 @@ class PartForm extends StatefulWidget {
     PartEntity? partEntity,
     required this.formKey,
     required this.addPart,
+    this.nsnCompleted,
+    this.minimumQuantity = 1,
     this.buttonName = 'Add Part',
   })  : nsnController = TextEditingController(text: partEntity?.nsn),
         nomenclatureController = TextEditingController(text: partEntity?.name),
@@ -24,7 +27,8 @@ class PartForm extends StatefulWidget {
         requisitionPointController = TextEditingController(
             text: partEntity?.requisitionPoint.toString()),
         requisitionQuantityController = TextEditingController(
-            text: partEntity?.requisitionQuantity.toString());
+            text: partEntity?.requisitionQuantity.toString()),
+        logger = Logger('part-form-widget');
 
   final GlobalKey<FormState> formKey;
   final String buttonName;
@@ -36,7 +40,8 @@ class PartForm extends StatefulWidget {
   final TextEditingController quantityController;
   final TextEditingController requisitionPointController;
   final TextEditingController requisitionQuantityController;
-
+  final int minimumQuantity;
+  final Logger logger;
   //callback functions
   final void Function({
     required String nsn,
@@ -49,6 +54,8 @@ class PartForm extends StatefulWidget {
     required String serialNumber,
     required UnitOfIssue unitOfIssue,
   }) addPart;
+
+  final void Function({required String nsn})? nsnCompleted;
 
   @override
   State<PartForm> createState() => _PartFormState();
@@ -86,21 +93,32 @@ class _PartFormState extends State<PartForm> {
         ));
   }
 
-  void apply() {
+  void apply({bool evokeCallback = true}) {
     if (widget.formKey.currentState != null) {
       if (widget.formKey.currentState!.validate()) {
         setState(() {
           isFormValid = true;
+          widget.logger.finest('isFormvalid is $isFormValid');
+        });
+        if (widget.nsnCompleted != null && evokeCallback) {
+          widget.nsnCompleted!(nsn: widget.nsnController.text);
+        }
+      } else {
+        setState(() {
+          isFormValid = false;
+          widget.logger.finest('isFormvalid is $isFormValid');
         });
       }
     } else {
       setState(() {
         isFormValid = false;
+        widget.logger.finest('isFormvalid is $isFormValid');
       });
     }
   }
 
   void _clearForm() {
+    isFormValid = false;
     widget.nsnController.clear();
     widget.nomenclatureController.clear();
     widget.partNumberController.clear();
@@ -125,6 +143,13 @@ class _PartFormState extends State<PartForm> {
 
     // Always call super.dispose() at the end of the dispose method
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    apply();
+    isFormValid = false;
+    super.initState();
   }
 
   @override
@@ -183,26 +208,34 @@ class _PartFormState extends State<PartForm> {
               isDisabled: !isFormValid,
               buttonName: widget.buttonName,
               onPressed: () {
-                widget.addPart(
-                  nsn: widget.nsnController.text,
-                  partNumber: widget.partNumberController.text,
-                  name: widget.nomenclatureController.text,
-                  location: widget.locationController.text,
-                  quantity: widget.quantityController.text,
-                  requisitionPoint: widget.requisitionPointController.text,
-                  requisitionQuantity:
-                      widget.requisitionQuantityController.text,
-                  unitOfIssue: unitOfIssue,
-                  serialNumber: widget.serialNumberController.text.isEmpty
-                      ? 'N/A'
-                      : widget.serialNumberController.text,
-                );
+                apply(evokeCallback: false);
+                if (isFormValid) {
+                  widget.addPart(
+                    nsn: widget.nsnController.text,
+                    partNumber: widget.partNumberController.text,
+                    name: widget.nomenclatureController.text,
+                    location: widget.locationController.text,
+                    quantity: widget.quantityController.text,
+                    requisitionPoint: widget.requisitionPointController.text,
+                    requisitionQuantity:
+                        widget.requisitionQuantityController.text,
+                    unitOfIssue: unitOfIssue,
+                    serialNumber: widget.serialNumberController.text.isEmpty
+                        ? 'N/A'
+                        : widget.serialNumberController.text,
+                  );
 
-                setState(() {
-                  _clearForm();
-                });
+                  setState(() {
+                    _clearForm();
+                  });
+                }
               }),
-          SmallButton(buttonName: 'Apply', onPressed: () => apply()),
+          SmallButton(
+              buttonName: 'Apply',
+              onPressed: () {
+                widget.logger.finest('apply button pressed');
+                apply();
+              }),
         ], paddingValue)
       ]),
     );

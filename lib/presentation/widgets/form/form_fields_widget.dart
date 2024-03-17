@@ -10,8 +10,10 @@ class CustomTextField extends StatelessWidget {
   final bool isNumberInput;
   final int? maxLength;
   final FocusNode? focusNode;
+  final int numberGreaterThan;
   const CustomTextField(
       {super.key,
+      this.numberGreaterThan = 1,
       this.focusNode,
       required this.controller,
       required this.hintText,
@@ -29,7 +31,13 @@ class CustomTextField extends StatelessWidget {
       validator: validation ??
           (value) {
             if (isNumberInput) {
-              return validatePositiveNumber(value);
+              return validatePositiveNumber(value, numberGreaterThan);
+            } else if (maxLength != null && value != null) {
+              if (value.length != maxLength) {
+                return 'Please enter a correct NSN';
+              } else {
+                return null;
+              }
             } else if (value == null || value.isEmpty) {
               return 'Please enter a $hintText.';
             }
