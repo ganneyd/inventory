@@ -6,8 +6,10 @@ class CustomSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode? focusNode;
   final Key textFieldKey;
+  final double padding;
   const CustomSearchBar(
       {this.focusNode,
+      this.padding = 50.0,
       required this.textFieldKey,
       this.onPressed,
       required this.controller})
@@ -16,7 +18,7 @@ class CustomSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+      padding: EdgeInsets.symmetric(horizontal: padding),
       child: Row(
         children: [
           Expanded(
