@@ -116,6 +116,7 @@ class _PartsPageViewState extends State<PartsPageView> {
                     width: MediaQuery.of(dialogContext).size.width * 0.3,
                     child: Dialog(
                       child: PartForm(
+                        minimumQuantity: 0,
                         buttonName: 'Update',
                         partEntity: part,
                         key: const Key('edit-part-form'),
