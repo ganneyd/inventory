@@ -1,102 +1,25 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/add_part/cubit/add_part_state.dart';
+import 'package:logging/logging.dart';
 
 class AddPartCubit extends Cubit<AddPartState> {
   final AddPartUsecase addPartUsecase;
-  final GlobalKey<FormState> formKey;
-  final TextEditingController nsnController;
-  final TextEditingController nomenclatureController;
-  final TextEditingController partNumberController;
-  final TextEditingController requisitionPointController;
-  final TextEditingController requisitionQuantityController;
-  final TextEditingController quantityController;
-  final TextEditingController serialNumberController;
-  final TextEditingController locationController;
-
+  final GetPartByNsnUseCase getPartByNsnUseCase;
+  final EditPartUsecase editPartUsecase;
+  final Logger _logger;
   AddPartCubit({
+    required this.editPartUsecase,
     required this.addPartUsecase,
-    required this.formKey,
-    required this.nsnController,
-    required this.nomenclatureController,
-    required this.partNumberController,
-    required this.requisitionPointController,
-    required this.requisitionQuantityController,
-    required this.quantityController,
-    required this.serialNumberController,
-    required this.locationController,
-  }) : super(
+    required this.getPartByNsnUseCase,
+  })  : _logger = Logger('add-part-cubit'),
+        super(
           AddPartState(
-            formKey: formKey,
             addPartStateStatus: AddPartStateStatus.loadedSuccessfully,
-            locationController: locationController,
-            nsnController: nsnController,
-            nomenclatureController: nomenclatureController,
-            partNumberController: partNumberController,
-            requisitionPointController: requisitionPointController,
-            requisitionQuantityController: requisitionQuantityController,
-            quantityController: quantityController,
-            serialNumberController: serialNumberController,
           ),
         );
-
-  ///method to save parts by emitting new state with the part
-  void savePart() async {
-    //first apply() the part to check validation
-    applyPart();
-
-    if (state.isFormValid) {
-      var results =
-          await addPartUsecase.call(AddPartParams(partEntity: state.part!));
-
-      results.fold(
-          //emit failure
-          (l) => emit(state.copyWith(
-              isFormValid: false,
-              error: l.errorMessage,
-              addPartStateStatus:
-                  AddPartStateStatus.createdDataUnsuccessfully)), (r) {
-        //clear form
-        _clearForm();
-        //emit success
-        emit(state.copyWith(
-            error: 'success creating part',
-            isFormValid: false,
-            addPartStateStatus: AddPartStateStatus.createdDataSuccessfully));
-      });
-    }
-  }
-
-  void applyPart() {
-    //check that the form is valid first
-    if (state.formKey.currentState != null) {
-      if (state.formKey.currentState!.validate()) {
-        //if its valid then emit the part with the state and update that the form
-        //is valid now
-        emit(state.copyWith(
-            isFormValid: true,
-            addPartStateStatus: AddPartStateStatus.loadedSuccessfully));
-        //if its not valid emit new status
-      } else {
-        //tell the user what the error was
-        //form is not valid
-        emit(state.copyWith(
-            isFormValid: false,
-            error: 'Please enter correct values',
-            addPartStateStatus: AddPartStateStatus.loadedUnsuccessfully));
-      }
-    } else {
-      //tell the user what the error was
-      //form is not valid
-      emit(state.copyWith(
-          isFormValid: false,
-          error: 'Error encountered trying to save form, please try again',
-          addPartStateStatus: AddPartStateStatus.loadedUnsuccessfully));
-    }
-  }
 
   void dropDownMenuHandler(UnitOfIssue value) {
     emit(state.copyWith(unitOfIssue: value));
@@ -127,22 +50,6 @@ class AddPartCubit extends Cubit<AddPartState> {
         index: 0,
         location: location,
         unitOfIssue: unitOfIssue);
-  }
-
-//method to reset the form after the user inputted values
-  void _clearForm() {
-    emit(state.copyWith(
-      nsnController: state.nsnController..clear(),
-      partNumberController: state.partNumberController..clear(),
-      serialNumberController: state.serialNumberController..clear(),
-      nomenclatureController: state.nomenclatureController..clear(),
-      locationController: state.locationController..clear(),
-      unitOfIssue: UnitOfIssue.EA,
-      quantityController: state.quantityController..clear(),
-      requisitionPointController: state.requisitionPointController..clear(),
-      requisitionQuantityController: state.requisitionQuantityController
-        ..clear(),
-    ));
   }
 
   void addPart({
@@ -177,13 +84,48 @@ class AddPartCubit extends Cubit<AddPartState> {
             error: l.errorMessage,
             addPartStateStatus: AddPartStateStatus.createdDataUnsuccessfully)),
         (r) {
-      //clear form
-      _clearForm();
       //emit success
       emit(state.copyWith(
           error: 'success creating part',
           isFormValid: false,
+          part: partEntity,
           addPartStateStatus: AddPartStateStatus.createdDataSuccessfully));
     });
+  }
+
+  void checkIfPartExists({required String nsn}) async {
+    var results =
+        await getPartByNsnUseCase.call(GetAllPartByNsnParams(queryKey: nsn));
+    results.fold((_) => (), (parts) {
+      if (parts.isNotEmpty) {
+        emit(state.copyWith(
+            existingParts: parts,
+            addPartStateStatus: AddPartStateStatus.foundMatches));
+      }
+    });
+    _logger.finest('found ${state.existingParts.length} parts matching $nsn');
+  }
+
+  void updateQuantity(
+      {PartEntity? partEntity, required int additionalQuantity}) async {
+    if (partEntity != null && additionalQuantity > 0) {
+      var results = await editPartUsecase.call(EditPartParams(
+          partEntity: partEntity.copyWith(
+              quantity: partEntity.quantity + additionalQuantity)));
+
+      results.fold(
+          (l) => emit(state.copyWith(
+              error: l.errorMessage,
+              addPartStateStatus:
+                  AddPartStateStatus.updatedQuantityUnsuccessfully)),
+          (r) => emit(state.copyWith(
+              error: '',
+              part: partEntity.copyWith(
+                  quantity: partEntity.quantity + additionalQuantity),
+              addPartStateStatus:
+                  AddPartStateStatus.updatedQuantitySuccessfully)));
+    } else {
+      emit(state.copyWith(addPartStateStatus: AddPartStateStatus.searched));
+    }
   }
 }

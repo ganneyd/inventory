@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
@@ -12,7 +11,12 @@ enum AddPartStateStatus {
   loadedUnsuccessfully,
   creatingData,
   createdDataSuccessfully,
-  createdDataUnsuccessfully
+  createdDataUnsuccessfully,
+  updatedQuantitySuccessfully,
+  updatedQuantityUnsuccessfully,
+  searching,
+  searched,
+  foundMatches,
 }
 
 @freezed
@@ -20,17 +24,9 @@ class AddPartState with _$AddPartState {
   factory AddPartState({
     PartEntity? part,
     String? error,
-    required GlobalKey<FormState> formKey,
     @Default(false) bool isFormValid,
     @Default(UnitOfIssue.EA) UnitOfIssue unitOfIssue,
-    required TextEditingController nsnController,
-    required TextEditingController partNumberController,
-    required TextEditingController serialNumberController,
-    required TextEditingController nomenclatureController,
-    required TextEditingController locationController,
-    required TextEditingController quantityController,
-    required TextEditingController requisitionPointController,
-    required TextEditingController requisitionQuantityController,
+    @Default(<PartEntity>[]) List<PartEntity> existingParts,
     @Default(AddPartStateStatus.loading) addPartStateStatus,
   }) = _AddPartState;
 }
