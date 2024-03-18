@@ -122,6 +122,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
     results.fold(
         (l) => emit(state.copyWith(
+            error: l.errorMessage,
             status: ManageInventoryStateStatus.fetchedDataUnsuccessfully)),
         (orders) {
       allPartOrdersList.addAll(orders);
@@ -187,13 +188,25 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   void updatePart(PartEntity partEntity) {
     var editedList = state.editedParts.toList();
     var partsList = state.allParts.toList();
-    editedList.add(partEntity);
+
     var index =
         partsList.indexWhere((element) => element.index == partEntity.index);
     if (index >= 0) {
       partsList[index] = partEntity;
+      editedList.add(partEntity);
+      emit(state.copyWith(
+          editedParts: editedList,
+          allParts: partsList,
+          status: ManageInventoryStateStatus.operationSuccess));
+      _logger.fine(
+          'updated part entity ${partEntity.nsn} - ${partEntity.name} index is : $index');
+    } else {
+      _logger.warning(
+          'could not update part entity ${partEntity.nsn} - ${partEntity.name} index found is : $index');
+      emit(state.copyWith(
+          error: 'Could not update part ${partEntity.nsn} - ${partEntity.name}',
+          status: ManageInventoryStateStatus.errorOccurred));
     }
-    emit(state.copyWith(editedParts: editedList, allParts: partsList));
   }
 
   void updateCheckoutQuantity({
@@ -202,78 +215,145 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   }) {
     List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
     var indexInList = newCheckoutPartList.indexOf(checkoutPart);
+    if (indexInList < 0) {
+      _logger.warning('index is out of bounds, it is : $indexInList');
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.errorOccurred,
+          error: 'Unexpected error occurred. Check log for details'));
+    } else {
+      var newCheckoutPart = checkoutPart.copyWith(
+        checkedOutQuantity: checkoutPart.checkedOutQuantity + quantityChange,
+        quantityDiscrepancy: checkoutPart.quantityDiscrepancy + quantityChange,
+      );
 
-    var newCheckoutPart = checkoutPart.copyWith(
-      checkedOutQuantity: checkoutPart.checkedOutQuantity + quantityChange,
-      quantityDiscrepancy: checkoutPart.quantityDiscrepancy + quantityChange,
-    );
-
-    newCheckoutPartList[indexInList] = newCheckoutPart;
-    emit(state.copyWith(
-      checkedOutParts: newCheckoutPartList,
-    ));
+      newCheckoutPartList[indexInList] = newCheckoutPart;
+      emit(state.copyWith(
+        status: ManageInventoryStateStatus.noStatusChange,
+        checkedOutParts: newCheckoutPartList,
+      ));
+    }
   }
 
-  void verifyPart({required CheckedOutEntity checkedOutEntity}) {
+  void verifyPart({required CheckedOutEntity checkedOutEntity}) async {
     List<CheckedOutEntity> newVerifiedList = state.newlyVerifiedParts.toList();
     List<CheckedOutEntity> newCheckoutPartList = state.checkedOutParts.toList();
     List<PartEntity> newPartEntityList = state.allParts.toList();
-    var indexInList = newCheckoutPartList.indexOf(checkedOutEntity);
+    var indexInList = newCheckoutPartList
+        .indexWhere((element) => element.index == checkedOutEntity.index);
 
     //update part
 
-    var newCheckoutPart = checkedOutEntity.copyWith(
-      isVerified: true,
-      verifiedDate: DateTime.now(),
-    );
+    if (indexInList >= 0) {
+      _logger.finest('found index for checkout entity and its $indexInList');
+      var newCheckoutPart = checkedOutEntity.copyWith(
+        isVerified: true,
+        verifiedDate: DateTime.now(),
+      );
 
-    newCheckoutPartList[indexInList] = newCheckoutPart;
-    var partIndex = newPartEntityList
-        .indexWhere((part) => part.index == checkedOutEntity.partEntityIndex);
-    var partEntity = newPartEntityList[partIndex];
-    //reflect change in the parts list
-    newPartEntityList[partIndex] = partEntity.copyWith(
-        quantity: partEntity.quantity - newCheckoutPart.quantityDiscrepancy);
-    //add checkout part to verified list
-    newVerifiedList.add(newCheckoutPart);
-    //emit changes
-    emit(state.copyWith(
-        newlyVerifiedParts: newVerifiedList,
-        checkedOutParts: newCheckoutPartList,
-        allParts: newPartEntityList));
+      newCheckoutPartList[indexInList] = newCheckoutPart;
+      var partIndex = newPartEntityList
+          .indexWhere((part) => part.index == checkedOutEntity.partEntityIndex);
+      //part not found
+      if (partIndex == -1) {
+        var results = await verifyCheckoutPartUsecase.call(
+            VerifyCheckoutPartParams(checkedOutEntityList: [newCheckoutPart]));
+        results.fold((l) {
+          _logger
+              .warning('Could not verify part index is $partIndex failure $l');
+          emit(state.copyWith(
+              status: ManageInventoryStateStatus.errorOccurred,
+              error: 'Could not verify part'));
+        },
+            (r) => emit(state.copyWith(
+                error: 'Successfully verified part',
+                status: ManageInventoryStateStatus.operationSuccess)));
+      } else if (partIndex >= 0 && partIndex <= newPartEntityList.length) {
+        var partEntity = newPartEntityList[partIndex];
+        //reflect change in the parts list
+        newPartEntityList[partIndex] = partEntity.copyWith(
+            quantity:
+                partEntity.quantity - newCheckoutPart.quantityDiscrepancy);
+        //add checkout part to verified list
+        newVerifiedList.add(newCheckoutPart);
+        emit(state.copyWith(
+            error:
+                'Successfully verified part ${partEntity.nsn} - ${partEntity.name}',
+            status: ManageInventoryStateStatus.operationSuccess,
+            newlyVerifiedParts: newVerifiedList,
+            checkedOutParts: newCheckoutPartList,
+            allParts: newPartEntityList));
+      } else {
+        _logger.warning('index is out of bounds for part, and is $partIndex');
+      }
+    } else {
+      _logger.warning(
+          'index is out of bounds for checked out part, and is $indexInList');
+    }
   }
 
-  void fulfillPartOrder({required OrderEntity orderEntity}) {
+  void fulfillPartOrder({required OrderEntity orderEntity}) async {
     List<PartEntity> allParts = state.allParts.toList();
     List<OrderEntity> allPartOrders = state.allPartOrders.toList();
     List<OrderEntity> newlyFulfilledPartOrders =
         state.newlyFulfilledPartOrders.toList();
     var index = allPartOrders.indexOf(orderEntity);
-    var fulfilledOrder = allPartOrders[index]
-        .copyWith(fulfillmentDate: DateTime.now(), isFulfilled: true);
-    allPartOrders[index] = fulfilledOrder;
-    var partIndex = allParts
-        .indexWhere((part) => part.index == fulfilledOrder.partEntityIndex);
+    if (index >= 0 && index < allPartOrders.length) {
+      var fulfilledOrder = allPartOrders[index]
+          .copyWith(fulfillmentDate: DateTime.now(), isFulfilled: true);
+      allPartOrders[index] = fulfilledOrder;
+      var partIndex = allParts
+          .indexWhere((part) => part.index == fulfilledOrder.partEntityIndex);
+      if (partIndex == -1) {
+        var results = await fulfillPartOrdersUsecase.call(
+            FulfillPartOrdersParams(fulfillmentEntities: [fulfilledOrder]));
 
-    var partEntity = allParts[partIndex];
+        results.fold(
+            (l) => emit(state.copyWith(
+                status: ManageInventoryStateStatus.errorOccurred,
+                error:
+                    'Could not complete order fulfillment, please see log for details')),
+            (r) => emit(state.copyWith(
+                status: ManageInventoryStateStatus.operationSuccess,
+                error: 'Successfully fulfilled part order')));
+      } else if (partIndex >= 0 && partIndex < allParts.length) {
+        var partEntity = allParts[partIndex];
 
-    partEntity = partEntity.copyWith(
-        quantity: partEntity.quantity + fulfilledOrder.orderAmount);
+        partEntity = partEntity.copyWith(
+            quantity: partEntity.quantity + fulfilledOrder.orderAmount);
 
-    allParts[partIndex] = partEntity;
+        allParts[partIndex] = partEntity;
 
-    newlyFulfilledPartOrders.add(fulfilledOrder);
+        newlyFulfilledPartOrders.add(fulfilledOrder);
 
-    emit(state.copyWith(
-        allPartOrders: allPartOrders,
-        newlyFulfilledPartOrders: newlyFulfilledPartOrders,
-        allParts: allParts));
+        emit(state.copyWith(
+            error:
+                'Successfully fulfilled part order for ${partEntity.nsn} - ${partEntity.name} added ${fulfilledOrder.orderAmount}${partEntity.unitOfIssue.displayValue}',
+            status: ManageInventoryStateStatus.operationSuccess,
+            allPartOrders: allPartOrders,
+            newlyFulfilledPartOrders: newlyFulfilledPartOrders,
+            allParts: allParts));
+      } else {
+        emit(state.copyWith(
+            status: ManageInventoryStateStatus.errorOccurred,
+            error:
+                'Unexpected error occurred while fulfilling order, please see log for details'));
+        _logger.warning(
+            'index out of bounds for part when completing order fulfillment index is $partIndex');
+      }
+    } else {
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.errorOccurred,
+          error:
+              'Unexpected error occurred while fulfilling order, please see log for details'));
+      _logger.warning(
+          'index out of bounds for part order fulfillment index is $index');
+    }
   }
 
   ///order parts methods
   void orderPart(
       {required int orderAmount, required int partEntityIndex}) async {
-    emit(state.copyWith(status: ManageInventoryStateStatus.creatingPartOrder));
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
     var partOrders = state.allPartOrders.toList();
     var index = state.allPartOrders.isEmpty ? 0 : partOrders.first.index + 1;
     var orderEntity = OrderEntity(
@@ -286,11 +366,16 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         .call(CreatePartOrderParams(orderEntity: orderEntity));
 
     results.fold((failure) {
+      _logger.warning(
+          'error encountered while creating part order failure: $failure');
       emit(state.copyWith(
-          status: ManageInventoryStateStatus.createdPartOrderUnsuccessfully));
+          error:
+              'Could not create part order at this time, please see log for details',
+          status: ManageInventoryStateStatus.errorOccurred));
     }, (_) {
       emit(state.copyWith(
-        status: ManageInventoryStateStatus.createdPartOrderSuccessfully,
+        error: 'Created part order successfully',
+        status: ManageInventoryStateStatus.operationSuccess,
         allPartOrders: partOrders,
       ));
     });
@@ -304,35 +389,39 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
           .call(DiscontinuePartParams(discontinuedPartEntity: allParts[index]));
       results.fold(
           (failure) => emit(state.copyWith(
-              error: failure.errorMessage,
-              status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
-          (_) {
+              error: 'Could not discontinue part',
+              status: ManageInventoryStateStatus.errorOccurred)), (_) {
         //remove all current orders for this discontinued part and add it to the list to be deleted
         allParts[index] = partEntity.copyWith(isDiscontinued: true);
         emit(state.copyWith(
             allPartOrders: [],
             allParts: allParts,
-            status: ManageInventoryStateStatus.updatedDataSuccessfully));
+            error: 'Discontinued part successfully',
+            status: ManageInventoryStateStatus.operationSuccess));
         loadPartOrders();
       });
     }
   }
 
   void deletePartOrder({required OrderEntity orderEntity}) async {
-    emit(state.copyWith(status: ManageInventoryStateStatus.deletingPartOrder));
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
     var partOrders = state.allPartOrders.toList();
 
     var results = await _deletePartOrderUsecase
         .call(DeletePartOrderParams(orderEntity: orderEntity));
 
-    results.fold(
-        (failure) => emit(state.copyWith(
-            status: ManageInventoryStateStatus.deletedPartOrderUnsuccessfully)),
-        (_) {
+    results.fold((failure) {
+      _logger.warning(
+          'error occurred while deleting part order failure: $failure');
+      emit(state.copyWith(
+          error: 'Could not delete part order',
+          status: ManageInventoryStateStatus.errorOccurred));
+    }, (_) {
       partOrders.remove(orderEntity);
 
       emit(state.copyWith(
-        status: ManageInventoryStateStatus.deletedPartOrderSuccessfully,
+        error: 'Deleted part order',
+        status: ManageInventoryStateStatus.operationSuccess,
         allPartOrders: partOrders,
       ));
     });
@@ -340,19 +429,28 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
   void clearDatabase() async {
     emit(state.copyWith(status: ManageInventoryStateStatus.loading));
-    Future.delayed(Durations.short4);
+    await _updateDatabase();
     var results = await _clearDatabaseUsecase.call(NoParams());
-    results.fold(
-        (l) => emit(state.copyWith(
-            error: l.errorMessage,
-            status: ManageInventoryStateStatus.loadedUnsuccessfully)),
+    results.fold((l) {
+      _logger.warning('error occurred while clearing database $l');
+      emit(state.copyWith(
+          error: 'Error occurred while clearing database',
+          status: ManageInventoryStateStatus.errorOccurred));
+    },
         (r) => emit(state.copyWith(
-            status: ManageInventoryStateStatus.loadedSuccessfully)));
+            error: 'Cleared database successfully',
+            allParts: [],
+            checkedOutParts: [],
+            newlyVerifiedParts: [],
+            newlyFulfilledPartOrders: [],
+            allPartOrders: [],
+            editedParts: [],
+            status: ManageInventoryStateStatus.operationSuccess)));
   }
 
   void restockPart(
       {required PartEntity partEntity, required int newQuantity}) async {
-    emit(state.copyWith(status: ManageInventoryStateStatus.updatingData));
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
     var restockedPart =
         partEntity.copyWith(isDiscontinued: false, quantity: newQuantity);
     var results =
@@ -361,24 +459,23 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     results.fold(
         (failure) => emit(state.copyWith(
             error: failure.errorMessage,
-            status: ManageInventoryStateStatus.updatedDataUnsuccessfully)),
-        (_) {
+            status: ManageInventoryStateStatus.errorOccurred)), (_) {
       var allParts = state.allParts.toList();
       var partIndex =
           allParts.indexWhere((part) => part.index == partEntity.index);
       allParts[partIndex] = restockedPart;
       emit(state.copyWith(
-          status: ManageInventoryStateStatus.updatedDataSuccessfully,
+          status: ManageInventoryStateStatus.operationSuccess,
           allParts: allParts));
     });
   }
 
   Future<void> _updateDatabase() async {
     _logger.finest('placing verified parts in the database');
-    emit(state.copyWith(status: ManageInventoryStateStatus.verifyingPart));
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
 
     for (var part in state.editedParts) {
-      _editPartUsecase.call(EditPartParams(partEntity: part));
+      await _editPartUsecase.call(EditPartParams(partEntity: part));
     }
     await verifyCheckoutPartUsecase.call(VerifyCheckoutPartParams(
         checkedOutEntityList: state.newlyVerifiedParts));
@@ -388,23 +485,37 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
 
   void exportToExcel(String path) async {
     _logger.finest('path is $path');
-    emit(state.copyWith(status: ManageInventoryStateStatus.exportingData));
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
     await _updateDatabase();
     var results =
         await _exportToExcelUsecase.call(ExportToExcelParams(path: path));
-    results.fold(
-        (l) => emit(state.copyWith(
-            status: ManageInventoryStateStatus.exportedDataUnsuccessfully,
-            error: l.errorMessage)),
-        (r) => emit(state.copyWith(
-            status: ManageInventoryStateStatus.exportedDataSuccessfully)));
+    results.fold((l) {
+      _logger.warning('error occurred when exporting to excel $l');
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.errorOccurred,
+          error: 'Could not export to excel'));
+    }, (r) {
+      emit(state.copyWith(
+          error: 'Exported file to excel located at $path',
+          status: ManageInventoryStateStatus.operationSuccess));
+    });
   }
 
   void importFromExcel(String path) async {
-    emit(state.copyWith(status: ManageInventoryStateStatus.loading));
-
-    await _importFromExcelUsecase.call(ImportFromExcelParams(path: path));
-    init();
+    var results =
+        await _importFromExcelUsecase.call(ImportFromExcelParams(path: path));
+    await results.fold((l) {
+      _logger.warning('error occurred when importing from excel at $path');
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.errorOccurred,
+          error: 'Error occurred when importing from excel sheet at $path'));
+    }, (count) async {
+      init();
+      await Future.delayed(Durations.short1);
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.operationSuccess,
+          error: ' Successfully imported $count parts from excel'));
+    });
   }
 
   @override

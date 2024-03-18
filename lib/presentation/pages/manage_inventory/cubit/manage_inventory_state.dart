@@ -7,27 +7,16 @@ part 'manage_inventory_state.freezed.dart';
 
 //the different states the add_part page can be in
 enum ManageInventoryStateStatus {
+  noStatusChange,
+  errorOccurred,
+  operationSuccess,
+  evokingFunction,
   loading,
   loadedSuccessfully,
   loadedUnsuccessfully,
   fetchingData,
   fetchedDataSuccessfully,
   fetchedDataUnsuccessfully,
-  verifyingPart,
-  verifiedPartSuccessfully,
-  verifiedPartUnsuccessfully,
-  creatingPartOrder,
-  createdPartOrderSuccessfully,
-  createdPartOrderUnsuccessfully,
-  deletingPartOrder,
-  deletedPartOrderSuccessfully,
-  deletedPartOrderUnsuccessfully,
-  updatingData,
-  updatedDataSuccessfully,
-  updatedDataUnsuccessfully,
-  exportingData,
-  exportedDataSuccessfully,
-  exportedDataUnsuccessfully,
 }
 
 @freezed
