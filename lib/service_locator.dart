@@ -71,8 +71,10 @@ Future<void> setupLocator() async {
           Hive.box<CheckedOutModel>(checkoutPartBox)));
   locator.registerLazySingleton<PartOrderRepository>(() =>
       PartOrderRepositoryImplementation(Hive.box<OrderModel>(partOrdersBox)));
-  locator.registerLazySingleton<LocalStorage>(
-      () => LocalStorageImplementation(box: Hive.box<PartModel>(boxName)));
+  locator.registerLazySingleton<LocalStorage>(() => LocalStorageImplementation(
+      box: Hive.box<PartModel>(boxName),
+      checkoutBox: Hive.box<CheckedOutModel>(checkoutPartBox),
+      orderBox: Hive.box<OrderModel>(partOrdersBox)));
   //!Usecases
   locator.registerFactory<AddPartUsecase>(
       () => AddPartUsecase(locator<PartRepository>()));
