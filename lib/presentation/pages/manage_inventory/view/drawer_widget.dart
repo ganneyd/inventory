@@ -41,17 +41,26 @@ class CustomDrawerWidget extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.file_open_rounded),
           title: const Text('Import from Excel'),
-          onTap: importFromExcel,
+          onTap: () {
+            importFromExcel.call();
+            Navigator.of(context).pop();
+          },
         ),
         ListTile(
           leading: const Icon(Icons.save_alt_rounded),
           title: const Text('Export to Excel'),
-          onTap: exportToExcel,
+          onTap: () {
+            exportToExcel.call();
+            Navigator.of(context).pop();
+          },
         ),
         ListTile(
           leading: const Icon(Icons.delete),
           title: const Text('ClearDatabase'),
-          onTap: clearDatabase,
+          onTap: () {
+            clearDatabase.call();
+            Navigator.of(context).pop();
+          },
         ),
       ],
     ));
