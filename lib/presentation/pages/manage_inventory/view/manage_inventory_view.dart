@@ -20,6 +20,7 @@ class ManageInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+              fetchPartAmount: 100,
               clearDatabaseUsecase: locator<ClearDatabaseUsecase>(),
               getPartByIndexUsecase: locator<GetPartByIndexUsecase>(),
               importFromExcelUsecase: locator<ImportFromExcelUsecase>(),
@@ -56,84 +57,26 @@ class ManageInventory extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     )));
               }
-
-              if (state.status ==
-                  ManageInventoryStateStatus.fetchedDataSuccessfully) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              if (state.status == ManageInventoryStateStatus.operationSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.green,
-                  duration: Duration(milliseconds: 10),
-                  content: SizedBox(
-                    height: 5,
-                  ),
+                  duration: const Duration(seconds: 2),
+                  content: Center(child: Text(state.error)),
                 ));
               }
-              if (state.status ==
-                  ManageInventoryStateStatus.createdPartOrderSuccessfully) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.green,
-                  duration: Duration(milliseconds: 100),
-                  content: SizedBox(
-                    height: 5,
-                    child: Text('ordered part'),
-                  ),
-                ));
-              }
-              if (state.status ==
-                  ManageInventoryStateStatus.verifiedPartSuccessfully) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.purple,
-                  duration: Duration(milliseconds: 10),
-                  content: SizedBox(
-                    height: 5,
-                    child: Text('Verified part'),
-                  ),
-                ));
-              }
-              if (state.status ==
-                  ManageInventoryStateStatus.verifiedPartUnsuccessfully) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.pink,
-                  duration: Duration(milliseconds: 10),
-                  content: SizedBox(
-                    height: 5,
-                    child: Center(
-                      child: Text('Could not verify part'),
-                    ),
-                  ),
-                ));
-              }
-              if (state.status ==
-                  ManageInventoryStateStatus.deletedPartOrderUnsuccessfully) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.pink,
-                  duration: Duration(milliseconds: 10),
-                  content: SizedBox(
-                    height: 5,
-                    child: Center(
-                      child: Text('Could not delete part'),
-                    ),
-                  ),
-                ));
-              }
-              if (state.status ==
-                  ManageInventoryStateStatus.createdPartOrderUnsuccessfully) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.pink,
-                  duration: Duration(milliseconds: 10),
-                  content: SizedBox(
-                    height: 5,
-                    child: Center(
-                      child: Text('Could not order part'),
-                    ),
-                  ),
+              if (state.status == ManageInventoryStateStatus.errorOccurred) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 2),
+                  content: Text(state.error),
                 ));
               }
               if (state.status ==
                   ManageInventoryStateStatus.fetchedDataUnsuccessfully) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red,
-                    duration: const Duration(microseconds: 250),
-                    content: Text("${state.error}")));
+                    duration: const Duration(seconds: 2),
+                    content: Text('Could not fetch data ${state.error}')));
               }
             });
 
@@ -168,7 +111,8 @@ class ManageInventory extends StatelessWidget {
                             var path = results;
 
                             BlocProvider.of<ManageInventoryCubit>(context)
-                                .exportToExcel("$path/export.xlsx");
+                                .exportToExcel(
+                                    "$path/export${DateTime.now()}.xlsx");
                           }
                         },
                         onPressed: () {
