@@ -12,21 +12,26 @@ import 'package:inventory_v1/domain/repositories/local_storage_repository.dart';
 import 'package:logging/logging.dart';
 
 class LocalStorageImplementation extends LocalStorage {
-  LocalStorageImplementation({required Box<PartModel> box})
-      : _hiveBox = box,
+  LocalStorageImplementation(
+      {required Box<PartModel> box,
+      required Box<CheckedOutModel> checkoutBox,
+      required Box<OrderModel> orderBox})
+      : _partsBox = box,
+        _checkoutPartsBox = checkoutBox,
+        _orderBox = orderBox,
         _logger = Logger('local-storage');
 
   final Logger _logger;
-  final Box<PartModel> _hiveBox;
-  final String boxName = 'parts_json';
-  final String checkoutPartBox = 'checkout_parts';
-  final String partOrdersBox = 'part_orders';
+  final Box<PartModel> _partsBox;
+  final Box<CheckedOutModel> _checkoutPartsBox;
+  final Box<OrderModel> _orderBox;
   @override
   Future<Either<Failure, void>> saveToExcel(String path) async {
     try {
       _logger.finest('exporting database to excel file at $path');
       var excel = Excel.createExcel();
-      Sheet sheet = excel['Sheet1'];
+      excel.sheets.clear();
+      Sheet partSheet = excel['PARTS'];
       List<CellValue> rowHeader = const [
         TextCellValue('NSN'),
         TextCellValue('NAME'),
@@ -39,8 +44,54 @@ class LocalStorageImplementation extends LocalStorage {
         TextCellValue('REQUISITION POINT'),
         TextCellValue('DISCONTINUED'),
       ];
-      sheet.appendRow(rowHeader);
-      for (var part in _hiveBox.values) {
+      partSheet.appendRow(rowHeader);
+
+      Sheet orderPartsSheet = excel['PART ORDERS'];
+      List<CellValue> checkedOutPartsHeader = const [
+        TextCellValue('PART INDEX'),
+        TextCellValue('PART NSN'),
+        TextCellValue('ORDER AMOUNT'),
+        TextCellValue('ORDER DATE'),
+        TextCellValue('FULFILLED'),
+        TextCellValue('FULFILLMENT DATE'),
+      ];
+      orderPartsSheet.appendRow(checkedOutPartsHeader);
+
+      Sheet checkedOutPartsSheet = excel['CHECKED OUT PARTS'];
+      List<CellValue> orderPartsHeader = const [
+        TextCellValue('CHECKED OUT AMOUNT'),
+        TextCellValue('DATE CHECKED OUT'),
+        TextCellValue('PART INDEX'),
+        TextCellValue('PART NSN'),
+        TextCellValue('VERIFIED'),
+        TextCellValue('VERIFICATION DATE'),
+        TextCellValue('QUANTITY DISCREPANCY'),
+        TextCellValue('ACFT'),
+        TextCellValue('PERSONNEL'),
+        TextCellValue('SECTION'),
+        TextCellValue('TASK'),
+      ];
+      checkedOutPartsSheet.appendRow(orderPartsHeader);
+
+      for (var part in _checkoutPartsBox.values) {
+        var row = [
+          TextCellValue(part.checkedOutAmount.toString()),
+          TextCellValue(part.dateTimeModel.toString()),
+          TextCellValue(part.partModelIndex.toString()),
+          TextCellValue(
+              _partsBox.getAt(part.partModelIndex)?.nsn ?? 'not_found'),
+          TextCellValue(part.isVerifiedModel ? 'YES' : 'NO'),
+          TextCellValue(part.verifiedDateModel.toString()),
+          TextCellValue(part.quantityDiscrepancyModel.toString()),
+          TextCellValue(part.aircraftTailNumberModel.toString()),
+          TextCellValue(part.checkoutUserModel),
+          TextCellValue(part.sectionModel.toString()),
+          TextCellValue(part.taskNameModel)
+        ];
+        checkedOutPartsSheet.appendRow(row);
+      }
+
+      for (var part in _partsBox.values) {
         _logger.finest(
             'part quantity is ${part.quantity} as int cell value is ${IntCellValue(part.quantity).value}rq is ${part.requisitionQuantity} part rp is ${part.requisitionPoint}');
         var row = [
@@ -55,7 +106,19 @@ class LocalStorageImplementation extends LocalStorage {
           TextCellValue(part.requisitionPoint.toString()),
           TextCellValue(part.isDiscontinued ? 'YES' : 'NO')
         ];
-        sheet.appendRow(row);
+        partSheet.appendRow(row);
+      }
+
+      for (var part in _orderBox.values) {
+        var row = [
+          TextCellValue(part.partModelIndex.toString()),
+          TextCellValue(_partsBox.getAt(part.partModelIndex)?.nsn ?? ''),
+          TextCellValue(part.orderAmountModel.toString()),
+          TextCellValue(part.orderDateModel.toString()),
+          TextCellValue(part.isFulfilledModel ? 'YES' : 'NO'),
+          TextCellValue(part.fulfillmentDateModel.toString()),
+        ];
+        orderPartsSheet.appendRow(row);
       }
 
       File(path)
@@ -70,7 +133,7 @@ class LocalStorageImplementation extends LocalStorage {
   }
 
   @override
-  Future<Either<Failure, void>> readFromExcel(
+  Future<Either<Failure, String>> readFromExcel(
       String path, Box<PartEntity> box) async {
     try {
       _logger.finest('reading from excel from $path');
@@ -118,23 +181,43 @@ class LocalStorageImplementation extends LocalStorage {
       }
       _logger.finest(
           'read from file read ${box.values.length - initialCount} new entries');
-      return const Right<Failure, void>(null);
+      return Right<Failure, String>(
+          (box.values.length - initialCount).toString());
     } catch (e) {
       _logger.warning("exception occurred when reading from excel $e");
-      return const Left<Failure, void>(CreateDataFailure());
+      return const Left<Failure, String>(CreateDataFailure());
     }
   }
 
   @override
   Future<Either<Failure, void>> clearDatabase() async {
     try {
-      await saveToExcel('/desktop/lastResort${DateTime.now().minute}.xlsx');
-      Hive.box<PartModel>(boxName).clear();
-      Hive.box<CheckedOutModel>(checkoutPartBox).clear();
-      Hive.box<OrderModel>(partOrdersBox).clear();
+      var directory = await _getDesktopPath();
+      await saveToExcel(
+          '$directory/inventory_files/lastResort${DateTime.now()}.xlsx');
+      _partsBox.clear();
+      _checkoutPartsBox.clear();
+      _orderBox.clear();
+      _logger.finest('wrote last resort file to $directory');
       return const Right<Failure, void>(null);
     } on Exception catch (_) {
       return const Left<Failure, void>(DeleteDataFailure());
     }
+  }
+
+  Future<String> _getDesktopPath() async {
+    String desktopPath;
+
+    if (Platform.isWindows) {
+      // On Windows, the desktop is typically under USERPROFILE
+      desktopPath = '${Platform.environment['USERPROFILE']!}\\Desktop';
+    } else if (Platform.isMacOS) {
+      // On macOS, the desktop is under the user's home directory
+      desktopPath = '${Platform.environment['HOME']!}/Desktop';
+    } else {
+      throw Exception('Unsupported platform');
+    }
+
+    return desktopPath;
   }
 }
