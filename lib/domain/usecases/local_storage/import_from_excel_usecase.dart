@@ -6,14 +6,14 @@ import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/domain/repositories/local_storage_repository.dart';
 
-class ImportFromExcelUsecase implements UseCase<void, ImportFromExcelParams> {
+class ImportFromExcelUsecase implements UseCase<String, ImportFromExcelParams> {
   const ImportFromExcelUsecase(LocalStorage localStorage, Box<PartModel> box)
       : _localStorage = localStorage,
         _box = box;
   final LocalStorage _localStorage;
   final Box<PartModel> _box;
   @override
-  Future<Either<Failure, void>> call(ImportFromExcelParams params) {
+  Future<Either<Failure, String>> call(ImportFromExcelParams params) async {
     return _localStorage.readFromExcel(params.path, _box);
   }
 }
