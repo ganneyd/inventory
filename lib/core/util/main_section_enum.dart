@@ -30,4 +30,19 @@ extension MaintenanceSectionExtension on MaintenanceSection {
         return 'Not Sure';
     }
   }
+
+  static MaintenanceSection fromDisplayValue(String displayValue) {
+    switch (displayValue) {
+      case '64 Maint':
+        return MaintenanceSection.aH;
+      case '60 Maint':
+        return MaintenanceSection.uh;
+      case '47 Maint':
+        return MaintenanceSection.chM;
+      case 'Civilian':
+        return MaintenanceSection.civ;
+      default:
+        return MaintenanceSection.unknown;
+    }
+  }
 }
