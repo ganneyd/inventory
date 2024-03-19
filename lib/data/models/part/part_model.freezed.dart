@@ -329,7 +329,6 @@ class _$PartModelImpl implements _PartModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PartModelImpl &&
-            (identical(other.index, index) || other.index == index) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.nsn, nsn) || other.nsn == nsn) &&
             (identical(other.partNumber, partNumber) ||
@@ -356,7 +355,6 @@ class _$PartModelImpl implements _PartModel {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      index,
       name,
       nsn,
       partNumber,

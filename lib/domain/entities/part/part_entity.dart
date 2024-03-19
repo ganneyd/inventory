@@ -52,6 +52,38 @@ class PartEntity {
 
   //tracks if the part is discontinued or not
   final bool isDiscontinued;
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is PartEntity &&
+        other.name == name &&
+        other.nsn == nsn &&
+        other.partNumber == partNumber &&
+        other.location == location &&
+        other.serialNumber == serialNumber &&
+        other.unitOfIssue == unitOfIssue &&
+        other.quantity == quantity &&
+        other.requisitionQuantity == requisitionQuantity &&
+        other.requisitionPoint == requisitionPoint &&
+        other.checksum == checksum &&
+        other.isDiscontinued == isDiscontinued;
+  }
+
+  @override
+  int get hashCode {
+    return name.hashCode ^
+        nsn.hashCode ^
+        partNumber.hashCode ^
+        location.hashCode ^
+        serialNumber.hashCode ^
+        unitOfIssue.hashCode ^
+        quantity.hashCode ^
+        requisitionQuantity.hashCode ^
+        requisitionPoint.hashCode ^
+        checksum.hashCode ^
+        isDiscontinued.hashCode;
+  }
 }
 
 extension PartEntityExtension on PartEntity {
