@@ -11,8 +11,10 @@ class CustomTextField extends StatefulWidget {
   final int? maxLength;
   final FocusNode? focusNode;
   final int numberGreaterThan;
+  final bool obscureText;
   const CustomTextField(
       {super.key,
+      this.obscureText = false,
       this.numberGreaterThan = 1,
       this.focusNode,
       required this.controller,
@@ -50,6 +52,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      obscureText: widget.obscureText,
       textCapitalization: TextCapitalization.characters,
       focusNode: widget.focusNode,
       maxLength: widget.maxLength,
