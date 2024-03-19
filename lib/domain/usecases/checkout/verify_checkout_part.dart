@@ -29,7 +29,7 @@ class VerifyCheckoutPart implements UseCase<void, VerifyCheckoutPartParams> {
     for (var checkoutPart in params.checkedOutEntityList) {
       isEditPartLeft = false;
       var getPartResults =
-          await _partRepository.getSpecificPart(checkoutPart.partEntityIndex);
+          _partRepository.getSpecificPart(checkoutPart.partEntityIndex);
       if (getPartResults.isLeft()) {
         continue;
       }

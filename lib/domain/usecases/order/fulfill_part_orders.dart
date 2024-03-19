@@ -25,7 +25,7 @@ class FulfillPartOrdersUsecase
     for (var orderEntity in params.fulfillmentEntities) {
       isEditPartLeft = false;
       var getPartResults =
-          await _partRepository.getSpecificPart(orderEntity.partEntityIndex);
+          _partRepository.getSpecificPart(orderEntity.partEntityIndex);
       if (getPartResults.isLeft()) {
         continue;
       }
