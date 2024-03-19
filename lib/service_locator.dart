@@ -68,9 +68,9 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<PartOrderRepository>(() =>
       PartOrderRepositoryImplementation(Hive.box<OrderModel>(partOrdersBox)));
   locator.registerLazySingleton<LocalStorage>(() => LocalStorageImplementation(
-      box: Hive.box<PartModel>(boxName),
-      checkoutBox: Hive.box<CheckedOutModel>(checkoutPartBox),
-      orderBox: Hive.box<OrderModel>(partOrdersBox)));
+      partOrderRepository: locator<PartOrderRepository>(),
+      partRepository: locator<PartRepository>(),
+      checkedOutPartRepository: locator<CheckedOutPartRepository>()));
   //!Usecases
   locator.registerFactory<AddPartUsecase>(
       () => AddPartUsecase(locator<PartRepository>()));
@@ -121,7 +121,10 @@ Future<void> setupLocator() async {
   locator.registerFactory<ExportToExcelUsecase>(
       () => ExportToExcelUsecase(localStorage: locator<LocalStorage>()));
   locator.registerFactory<ImportFromExcelUsecase>(() => ImportFromExcelUsecase(
-      locator<LocalStorage>(), Hive.box<PartModel>(boxName)));
+      locator<LocalStorage>(),
+      Hive.box<PartModel>(boxName),
+      Hive.box<CheckedOutModel>(checkoutPartBox),
+      Hive.box<OrderModel>(partOrdersBox)));
   locator.registerFactory<GetPartByIndexUsecase>(
       () => GetPartByIndexUsecase(locator<PartRepository>()));
 
