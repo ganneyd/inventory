@@ -55,3 +55,6 @@ lib/presentation/pages/edit_part/cubit/edit_part_state.freezed.dart
 lib/core/util/main_section_enum.g.dart
 lib/data/models/checked-out/checked_out_model.g.dart
 lib/presentation/pages/manage_inventory/cubit/manage_inventory_state.freezed.dart
+lib/data/models/user/user_model.g.dart
+lib/core/util/view_right_enum.g.dart
+lib/core/util/rank_enum.g.dart
