@@ -156,40 +156,54 @@ class CheckOutView extends StatelessWidget {
                 children: [
                   state.isCheckoutCompleted
                       ? Expanded(
-                          child: SmallButton(
-                              buttonName: 'Retrieved All My Parts',
-                              onPressed: () =>
-                                  BlocProvider.of<CheckoutCubit>(context)
-                                      .partRetrievalCompleted()),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 50),
+                            child: SmallButton(
+                                buttonName: 'Retrieved All My Parts',
+                                onPressed: () =>
+                                    BlocProvider.of<CheckoutCubit>(context)
+                                        .partRetrievalCompleted()),
+                          ),
                         )
                       : Expanded(
-                          child: SmallButton(
-                              buttonName: 'Checkout',
-                              onPressed: state.status ==
-                                      CheckoutStateStatus.addedUserSuccessfully
-                                  ? () =>
-                                      BlocProvider.of<CheckoutCubit>(context)
-                                          .checkoutCart()
-                                  : () => showDialog(
-                                      context: context,
-                                      builder: ((dialogContext) {
-                                        return CheckoutPartDialog(
-                                            updateCheckout: (
-                                                    {required MaintenanceSection
-                                                        section,
-                                                    required String tailNumber,
-                                                    required String taskName,
-                                                    required String
-                                                        checkoutUser}) =>
-                                                BlocProvider.of<CheckoutCubit>(
-                                                        context)
-                                                    .addCheckoutUser(
-                                                        section: section,
-                                                        tailNumber: tailNumber,
-                                                        taskName: taskName,
-                                                        checkoutUser:
-                                                            checkoutUser));
-                                      }))),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 50),
+                            child: SmallButton(
+                                buttonName: state.status ==
+                                        CheckoutStateStatus
+                                            .addedUserSuccessfully
+                                    ? 'Checkout'
+                                    : 'Add Task',
+                                onPressed: state.status ==
+                                        CheckoutStateStatus
+                                            .addedUserSuccessfully
+                                    ? () =>
+                                        BlocProvider.of<CheckoutCubit>(context)
+                                            .checkoutCart()
+                                    : () => showDialog(
+                                        context: context,
+                                        builder: ((dialogContext) {
+                                          return CheckoutPartDialog(
+                                              updateCheckout: (
+                                                      {required MaintenanceSection
+                                                          section,
+                                                      required String
+                                                          tailNumber,
+                                                      required String taskName,
+                                                      required String
+                                                          checkoutUser}) =>
+                                                  BlocProvider.of<
+                                                              CheckoutCubit>(
+                                                          context)
+                                                      .addCheckoutUser(
+                                                          section: section,
+                                                          tailNumber:
+                                                              tailNumber,
+                                                          taskName: taskName,
+                                                          checkoutUser:
+                                                              checkoutUser));
+                                        }))),
+                          ),
                         )
                 ],
               ),
