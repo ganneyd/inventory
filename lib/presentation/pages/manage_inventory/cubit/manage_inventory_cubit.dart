@@ -197,6 +197,8 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       emit(state.copyWith(
           editedParts: editedList,
           allParts: partsList,
+          error:
+              'Updated part successfully  ${partEntity.nsn} - ${partEntity.name}',
           status: ManageInventoryStateStatus.operationSuccess));
       _logger.fine(
           'updated part entity ${partEntity.nsn} - ${partEntity.name} index is : $index');
