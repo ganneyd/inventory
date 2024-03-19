@@ -2,6 +2,9 @@
     "cmake.configureOnOpen": false,
     "java.compile.nullAnalysis.mode": "automatic",
     "cSpell.words": [
-        "dartz"
+        "checkpw",
+        "dartz",
+        "gensalt",
+        "hashpw"
     ]
 }
