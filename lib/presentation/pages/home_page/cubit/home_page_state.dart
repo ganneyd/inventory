@@ -8,9 +8,9 @@ enum HomePageStateStatus {
   loading,
   loadedSuccessfully,
   loadedUnsuccessfully,
-  searchingParts,
-  searchSuccessful,
-  searchUnsuccessful
+  loggingIn,
+  loggingInSuccess,
+  loggingInFailure,
 }
 
 @freezed
