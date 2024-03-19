@@ -48,4 +48,8 @@ abstract class PartRepository {
 
   ///Deletes a particular [partEntity] from the database
   Future<Either<Failure, void>> deletePart(PartEntity partEntity);
+
+  Iterable<PartEntity> getValues();
+
+  Future<Either<Failure, void>> clearParts();
 }

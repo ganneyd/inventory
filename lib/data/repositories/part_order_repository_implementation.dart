@@ -17,14 +17,44 @@ class PartOrderRepositoryImplementation extends PartOrderRepository {
   @override
   Future<Either<Failure, void>> createPartOrder(OrderEntity orderEntity) async {
     try {
-      await _localDatasource.put(orderEntity.index, orderEntity.toModel());
-      _logger.finest(
-          'added $orderEntity index: ${orderEntity.index} to database database length is ${_localDatasource.length}');
+      var index = _localDatasource.isEmpty ? 0 : _localDatasource.length;
+
+      OrderModel orderModel = orderEntity.copyWith(index: index).toModel();
+
+      if (_orderDoesNotExist(orderModel)) {
+        await _localDatasource.add(orderModel);
+        _logger.finest(
+            'added $orderEntity index: ${orderEntity.index} to database database length is ${_localDatasource.length}');
+      } else {
+        _logger.severe('order already exists');
+      }
+
       return const Right<Failure, void>(null);
     } catch (e) {
       _logger.warning('exception occurred ${e.toString()}');
       return const Left<Failure, void>(CreateDataFailure());
     }
+  }
+
+  bool _orderDoesNotExist(OrderModel orderModel) {
+    if (_localDatasource.isEmpty) {
+      _logger.info('_localdataource is empty');
+      return true;
+    } else {
+      _logger.info(
+          'local datasource length is ${_localDatasource.length} first element is ${_localDatasource.getAt(0)?.indexModel}, ${_localDatasource.getAt(0)?.partModelIndex}, ${_localDatasource.getAt(0)?.fulfillmentDateModel},${_localDatasource.getAt(0)?.orderDateModel}');
+    }
+    var list = _localDatasource.values.where((element) {
+      bool match = element.partModelIndex == orderModel.partModelIndex &&
+          element.orderAmountModel == orderModel.orderAmountModel;
+      _logger.info(
+          'Comparing order model : partModelIndex=${orderModel.partModelIndex}, '
+          'orderAmountModel=${orderModel.orderAmountModel} with element: partModelIndex=${element.partModelIndex}, '
+          'orderAmountModel=${element.orderAmountModel}, Match: $match');
+      return match;
+    });
+
+    return list.isEmpty;
   }
 
   @override
@@ -125,6 +155,22 @@ class PartOrderRepositoryImplementation extends PartOrderRepository {
       return Right<Failure, List<OrderEntity>>(orderList);
     } catch (e) {
       return const Left<Failure, List<OrderEntity>>(ReadDataFailure());
+    }
+  }
+
+  @override
+  Iterable<OrderEntity> getValues() {
+    return _localDatasource.values;
+  }
+
+  @override
+  Future<Either<Failure, void>> clearParts() async {
+    try {
+      _localDatasource.clear();
+      _logger.info('cleared database length is ${_localDatasource.length}');
+      return const Right<Failure, void>(null);
+    } catch (e) {
+      return const Left<Failure, void>(DeleteDataFailure());
     }
   }
 }

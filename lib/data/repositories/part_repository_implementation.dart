@@ -19,13 +19,19 @@ class PartRepositoryImplementation extends PartRepository {
   @override
   Future<Either<Failure, void>> createPart(PartEntity partEntity) async {
     try {
-      _logger.finest('setting partEntity index');
       var index = _localDataSource.isEmpty ? 0 : _localDataSource.length;
-      _logger.finest('index is $index');
 
       var addPart = PartEntityToModelAdapter.fromEntity(partEntity);
-      await _localDataSource.add(addPart.copyWith(index: index));
-      _logger.finest('index set');
+      addPart = addPart.copyWith(index: index);
+      bool partExist = _localDataSource.values
+          .where((element) => element == addPart)
+          .isNotEmpty;
+      if (!partExist) {
+        await _localDataSource.add(addPart);
+      } else {
+        _logger.finest('part exists');
+      }
+
       return const Right<Failure, void>(null);
     } on CreateDataException {
       return const Left<Failure, void>(CreateDataFailure());
@@ -193,6 +199,22 @@ class PartRepositoryImplementation extends PartRepository {
       return const Left<Failure, PartEntity>(IndexOutOfBoundsFailure());
     } catch (e) {
       return const Left<Failure, PartEntity>(ReadDataFailure());
+    }
+  }
+
+  @override
+  Iterable<PartEntity> getValues() {
+    return _localDataSource.values;
+  }
+
+  @override
+  Future<Either<Failure, void>> clearParts() async {
+    try {
+      _localDataSource.clear();
+      _logger.info('cleared database length is ${_localDataSource.length}');
+      return const Right<Failure, void>(null);
+    } catch (e) {
+      return const Left<Failure, void>(DeleteDataFailure());
     }
   }
 }

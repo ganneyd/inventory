@@ -34,15 +34,41 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
   Future<Either<Failure, void>> createCheckOut(
       CheckedOutEntity checkedOutEntity) async {
     try {
-      _logger.finest('creating new checked out entry $checkedOutEntity');
       var index = _localDatasource.isEmpty ? 0 : _localDatasource.length;
       checkedOutEntity = checkedOutEntity.copyWith(index: index);
-      await _localDatasource.add(toCheckoutPartModel(checkedOutEntity));
+      CheckedOutModel checkedOutModel = toCheckoutPartModel(checkedOutEntity);
+      if (_newCheckedOutPart(checkedOutModel)) {
+        _logger.finest('creating new checked out entry $checkedOutEntity');
+        await _localDatasource.add(toCheckoutPartModel(checkedOutEntity));
+      } else {
+        _logger.finest('checked out part already exists!');
+      }
+
       return const Right<Failure, void>(null);
     } catch (exception) {
       _logger.warning('failed to create checkout part ${exception.toString()}');
       return const Left<Failure, void>(CreateDataFailure());
     }
+  }
+
+  bool _newCheckedOutPart(CheckedOutModel checkedOutModel) {
+    var list = _localDatasource.values.where((element) {
+      return element.checkedOutAmount == checkedOutModel.checkedOutAmount &&
+          element.dateTimeModel.millisecondsSinceEpoch ==
+              checkedOutModel.dateTimeModel.millisecondsSinceEpoch &&
+          element.partModelIndex == checkedOutModel.partModelIndex &&
+          element.quantityDiscrepancyModel ==
+              checkedOutModel.quantityDiscrepancyModel &&
+          element.aircraftTailNumberModel.toLowerCase() ==
+              checkedOutModel.aircraftTailNumberModel.toLowerCase() &&
+          element.checkoutUserModel.toLowerCase() ==
+              checkedOutModel.checkoutUserModel.toLowerCase() &&
+          element.sectionModel == checkedOutModel.sectionModel &&
+          element.taskNameModel.toLowerCase() ==
+              element.taskNameModel.toLowerCase();
+    });
+
+    return list.isEmpty;
   }
 
   @override
@@ -120,6 +146,22 @@ class CheckedOutPartRepositoryImplementation extends CheckedOutPartRepository {
       return Right<Failure, int>(length);
     } catch (e) {
       return const Left<Failure, int>(ReadDataFailure());
+    }
+  }
+
+  @override
+  Iterable<CheckedOutEntity> getValues() {
+    return _localDatasource.values;
+  }
+
+  @override
+  Future<Either<Failure, void>> clearParts() async {
+    try {
+      _localDatasource.clear();
+      _logger.info('cleared database length is ${_localDatasource.length}');
+      return const Right<Failure, void>(null);
+    } catch (e) {
+      return const Left<Failure, void>(DeleteDataFailure());
     }
   }
 }

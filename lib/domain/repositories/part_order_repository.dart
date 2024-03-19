@@ -22,4 +22,7 @@ abstract class PartOrderRepository {
 
   Future<Either<Failure, List<OrderEntity>>> getEveryOrderThatMatchesPart(
       int partEntityIndex);
+
+  Iterable<OrderEntity> getValues();
+  Future<Either<Failure, void>> clearParts();
 }

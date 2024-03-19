@@ -22,4 +22,7 @@ abstract class CheckedOutPartRepository {
   ///Deletes a particular checked out part in the database
   Future<Either<Failure, void>> deleteCheckedOutItem(
       CheckedOutEntity checkedOutEntity);
+
+  Iterable<CheckedOutEntity> getValues();
+  Future<Either<Failure, void>> clearParts();
 }
