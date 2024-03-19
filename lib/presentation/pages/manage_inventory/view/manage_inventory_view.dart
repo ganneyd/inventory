@@ -88,6 +88,9 @@ class ManageInventory extends StatelessWidget {
                             BlocProvider.of<ManageInventoryCubit>(context)
                                 .clearDatabase(),
                         importFromExcel: () async {
+                          final cubit =
+                              BlocProvider.of<ManageInventoryCubit>(context);
+
                           var results = await FilePicker.platform.pickFiles(
                             type: FileType.custom,
                             allowedExtensions: ['xlsx', 'numbers'],
@@ -97,12 +100,14 @@ class ManageInventory extends StatelessWidget {
                             var path = results.files.single.path;
 
                             if (path != null) {
-                              BlocProvider.of<ManageInventoryCubit>(context)
-                                  .importFromExcel(path);
+                              cubit.importFromExcel(path);
                             }
                           }
                         },
                         exportToExcel: () async {
+                          final cubit =
+                              BlocProvider.of<ManageInventoryCubit>(context);
+
                           var results =
                               await FilePicker.platform.getDirectoryPath(
                             dialogTitle: 'Choose a destination for export',
@@ -110,9 +115,7 @@ class ManageInventory extends StatelessWidget {
                           if (results != null) {
                             var path = results;
 
-                            BlocProvider.of<ManageInventoryCubit>(context)
-                                .exportToExcel(
-                                    "$path/export${DateTime.now()}.xlsx");
+                            cubit.exportToExcel(path);
                           }
                         },
                         onPressed: () {
