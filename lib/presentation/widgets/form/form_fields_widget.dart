@@ -12,8 +12,10 @@ class CustomTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final int numberGreaterThan;
   final bool obscureText;
+  final bool autoUpperCase;
   const CustomTextField(
       {super.key,
+      this.autoUpperCase = true,
       this.obscureText = false,
       this.numberGreaterThan = 1,
       this.focusNode,
@@ -32,12 +34,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   void initState() {
     widget.controller.addListener(() {
-      final text = widget.controller.text.toUpperCase();
-      if (text != widget.controller.text) {
-        widget.controller.value = TextEditingValue(
-          text: text,
-          selection: TextSelection.collapsed(offset: text.length),
-        );
+      if (widget.autoUpperCase) {
+        final text = widget.controller.text.toUpperCase();
+        if (text != widget.controller.text) {
+          widget.controller.value = TextEditingValue(
+            text: text,
+            selection: TextSelection.collapsed(offset: text.length),
+          );
+        }
       }
     });
     super.initState();
