@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/view_right_enum.dart';
 import 'package:inventory_v1/domain/entities/user/user_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
@@ -14,15 +15,58 @@ import 'package:inventory_v1/presentation/widgets/generic_app_bar_widget.dart';
 import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/service_locator.dart';
 
-class ManageInventory extends StatelessWidget {
+class ManageInventory extends StatefulWidget {
   const ManageInventory({required this.authenticatedUser})
       : super(key: const Key('manage-inventory-view'));
   final UserEntity authenticatedUser;
+
+  @override
+  State<ManageInventory> createState() => _ManageInventoryState();
+}
+
+class _ManageInventoryState extends State<ManageInventory> {
+  int _selectedIndex = 0;
+
+  List<Widget> _getPages(
+          ManageInventoryState state, ManageInventoryCubit cubit) =>
+      widget.authenticatedUser.viewRights
+          .where((element) => element != ViewRightsEnum.admin)
+          .map((right) {
+        switch (right) {
+          case ViewRightsEnum.parts:
+            return PartsPageView(
+              allParts: state.allParts,
+              cubit: cubit,
+            );
+          case ViewRightsEnum.verify:
+            return CheckoutPartPageView(
+              cubit: cubit,
+              allParts: state.allParts,
+              allCheckedOutParts: state.checkedOutParts,
+            );
+          case ViewRightsEnum.orders:
+            return PartOrdersPageView(
+                allPartOrders: state.allPartOrders,
+                allParts: state.allParts,
+                cubit: cubit);
+          default:
+            return const Center(
+              child: Text("You ain't a big boy yet!"),
+            ); // Fallback for undefined rights
+        }
+      }).toList();
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
-              authenticatedUser: authenticatedUser,
+              authenticatedUser: widget.authenticatedUser,
               fetchPartAmount: 100,
               clearDatabaseUsecase: locator<ClearDatabaseUsecase>(),
               getPartByIndexUsecase: locator<GetPartByIndexUsecase>(),
@@ -83,97 +127,95 @@ class ManageInventory extends StatelessWidget {
               }
             });
 
-            return DefaultTabController(
-                length: 3,
-                child: Scaffold(
-                    drawer: CustomDrawerWidget(
-                        currentUser: state.authenticatedUser,
-                        clearDatabase: () =>
-                            BlocProvider.of<ManageInventoryCubit>(context)
-                                .clearDatabase(),
-                        importFromExcel: () async {
-                          final cubit =
-                              BlocProvider.of<ManageInventoryCubit>(context);
+            return Scaffold(
+              drawer: CustomDrawerWidget(
+                  currentUser: state.authenticatedUser,
+                  clearDatabase: () =>
+                      BlocProvider.of<ManageInventoryCubit>(context)
+                          .clearDatabase(),
+                  importFromExcel: () async {
+                    final cubit =
+                        BlocProvider.of<ManageInventoryCubit>(context);
 
-                          var results = await FilePicker.platform.pickFiles(
-                            type: FileType.custom,
-                            allowedExtensions: ['xlsx', 'numbers'],
-                            dialogTitle: 'Choose the excel file to import from',
-                          );
-                          if (results != null) {
-                            var path = results.files.single.path;
+                    var results = await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['xlsx', 'numbers'],
+                      dialogTitle: 'Choose the excel file to import from',
+                    );
+                    if (results != null) {
+                      var path = results.files.single.path;
 
-                            if (path != null) {
-                              cubit.importFromExcel(path);
-                            }
-                          }
-                        },
-                        exportToExcel: () async {
-                          final cubit =
-                              BlocProvider.of<ManageInventoryCubit>(context);
+                      if (path != null) {
+                        cubit.importFromExcel(path);
+                      }
+                    }
+                  },
+                  exportToExcel: () async {
+                    final cubit =
+                        BlocProvider.of<ManageInventoryCubit>(context);
 
-                          var results =
-                              await FilePicker.platform.getDirectoryPath(
-                            dialogTitle: 'Choose a destination for export',
-                          );
-                          if (results != null) {
-                            var path = results;
+                    var results = await FilePicker.platform.getDirectoryPath(
+                      dialogTitle: 'Choose a destination for export',
+                    );
+                    if (results != null) {
+                      var path = results;
 
-                            cubit.exportToExcel(path);
-                          }
-                        },
+                      cubit.exportToExcel(path);
+                    }
+                  },
+                  onPressed: () {
+                    BlocProvider.of<ManageInventoryCubit>(context)
+                        .filterByLocation();
+                  }),
+              appBar: CustomAppBar(
+                key: const Key('manage-inventory-view-search-bar'),
+                title: 'Manage Inventory',
+                actions: [
+                  Builder(
+                    builder: (BuildContext context) {
+                      return IconButton(
+                        icon: const Icon(Icons.menu),
                         onPressed: () {
-                          BlocProvider.of<ManageInventoryCubit>(context)
-                              .filterByLocation();
-                        }),
-                    appBar: CustomAppBar(
-                        key: const Key('manage-inventory-view-search-bar'),
-                        title: 'Manage Inventory',
-                        actions: [
-                          Builder(
-                            builder: (BuildContext context) {
-                              return IconButton(
-                                icon: const Icon(Icons.menu),
-                                onPressed: () {
-                                  Scaffold.of(context).openDrawer();
-                                },
-                                tooltip: MaterialLocalizations.of(context)
-                                    .openAppDrawerTooltip,
-                              );
-                            },
-                          ),
-                        ],
-                        bottom: const TabBar(
-                          tabs: [
-                            Tab(
-                              text: 'Parts',
-                            ),
-                            Tab(
-                              text: 'Checked out Parts',
-                            ),
-                            Tab(
-                              text: 'Part Orders',
-                            )
-                          ],
-                        )),
-                    body: TabBarView(
-                      children: [
-                        PartsPageView(
-                            allParts: state.allParts,
-                            cubit:
-                                BlocProvider.of<ManageInventoryCubit>(context)),
-                        CheckoutPartPageView(
-                            allParts: state.allParts,
-                            allCheckedOutParts: state.checkedOutParts,
-                            cubit:
-                                BlocProvider.of<ManageInventoryCubit>(context)),
-                        PartOrdersPageView(
-                            allPartOrders: state.allPartOrders,
-                            allParts: state.allParts,
-                            cubit:
-                                BlocProvider.of<ManageInventoryCubit>(context))
-                      ],
-                    )));
+                          Scaffold.of(context).openDrawer();
+                        },
+                        tooltip: MaterialLocalizations.of(context)
+                            .openAppDrawerTooltip,
+                      );
+                    },
+                  ),
+                ],
+              ),
+              body: IndexedStack(
+                index: _selectedIndex,
+                children: _getPages(
+                    state, BlocProvider.of<ManageInventoryCubit>(context)),
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                unselectedItemColor: Colors.grey,
+                selectedItemColor: Colors.black,
+                items: widget.authenticatedUser.viewRights
+                    .where((element) => element != ViewRightsEnum.admin)
+                    .map((right) {
+                  switch (right) {
+                    case ViewRightsEnum.parts:
+                      return const BottomNavigationBarItem(
+                          icon: Icon(Icons.storage), label: 'Inventory');
+                    case ViewRightsEnum.verify:
+                      return const BottomNavigationBarItem(
+                          icon: Icon(Icons.shopping_cart),
+                          label: 'Checked Out Parts');
+                    case ViewRightsEnum.orders:
+                      return const BottomNavigationBarItem(
+                          icon: Icon(Icons.checklist), label: 'Orders');
+                    default:
+                      return const BottomNavigationBarItem(
+                          icon: Text('Unknown'), label: '');
+                  }
+                }).toList(),
+                currentIndex: _selectedIndex,
+                onTap: _onItemTapped,
+              ),
+            );
           },
         ));
   }

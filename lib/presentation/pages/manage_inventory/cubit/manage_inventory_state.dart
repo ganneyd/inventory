@@ -25,6 +25,7 @@ class ManageInventoryState with _$ManageInventoryState {
   factory ManageInventoryState({
     @Default(20) int fetchPartAmount,
     required UserEntity authenticatedUser,
+    @Default(<UserEntity>[]) List<UserEntity> allUsers,
     @Default(<PartEntity>[]) List<PartEntity> editedParts,
     @Default(<PartEntity>[]) List<PartEntity> allParts,
     @Default(<CheckedOutEntity>[]) List<CheckedOutEntity> newlyVerifiedParts,
