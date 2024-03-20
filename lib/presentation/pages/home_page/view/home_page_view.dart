@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/core/util/rank_enum.dart';
+import 'package:inventory_v1/core/util/view_right_enum.dart';
+import 'package:inventory_v1/domain/usecases/authentication/login_usecase.dart';
+import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/home_page/cubit/home_page_cubit.dart';
 import 'package:inventory_v1/presentation/pages/home_page/cubit/home_page_state.dart';
-import 'package:inventory_v1/presentation/pages/home_page/view/mange_inventory_login_dialog.dart';
+import 'package:inventory_v1/presentation/pages/home_page/view/auth_dialog.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
+import 'package:inventory_v1/service_locator.dart';
 
 class HomePageView extends StatelessWidget {
   HomePageView()
@@ -24,12 +29,13 @@ class HomePageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomePageCubit>(
-      create: (_) => HomePageCubit(),
+      create: (_) => HomePageCubit(
+          createUserUsecase: locator<CreateUserUsecase>(),
+          loginUsecase: locator<LoginUsecase>()),
       child: BlocBuilder<HomePageCubit, HomePageState>(
         builder: (context, state) {
           SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-            if (state.addPartStateStatus ==
-                HomePageStateStatus.loggingInFailure) {
+            if (state.status == HomePageStateStatus.loggingInFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
                   duration: Durations.long1,
@@ -40,8 +46,8 @@ class HomePageView extends StatelessWidget {
                   )));
             }
 
-            if (state.addPartStateStatus ==
-                HomePageStateStatus.loggingInSuccess) {
+            if (state.status == HomePageStateStatus.loggingInSuccess &&
+                state.authenticatedUser != null) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.green,
                   duration: const Duration(seconds: 4),
@@ -52,7 +58,37 @@ class HomePageView extends StatelessWidget {
                     ),
                   )));
 
-              Navigator.of(context).pushNamed('/manage_inventory');
+              Navigator.of(context).pushNamed('/manage_inventory',
+                  arguments: state.authenticatedUser);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 4),
+                  content: Center(
+                    child: Center(
+                      child: Text('Failed to get profile'),
+                    ),
+                  )));
+            }
+            if (state.status == HomePageStateStatus.createdUserSuccessfully) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 4),
+                  content: Center(
+                    child: Center(
+                      child: Text('Created user profile ${state.error}'),
+                    ),
+                  )));
+            }
+            if (state.status == HomePageStateStatus.createdUserUnsuccessfully) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 4),
+                  content: Center(
+                    child: Center(
+                      child: Text('Failed to create profile: ${state.error}'),
+                    ),
+                  )));
             }
           });
           return Scaffold(
@@ -86,24 +122,37 @@ class HomePageView extends StatelessWidget {
                                     child: BlocListener<HomePageCubit,
                                         HomePageState>(
                                       listener: (context, state) {
-                                        if (state.addPartStateStatus ==
+                                        if (state.status ==
                                             HomePageStateStatus
                                                 .loggingInSuccess) {
                                           Navigator.pop(
                                               dialogContext); // Close the dialog
                                         }
                                       },
-                                      child: LoginDialog(
-                                        onLogin: (
-                                                {required String user,
-                                                required String password}) =>
-                                            BlocProvider.of<HomePageCubit>(
-                                                    context)
-                                                .login(
-                                                    user: user,
-                                                    password: password),
-                                        key: const Key('home-page-dialog'),
-                                      ),
+                                      child: AuthDialog(
+                                          onSubmit: (
+                                                  {required String firstName,
+                                                  required String lastName,
+                                                  required String password,
+                                                  required RankEnum rankEnum,
+                                                  required List<ViewRightsEnum>
+                                                      viewRights}) =>
+                                              BlocProvider.of<HomePageCubit>(
+                                                      context)
+                                                  .signUpUser(
+                                                      firstName: firstName,
+                                                      lastName: lastName,
+                                                      rankEnum: rankEnum,
+                                                      viewRights: viewRights,
+                                                      password: password),
+                                          onLogin: (
+                                                  {required String username,
+                                                  required String password}) =>
+                                              BlocProvider.of<HomePageCubit>(
+                                                      context)
+                                                  .login(
+                                                      username: username,
+                                                      password: password)),
                                     ),
                                   );
                                 });
