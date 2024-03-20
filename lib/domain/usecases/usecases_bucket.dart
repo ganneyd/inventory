@@ -14,3 +14,4 @@ export 'order/order_usecases_bucket.dart';
 export 'get_part_by_index.dart';
 export 'local_storage/local_storage_bucket.dart';
 export 'get_part_by_filter_usecase.dart';
+export 'authentication/authentication_usecases_bucket.dart';
