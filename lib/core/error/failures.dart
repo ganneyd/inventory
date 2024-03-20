@@ -82,3 +82,8 @@ class IndexOutOfBoundsFailure extends Failure {
       {String errMsg = 'The value was out of the constraint bounds'})
       : super(errorMessage: errMsg);
 }
+
+class AuthenticationFailure extends Failure {
+  const AuthenticationFailure(
+      {super.errorMessage = 'Unhandled auth error message'});
+}
