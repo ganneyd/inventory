@@ -16,10 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$HomePageState {
-  PartEntity? get part => throw _privateConstructorUsedError;
+  UserEntity? get authenticatedUser => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
-  HomePageStateStatus get addPartStateStatus =>
-      throw _privateConstructorUsedError;
+  HomePageStateStatus get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $HomePageStateCopyWith<HomePageState> get copyWith =>
@@ -33,9 +32,9 @@ abstract class $HomePageStateCopyWith<$Res> {
       _$HomePageStateCopyWithImpl<$Res, HomePageState>;
   @useResult
   $Res call(
-      {PartEntity? part,
+      {UserEntity? authenticatedUser,
       String? error,
-      HomePageStateStatus addPartStateStatus});
+      HomePageStateStatus status});
 }
 
 /// @nodoc
@@ -51,22 +50,22 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? part = freezed,
+    Object? authenticatedUser = freezed,
     Object? error = freezed,
-    Object? addPartStateStatus = null,
+    Object? status = null,
   }) {
     return _then(_value.copyWith(
-      part: freezed == part
-          ? _value.part
-          : part // ignore: cast_nullable_to_non_nullable
-              as PartEntity?,
+      authenticatedUser: freezed == authenticatedUser
+          ? _value.authenticatedUser
+          : authenticatedUser // ignore: cast_nullable_to_non_nullable
+              as UserEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
-      addPartStateStatus: null == addPartStateStatus
-          ? _value.addPartStateStatus
-          : addPartStateStatus // ignore: cast_nullable_to_non_nullable
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as HomePageStateStatus,
     ) as $Val);
   }
@@ -81,9 +80,9 @@ abstract class _$$HomePageStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {PartEntity? part,
+      {UserEntity? authenticatedUser,
       String? error,
-      HomePageStateStatus addPartStateStatus});
+      HomePageStateStatus status});
 }
 
 /// @nodoc
@@ -97,22 +96,22 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? part = freezed,
+    Object? authenticatedUser = freezed,
     Object? error = freezed,
-    Object? addPartStateStatus = null,
+    Object? status = null,
   }) {
     return _then(_$HomePageStateImpl(
-      part: freezed == part
-          ? _value.part
-          : part // ignore: cast_nullable_to_non_nullable
-              as PartEntity?,
+      authenticatedUser: freezed == authenticatedUser
+          ? _value.authenticatedUser
+          : authenticatedUser // ignore: cast_nullable_to_non_nullable
+              as UserEntity?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
-      addPartStateStatus: null == addPartStateStatus
-          ? _value.addPartStateStatus
-          : addPartStateStatus // ignore: cast_nullable_to_non_nullable
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as HomePageStateStatus,
     ));
   }
@@ -122,21 +121,21 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
 
 class _$HomePageStateImpl implements _HomePageState {
   _$HomePageStateImpl(
-      {this.part,
+      {this.authenticatedUser,
       this.error,
-      this.addPartStateStatus = HomePageStateStatus.loading});
+      this.status = HomePageStateStatus.loading});
 
   @override
-  final PartEntity? part;
+  final UserEntity? authenticatedUser;
   @override
   final String? error;
   @override
   @JsonKey()
-  final HomePageStateStatus addPartStateStatus;
+  final HomePageStateStatus status;
 
   @override
   String toString() {
-    return 'HomePageState(part: $part, error: $error, addPartStateStatus: $addPartStateStatus)';
+    return 'HomePageState(authenticatedUser: $authenticatedUser, error: $error, status: $status)';
   }
 
   @override
@@ -144,14 +143,15 @@ class _$HomePageStateImpl implements _HomePageState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$HomePageStateImpl &&
-            (identical(other.part, part) || other.part == part) &&
+            (identical(other.authenticatedUser, authenticatedUser) ||
+                other.authenticatedUser == authenticatedUser) &&
             (identical(other.error, error) || other.error == error) &&
-            (identical(other.addPartStateStatus, addPartStateStatus) ||
-                other.addPartStateStatus == addPartStateStatus));
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, part, error, addPartStateStatus);
+  int get hashCode =>
+      Object.hash(runtimeType, authenticatedUser, error, status);
 
   @JsonKey(ignore: true)
   @override
@@ -162,16 +162,16 @@ class _$HomePageStateImpl implements _HomePageState {
 
 abstract class _HomePageState implements HomePageState {
   factory _HomePageState(
-      {final PartEntity? part,
+      {final UserEntity? authenticatedUser,
       final String? error,
-      final HomePageStateStatus addPartStateStatus}) = _$HomePageStateImpl;
+      final HomePageStateStatus status}) = _$HomePageStateImpl;
 
   @override
-  PartEntity? get part;
+  UserEntity? get authenticatedUser;
   @override
   String? get error;
   @override
-  HomePageStateStatus get addPartStateStatus;
+  HomePageStateStatus get status;
   @override
   @JsonKey(ignore: true)
   _$$HomePageStateImplCopyWith<_$HomePageStateImpl> get copyWith =>
