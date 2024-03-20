@@ -1,5 +1,6 @@
 import 'package:inventory_v1/core/util/rank_enum.dart';
 import 'package:inventory_v1/core/util/view_right_enum.dart';
+import 'package:inventory_v1/data/models/user/user_model.dart';
 
 class UserEntity {
   UserEntity(
@@ -43,6 +44,7 @@ extension UserEntityExtension on UserEntity {
     String? lastName,
     RankEnum? rank,
     String? username,
+    String? password,
     List<ViewRightsEnum>? viewRights,
   }) {
     return UserEntity(
@@ -50,7 +52,17 @@ extension UserEntityExtension on UserEntity {
         lastName: lastName ?? this.lastName,
         rank: rank ?? this.rank,
         username: username ?? this.username,
-        password: password,
+        password: password ?? this.password,
         viewRights: viewRights ?? this.viewRights);
+  }
+
+  UserModel toModel() {
+    return UserModel(
+        firstNameModel: firstName,
+        lastNameModel: lastName,
+        rankModel: rank,
+        usernameModel: username,
+        passwordModel: password,
+        viewRightsList: viewRights);
   }
 }
