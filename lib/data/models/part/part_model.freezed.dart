@@ -324,49 +324,6 @@ class _$PartModelImpl implements _PartModel {
     return 'PartModel(index: $index, name: $name, nsn: $nsn, partNumber: $partNumber, location: $location, quantity: $quantity, requisitionPoint: $requisitionPoint, requisitionQuantity: $requisitionQuantity, serialNumber: $serialNumber, unitOfIssue: $unitOfIssue, checksum: $checksum, isDiscontinued: $isDiscontinued)';
   }
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PartModelImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.nsn, nsn) || other.nsn == nsn) &&
-            (identical(other.partNumber, partNumber) ||
-                other.partNumber == partNumber) &&
-            (identical(other.location, location) ||
-                other.location == location) &&
-            (identical(other.quantity, quantity) ||
-                other.quantity == quantity) &&
-            (identical(other.requisitionPoint, requisitionPoint) ||
-                other.requisitionPoint == requisitionPoint) &&
-            (identical(other.requisitionQuantity, requisitionQuantity) ||
-                other.requisitionQuantity == requisitionQuantity) &&
-            (identical(other.serialNumber, serialNumber) ||
-                other.serialNumber == serialNumber) &&
-            (identical(other.unitOfIssue, unitOfIssue) ||
-                other.unitOfIssue == unitOfIssue) &&
-            (identical(other.checksum, checksum) ||
-                other.checksum == checksum) &&
-            (identical(other.isDiscontinued, isDiscontinued) ||
-                other.isDiscontinued == isDiscontinued));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      name,
-      nsn,
-      partNumber,
-      location,
-      quantity,
-      requisitionPoint,
-      requisitionQuantity,
-      serialNumber,
-      unitOfIssue,
-      checksum,
-      isDiscontinued);
-
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
