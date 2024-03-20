@@ -2,18 +2,24 @@ import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:inventory_v1/core/util/main_section_enum.dart';
+import 'package:inventory_v1/core/util/rank_enum.dart';
 import 'package:inventory_v1/core/util/util.dart';
+import 'package:inventory_v1/core/util/view_right_enum.dart';
 import 'package:inventory_v1/data/models/checked-out/checked_out_model.dart';
 import 'package:inventory_v1/data/models/part/part_model.dart';
 import 'package:inventory_v1/data/models/part_order/part_order_model.dart';
+import 'package:inventory_v1/data/models/user/user_model.dart';
+import 'package:inventory_v1/data/repositories/authentication_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/checked_out_part_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/local_storage_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_order_repository_implementation.dart';
 import 'package:inventory_v1/data/repositories/part_repository_implementation.dart';
+import 'package:inventory_v1/domain/repositories/authentication_repository.dart';
 import 'package:inventory_v1/domain/repositories/checked_out_part_repository.dart';
 import 'package:inventory_v1/domain/repositories/local_storage_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_order_repository.dart';
 import 'package:inventory_v1/domain/repositories/part_repository.dart';
+import 'package:inventory_v1/domain/usecases/authentication/login_usecase.dart';
 import 'package:logging/logging.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 
@@ -21,6 +27,7 @@ import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 const String boxName = 'parts_json';
 const String checkoutPartBox = 'checkout_parts';
 const String partOrdersBox = 'part_orders';
+const String usersBox = 'users';
 final GetIt locator = GetIt.instance;
 Logger serviceLocatorLogger = Logger('service_locator');
 
@@ -39,9 +46,13 @@ Future<void> initHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(PartModelAdapter());
   Hive.registerAdapter(UnitOfIssueAdapter());
-  Hive.registerAdapter(MaintenanceSectionAdapter());
   Hive.registerAdapter(CheckedOutModelAdapter());
   Hive.registerAdapter(OrderModelAdapter());
+  Hive.registerAdapter(MaintenanceSectionAdapter());
+  Hive.registerAdapter(RankEnumAdapter());
+  Hive.registerAdapter(ViewRightsEnumAdapter());
+  Hive.registerAdapter(UserModelAdapter());
+  await Hive.openBox<UserModel>(usersBox);
   await Hive.openBox<OrderModel>(partOrdersBox);
   await Hive.openBox<PartModel>(boxName);
   await Hive.openBox<CheckedOutModel>(checkoutPartBox);
@@ -60,6 +71,11 @@ Future<void> setupLocator() async {
 
   //!Data Layer
   //!Repositories
+  locator.registerLazySingleton<AuthenticationRepository>(
+    () => AuthenticationRepositoryImplementation(
+      localDatasource: Hive.box<UserModel>(usersBox),
+    ),
+  );
   locator.registerLazySingleton<PartRepository>(
       () => PartRepositoryImplementation(Hive.box<PartModel>(boxName)));
   locator.registerLazySingleton<CheckedOutPartRepository>(() =>
@@ -130,6 +146,25 @@ Future<void> setupLocator() async {
 
   locator.registerFactory<ClearDatabaseUsecase>(
       () => ClearDatabaseUsecase(localStorage: locator<LocalStorage>()));
+  //!authentication usecases
+  locator.registerFactory<LoginUsecase>(() => LoginUsecase(
+      authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<CreateUserUsecase>(() => CreateUserUsecase(
+      authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<DeleteUserUsecase>(() => DeleteUserUsecase(
+      authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<ExportUsersUsecase>(() => ExportUsersUsecase(
+      authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<GetUsersUsecase>(() => GetUsersUsecase(
+      authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<UpdatePasswordUsecase>(() => UpdatePasswordUsecase(
+      authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<UpdateUserProfileUsecase>(() =>
+      UpdateUserProfileUsecase(
+          authenticationRepository: locator<AuthenticationRepository>()));
+  locator.registerFactory<UpdateUserViewRightsUsecase>(() =>
+      UpdateUserViewRightsUsecase(
+          authenticationRepository: locator<AuthenticationRepository>()));
   //!Presentation Layer
 //!Pages
 }
