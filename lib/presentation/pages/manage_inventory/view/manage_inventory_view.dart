@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventory_v1/domain/entities/user/user_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
@@ -14,12 +15,14 @@ import 'package:inventory_v1/presentation/widgets/loading_widget.dart';
 import 'package:inventory_v1/service_locator.dart';
 
 class ManageInventory extends StatelessWidget {
-  const ManageInventory() : super(key: const Key('manage-inventory-view'));
-
+  const ManageInventory({required this.authenticatedUser})
+      : super(key: const Key('manage-inventory-view'));
+  final UserEntity authenticatedUser;
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+              authenticatedUser: authenticatedUser,
               fetchPartAmount: 100,
               clearDatabaseUsecase: locator<ClearDatabaseUsecase>(),
               getPartByIndexUsecase: locator<GetPartByIndexUsecase>(),
@@ -84,6 +87,7 @@ class ManageInventory extends StatelessWidget {
                 length: 3,
                 child: Scaffold(
                     drawer: CustomDrawerWidget(
+                        currentUser: state.authenticatedUser,
                         clearDatabase: () =>
                             BlocProvider.of<ManageInventoryCubit>(context)
                                 .clearDatabase(),

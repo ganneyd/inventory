@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_v1/domain/entities/checked-out/cart_check_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
+import 'package:inventory_v1/domain/entities/user/user_entity.dart';
 import 'package:inventory_v1/presentation/pages/add_part/view/add_part_view.dart';
 import 'package:inventory_v1/presentation/pages/checkout/view/checkout_view.dart';
 import 'package:inventory_v1/presentation/pages/edit_part/view/edit_part_view.dart';
@@ -23,7 +24,10 @@ class RouteGenerator {
         final PartEntity partEntity = settings.arguments as PartEntity;
         return getRoute(EditPartView(partEntity: partEntity));
       case '/manage_inventory':
-        return getRoute(const ManageInventory());
+        final UserEntity authenticatedUser = settings.arguments as UserEntity;
+        return getRoute(ManageInventory(
+          authenticatedUser: authenticatedUser,
+        ));
       case '/search_parts':
         final String searchKey = settings.arguments as String;
         return getRoute(SearchResults(

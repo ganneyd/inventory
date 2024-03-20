@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_v1/core/util/rank_enum.dart';
+import 'package:inventory_v1/core/util/view_right_enum.dart';
+import 'package:inventory_v1/domain/entities/user/user_entity.dart';
 import 'package:inventory_v1/presentation/widgets/widget_bucket.dart';
 
 class CustomDrawerWidget extends StatelessWidget {
   CustomDrawerWidget(
       {super.key,
+      required this.currentUser,
       required this.onPressed,
       required this.clearDatabase,
       required this.exportToExcel,
@@ -14,22 +18,40 @@ class CustomDrawerWidget extends StatelessWidget {
   final VoidCallback importFromExcel;
   final VoidCallback exportToExcel;
   final VoidCallback clearDatabase;
+  final UserEntity currentUser;
   @override
   Widget build(BuildContext context) {
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
       children: <Widget>[
-        const DrawerHeader(
-          decoration: BoxDecoration(
+        DrawerHeader(
+          decoration: const BoxDecoration(
             color: Colors.blue,
           ),
-          child: Text(
-            'Settings',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-            ),
+          child: Column(
+            children: [
+              const Text(
+                'Settings',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                      ' ${currentUser.rank.enumToString()} ${currentUser.lastName.toUpperCase()}, ${currentUser.firstName.toUpperCase()}')
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: currentUser.viewRights
+                    .map((e) => Text(e.enumToString()))
+                    .toList(),
+              )
+            ],
           ),
         ),
         CustomSearchBar(

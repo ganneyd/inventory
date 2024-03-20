@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ManageInventoryState {
   int get fetchPartAmount => throw _privateConstructorUsedError;
+  UserEntity get authenticatedUser => throw _privateConstructorUsedError;
   List<PartEntity> get editedParts => throw _privateConstructorUsedError;
   List<PartEntity> get allParts => throw _privateConstructorUsedError;
   List<CheckedOutEntity> get newlyVerifiedParts =>
@@ -42,6 +43,7 @@ abstract class $ManageInventoryStateCopyWith<$Res> {
   @useResult
   $Res call(
       {int fetchPartAmount,
+      UserEntity authenticatedUser,
       List<PartEntity> editedParts,
       List<PartEntity> allParts,
       List<CheckedOutEntity> newlyVerifiedParts,
@@ -67,6 +69,7 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? fetchPartAmount = null,
+    Object? authenticatedUser = null,
     Object? editedParts = null,
     Object? allParts = null,
     Object? newlyVerifiedParts = null,
@@ -81,6 +84,10 @@ class _$ManageInventoryStateCopyWithImpl<$Res,
           ? _value.fetchPartAmount
           : fetchPartAmount // ignore: cast_nullable_to_non_nullable
               as int,
+      authenticatedUser: null == authenticatedUser
+          ? _value.authenticatedUser
+          : authenticatedUser // ignore: cast_nullable_to_non_nullable
+              as UserEntity,
       editedParts: null == editedParts
           ? _value.editedParts
           : editedParts // ignore: cast_nullable_to_non_nullable
@@ -127,6 +134,7 @@ abstract class _$$ManageInventoryStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {int fetchPartAmount,
+      UserEntity authenticatedUser,
       List<PartEntity> editedParts,
       List<PartEntity> allParts,
       List<CheckedOutEntity> newlyVerifiedParts,
@@ -149,6 +157,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? fetchPartAmount = null,
+    Object? authenticatedUser = null,
     Object? editedParts = null,
     Object? allParts = null,
     Object? newlyVerifiedParts = null,
@@ -163,6 +172,10 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
           ? _value.fetchPartAmount
           : fetchPartAmount // ignore: cast_nullable_to_non_nullable
               as int,
+      authenticatedUser: null == authenticatedUser
+          ? _value.authenticatedUser
+          : authenticatedUser // ignore: cast_nullable_to_non_nullable
+              as UserEntity,
       editedParts: null == editedParts
           ? _value._editedParts
           : editedParts // ignore: cast_nullable_to_non_nullable
@@ -201,6 +214,7 @@ class __$$ManageInventoryStateImplCopyWithImpl<$Res>
 class _$ManageInventoryStateImpl implements _ManageInventoryState {
   _$ManageInventoryStateImpl(
       {this.fetchPartAmount = 20,
+      required this.authenticatedUser,
       final List<PartEntity> editedParts = const <PartEntity>[],
       final List<PartEntity> allParts = const <PartEntity>[],
       final List<CheckedOutEntity> newlyVerifiedParts =
@@ -220,6 +234,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   @override
   @JsonKey()
   final int fetchPartAmount;
+  @override
+  final UserEntity authenticatedUser;
   final List<PartEntity> _editedParts;
   @override
   @JsonKey()
@@ -285,7 +301,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 
   @override
   String toString() {
-    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, editedParts: $editedParts, allParts: $allParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, allPartOrders: $allPartOrders, newlyFulfilledPartOrders: $newlyFulfilledPartOrders, error: $error, status: $status)';
+    return 'ManageInventoryState(fetchPartAmount: $fetchPartAmount, authenticatedUser: $authenticatedUser, editedParts: $editedParts, allParts: $allParts, newlyVerifiedParts: $newlyVerifiedParts, checkedOutParts: $checkedOutParts, allPartOrders: $allPartOrders, newlyFulfilledPartOrders: $newlyFulfilledPartOrders, error: $error, status: $status)';
   }
 
   @override
@@ -295,6 +311,8 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
             other is _$ManageInventoryStateImpl &&
             (identical(other.fetchPartAmount, fetchPartAmount) ||
                 other.fetchPartAmount == fetchPartAmount) &&
+            (identical(other.authenticatedUser, authenticatedUser) ||
+                other.authenticatedUser == authenticatedUser) &&
             const DeepCollectionEquality()
                 .equals(other._editedParts, _editedParts) &&
             const DeepCollectionEquality().equals(other._allParts, _allParts) &&
@@ -314,6 +332,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
   int get hashCode => Object.hash(
       runtimeType,
       fetchPartAmount,
+      authenticatedUser,
       const DeepCollectionEquality().hash(_editedParts),
       const DeepCollectionEquality().hash(_allParts),
       const DeepCollectionEquality().hash(_newlyVerifiedParts),
@@ -335,6 +354,7 @@ class _$ManageInventoryStateImpl implements _ManageInventoryState {
 abstract class _ManageInventoryState implements ManageInventoryState {
   factory _ManageInventoryState(
       {final int fetchPartAmount,
+      required final UserEntity authenticatedUser,
       final List<PartEntity> editedParts,
       final List<PartEntity> allParts,
       final List<CheckedOutEntity> newlyVerifiedParts,
@@ -346,6 +366,8 @@ abstract class _ManageInventoryState implements ManageInventoryState {
 
   @override
   int get fetchPartAmount;
+  @override
+  UserEntity get authenticatedUser;
   @override
   List<PartEntity> get editedParts;
   @override

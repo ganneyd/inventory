@@ -5,6 +5,7 @@ import 'package:inventory_v1/core/util/util.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
+import 'package:inventory_v1/domain/entities/user/user_entity.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:logging/logging.dart';
@@ -12,6 +13,7 @@ import 'package:logging/logging.dart';
 class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   ManageInventoryCubit(
       {int fetchPartAmount = 20,
+      required UserEntity authenticatedUser,
       required this.getAllPartsUsecase,
       required this.getUnverifiedCheckoutParts,
       required this.getAllCheckoutParts,
@@ -35,7 +37,9 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         _editPartUsecase = editPartUsecase,
         _deletePartOrderUsecase = deletePartOrderUsecase,
         _discontinuePartUsecase = discontinuePartUsecase,
-        super(ManageInventoryState(fetchPartAmount: fetchPartAmount));
+        super(ManageInventoryState(
+            fetchPartAmount: fetchPartAmount,
+            authenticatedUser: authenticatedUser));
 
   //usecase init
   final GetAllPartsUsecase getAllPartsUsecase;
