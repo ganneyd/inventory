@@ -44,12 +44,7 @@ class HomePageCubit extends Cubit<HomePageState> {
             firstName: firstName,
             lastName: lastName,
             rank: rankEnum,
-            viewRights: [
-              ViewRightsEnum.parts,
-              ViewRightsEnum.orders,
-              ViewRightsEnum.verify,
-              ViewRightsEnum.admin
-            ],
+            viewRights: [ViewRightsEnum.none],
             password: password,
             username: '')));
     createUserResults.fold(
