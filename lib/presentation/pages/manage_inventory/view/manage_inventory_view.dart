@@ -4,9 +4,11 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/util/view_right_enum.dart';
 import 'package:inventory_v1/domain/entities/user/user_entity.dart';
+import 'package:inventory_v1/domain/usecases/authentication/login_usecase.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_cubit.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
+import 'package:inventory_v1/presentation/pages/manage_inventory/view/users/users_view.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/verification/check_out_part_page_view.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/drawer_widget.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/view/order/part_order_view.dart';
@@ -29,10 +31,20 @@ class _ManageInventoryState extends State<ManageInventory> {
 
   List<Widget> _getPages(
           ManageInventoryState state, ManageInventoryCubit cubit) =>
-      widget.authenticatedUser.viewRights
-          .where((element) => element != ViewRightsEnum.admin)
-          .map((right) {
+      widget.authenticatedUser.viewRights.map((right) {
         switch (right) {
+          case ViewRightsEnum.admin:
+            return UsersView(
+              currentUser: state.authenticatedUser,
+              users: state.allUsers,
+              updateViewRights: (user, newRights) =>
+                  cubit.updateUserViewRights(user, newRights),
+              reauthenticateUser: (password) =>
+                  cubit.isUserCredentialsValid(password),
+              deleteUser: (user, password) => cubit.deleteUser(user, password),
+              resetUserPassword: (user, password) =>
+                  cubit.resetUserPassword(user, password),
+            );
           case ViewRightsEnum.parts:
             return PartsPageView(
               allParts: state.allParts,
@@ -66,6 +78,13 @@ class _ManageInventoryState extends State<ManageInventory> {
   Widget build(BuildContext context) {
     return BlocProvider<ManageInventoryCubit>(
         create: (_) => ManageInventoryCubit(
+              loginUsecase: locator<LoginUsecase>(),
+              deleteUserUsecase: locator<DeleteUserUsecase>(),
+              exportUsersUsecase: locator<ExportUsersUsecase>(),
+              updatePasswordUsecase: locator<UpdatePasswordUsecase>(),
+              updateUserViewRightsUsecase:
+                  locator<UpdateUserViewRightsUsecase>(),
+              getUsersUsecase: locator<GetUsersUsecase>(),
               authenticatedUser: widget.authenticatedUser,
               fetchPartAmount: 100,
               clearDatabaseUsecase: locator<ClearDatabaseUsecase>(),
@@ -185,36 +204,48 @@ class _ManageInventoryState extends State<ManageInventory> {
                   ),
                 ],
               ),
-              body: IndexedStack(
-                index: _selectedIndex,
-                children: _getPages(
-                    state, BlocProvider.of<ManageInventoryCubit>(context)),
-              ),
-              bottomNavigationBar: BottomNavigationBar(
-                unselectedItemColor: Colors.grey,
-                selectedItemColor: Colors.black,
-                items: widget.authenticatedUser.viewRights
-                    .where((element) => element != ViewRightsEnum.admin)
-                    .map((right) {
-                  switch (right) {
-                    case ViewRightsEnum.parts:
-                      return const BottomNavigationBarItem(
-                          icon: Icon(Icons.storage), label: 'Inventory');
-                    case ViewRightsEnum.verify:
-                      return const BottomNavigationBarItem(
-                          icon: Icon(Icons.shopping_cart),
-                          label: 'Checked Out Parts');
-                    case ViewRightsEnum.orders:
-                      return const BottomNavigationBarItem(
-                          icon: Icon(Icons.checklist), label: 'Orders');
-                    default:
-                      return const BottomNavigationBarItem(
-                          icon: Text('Unknown'), label: '');
-                  }
-                }).toList(),
-                currentIndex: _selectedIndex,
-                onTap: _onItemTapped,
-              ),
+              body: state.authenticatedUser.viewRights.length < 2 ||
+                      state.authenticatedUser.viewRights
+                          .contains(ViewRightsEnum.none)
+                  ? const Center(
+                      child: Text('You aint got no rights'),
+                    )
+                  : IndexedStack(
+                      index: _selectedIndex,
+                      children: _getPages(state,
+                          BlocProvider.of<ManageInventoryCubit>(context)),
+                    ),
+              bottomNavigationBar: state.authenticatedUser.viewRights.length <
+                          2 ||
+                      state.authenticatedUser.viewRights
+                          .contains(ViewRightsEnum.none)
+                  ? null
+                  : BottomNavigationBar(
+                      unselectedItemColor: Colors.grey,
+                      selectedItemColor: Colors.black,
+                      items: widget.authenticatedUser.viewRights.map((right) {
+                        switch (right) {
+                          case ViewRightsEnum.admin:
+                            return const BottomNavigationBarItem(
+                                icon: Icon(Icons.people), label: 'Users');
+                          case ViewRightsEnum.parts:
+                            return const BottomNavigationBarItem(
+                                icon: Icon(Icons.storage), label: 'Inventory');
+                          case ViewRightsEnum.verify:
+                            return const BottomNavigationBarItem(
+                                icon: Icon(Icons.shopping_cart),
+                                label: 'Checked Out Parts');
+                          case ViewRightsEnum.orders:
+                            return const BottomNavigationBarItem(
+                                icon: Icon(Icons.checklist), label: 'Orders');
+                          default:
+                            return BottomNavigationBarItem(
+                                icon: const Text('Unknown'), label: '$right');
+                        }
+                      }).toList(),
+                      currentIndex: _selectedIndex,
+                      onTap: _onItemTapped,
+                    ),
             );
           },
         ));
