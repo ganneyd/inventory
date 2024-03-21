@@ -35,6 +35,7 @@ class HomePageView extends StatelessWidget {
       child: BlocBuilder<HomePageCubit, HomePageState>(
         builder: (context, state) {
           SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+            ScaffoldMessenger.of(context).clearSnackBars();
             if (state.status == HomePageStateStatus.loggingInFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
@@ -46,31 +47,35 @@ class HomePageView extends StatelessWidget {
                   )));
             }
 
-            if (state.status == HomePageStateStatus.loggingInSuccess &&
-                state.authenticatedUser != null) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 4),
-                  content: Center(
-                    child: Center(
-                      child: Text(
-                          'Successfully logged in, Welcome ${state.error}'),
-                    ),
-                  )));
+            if (state.status == HomePageStateStatus.loggingInSuccess) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              if (state.authenticatedUser != null) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.green,
+                    duration: const Duration(seconds: 4),
+                    content: Center(
+                      child: Center(
+                        child: Text(
+                            'Successfully logged in, Welcome ${state.error}'),
+                      ),
+                    )));
 
-              Navigator.of(context).pushNamed('/manage_inventory',
-                  arguments: state.authenticatedUser);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.red,
-                  duration: Duration(seconds: 4),
-                  content: Center(
-                    child: Center(
-                      child: Text('Failed to get profile'),
-                    ),
-                  )));
+                Navigator.of(context).pushNamed('/manage_inventory',
+                    arguments: state.authenticatedUser);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 4),
+                    content: Center(
+                      child: Center(
+                        child: Text('Failed to get profile'),
+                      ),
+                    )));
+              }
             }
+
             if (state.status == HomePageStateStatus.createdUserSuccessfully) {
+              ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.green,
                   duration: const Duration(seconds: 4),
@@ -81,6 +86,7 @@ class HomePageView extends StatelessWidget {
                   )));
             }
             if (state.status == HomePageStateStatus.createdUserUnsuccessfully) {
+              ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 4),
