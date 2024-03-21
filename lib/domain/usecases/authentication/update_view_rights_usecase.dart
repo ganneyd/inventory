@@ -36,12 +36,12 @@ class UpdateUserViewRightsUsecase
           errMsg: "Cannot remove admin rights from another admin."));
     }
 
-    // If granting admin rights, ensure it's the only right
-    if (params.newViewRights.contains(ViewRightsEnum.admin)) {
-      updatedRights = [ViewRightsEnum.admin];
-      _logger.info(
-          'Granting admin rights to user: ${params.userToUpdate.username}. All other rights removed.');
-    }
+    // // If granting admin rights, ensure it's the only right
+    // if (params.newViewRights.contains(ViewRightsEnum.admin)) {
+    //   updatedRights = [ViewRightsEnum.admin];
+    //   _logger.info(
+    //       'Granting admin rights to user: ${params.userToUpdate.username}. All other rights removed.');
+    // }
 
     // Proceed with updating the user's view rights
     var result = await authenticationRepository
