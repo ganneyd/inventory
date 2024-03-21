@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventory_v1/core/usecases/usecases.dart';
 import 'package:inventory_v1/core/util/util.dart';
+import 'package:inventory_v1/core/util/view_right_enum.dart';
 import 'package:inventory_v1/domain/entities/checked-out/checked_out_entity.dart';
 import 'package:inventory_v1/domain/entities/part/part_entity.dart';
 import 'package:inventory_v1/domain/entities/part_order/order_entity.dart';
 import 'package:inventory_v1/domain/entities/user/user_entity.dart';
+import 'package:inventory_v1/domain/usecases/authentication/login_usecase.dart';
 import 'package:inventory_v1/domain/usecases/usecases_bucket.dart';
 import 'package:inventory_v1/presentation/pages/manage_inventory/cubit/manage_inventory_state.dart';
 import 'package:logging/logging.dart';
@@ -22,14 +24,26 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
       required this.fulfillPartOrdersUsecase,
       required this.createPartOrderUsecase,
       required this.getAllPartOrdersUsecase,
+      required LoginUsecase loginUsecase,
+      required DeleteUserUsecase deleteUserUsecase,
+      required UpdateUserViewRightsUsecase updateUserViewRightsUsecase,
+      required ExportUsersUsecase exportUsersUsecase,
       required ClearDatabaseUsecase clearDatabaseUsecase,
       required GetPartByIndexUsecase getPartByIndexUsecase,
       required ImportFromExcelUsecase importFromExcelUsecase,
       required ExportToExcelUsecase exportToExcelUsecase,
       required EditPartUsecase editPartUsecase,
       required DiscontinuePartUsecase discontinuePartUsecase,
-      required DeletePartOrderUsecase deletePartOrderUsecase})
+      required DeletePartOrderUsecase deletePartOrderUsecase,
+      required UpdatePasswordUsecase updatePasswordUsecase,
+      required GetUsersUsecase getUsersUsecase})
       : _logger = Logger('manage-inv-cubit'),
+        _loginUsecase = loginUsecase,
+        _getUsersUsecase = getUsersUsecase,
+        _deleteUserUsecase = deleteUserUsecase,
+        _updateUserViewRightsUsecase = updateUserViewRightsUsecase,
+        _exportUsersUsecase = exportUsersUsecase,
+        _updatePasswordUsecase = updatePasswordUsecase,
         _clearDatabaseUsecase = clearDatabaseUsecase,
         _getPartByIndexUsecase = getPartByIndexUsecase,
         _importFromExcelUsecase = importFromExcelUsecase,
@@ -57,6 +71,12 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
   final ImportFromExcelUsecase _importFromExcelUsecase;
   final GetPartByIndexUsecase _getPartByIndexUsecase;
   final ClearDatabaseUsecase _clearDatabaseUsecase;
+  final GetUsersUsecase _getUsersUsecase;
+  final UpdatePasswordUsecase _updatePasswordUsecase;
+  final DeleteUserUsecase _deleteUserUsecase;
+  final UpdateUserViewRightsUsecase _updateUserViewRightsUsecase;
+  final ExportUsersUsecase _exportUsersUsecase;
+  final LoginUsecase _loginUsecase;
   //for debugging
   final Logger _logger;
 //initialization method
@@ -65,6 +85,7 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     loadParts();
     loadCheckedOutParts();
     loadPartOrders();
+    loadUsers();
   }
 
   ///Method uses the [GetAllPartsUsecase] to retrieve the parts lazily
@@ -137,6 +158,23 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
     });
   }
 
+  void loadUsers() async {
+    if (state.authenticatedUser.viewRights.contains(ViewRightsEnum.admin)) {
+      var results = await _getUsersUsecase.call(NoParams());
+
+      results.fold(
+          (l) => emit(state.copyWith(
+              status: ManageInventoryStateStatus.fetchedDataUnsuccessfully,
+              error: l.errorMessage)),
+          (r) => emit(state.copyWith(
+              allUsers: r
+                  .where((e) => e.username != state.authenticatedUser.username)
+                  .toList(),
+              error: 'Retrieved users!',
+              status: ManageInventoryStateStatus.fetchedDataSuccessfully)));
+    }
+  }
+
   PartEntity getPart(int index) {
     var results =
         _getPartByIndexUsecase.call(GetPartByIndexParams(index: index));
@@ -155,6 +193,12 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
             checksum: 0,
             isDiscontinued: true),
         (part) => part);
+  }
+
+  Future<bool> isUserCredentialsValid(String password) async {
+    var results = await _loginUsecase.call(LoginParams(
+        username: state.authenticatedUser.username, password: password));
+    return results.fold((l) => false, (r) => true);
   }
 
   List<PartEntity> filterLowQuantityParts(List<PartEntity> allParts) {
@@ -238,6 +282,43 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         checkedOutParts: newCheckoutPartList,
       ));
     }
+  }
+
+  void updateUserViewRights(
+      UserEntity user, List<ViewRightsEnum> newRights) async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
+    var results = await _updateUserViewRightsUsecase.call(
+        UpdateUserViewRightsParams(
+            requestingUser: state.authenticatedUser,
+            userToUpdate: user,
+            newViewRights: newRights));
+
+    results.fold(
+        (l) => emit(state.copyWith(
+            error: l.errorMessage,
+            status: ManageInventoryStateStatus.errorOccurred)), (r) {
+      loadUsers();
+      emit(state.copyWith(
+          error: 'Updated rights for user ${user.username}',
+          status: ManageInventoryStateStatus.operationSuccess));
+    });
+  }
+
+  void resetUserPassword(UserEntity user, String password) async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
+    var results = await _updatePasswordUsecase.call(UpdatePasswordParams(
+        newPassword: 'default',
+        username: state.authenticatedUser.username,
+        currentPassword: password,
+        userToUpdate: user));
+
+    results.fold(
+        (l) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.errorOccurred,
+            error: l.errorMessage)),
+        (r) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.operationSuccess,
+            error: 'Successfully reset password for ${user.username}')));
   }
 
   void verifyPart({required CheckedOutEntity checkedOutEntity}) async {
@@ -430,6 +511,24 @@ class ManageInventoryCubit extends Cubit<ManageInventoryState> {
         status: ManageInventoryStateStatus.operationSuccess,
         allPartOrders: partOrders,
       ));
+    });
+  }
+
+  void deleteUser(UserEntity user, String password) async {
+    emit(state.copyWith(status: ManageInventoryStateStatus.evokingFunction));
+    var results = await _deleteUserUsecase.call(DeleteUserParams(
+        userEntity: user,
+        password: password,
+        username: state.authenticatedUser.username));
+
+    results.fold(
+        (l) => emit(state.copyWith(
+            status: ManageInventoryStateStatus.errorOccurred,
+            error: 'Could not delete user profile: ${l.errorMessage}')), (r) {
+      emit(state.copyWith(
+          status: ManageInventoryStateStatus.operationSuccess,
+          error: 'Successfully deleted user : ${user.username}'));
+      loadUsers();
     });
   }
 
