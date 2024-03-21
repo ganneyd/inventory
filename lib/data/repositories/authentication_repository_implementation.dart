@@ -93,14 +93,23 @@ class AuthenticationRepositoryImplementation
   Future<Either<Failure, void>> updateUser(UserEntity user) async {
     try {
       var userInBox = _localDatasource.get(user.username);
-      _logger.info(
-          'updating user ${userInBox?.firstNameModel} - ${userInBox?.lastNameModel}');
-      _localDatasource.put(user.username, user.toModel());
+      if (userInBox != null) {
+        _logger.info(
+            'updating user ${userInBox.firstNameModel} - ${userInBox.lastNameModel}');
 
-      _logger.info(
-          'updated user ${userInBox?.firstNameModel} - ${userInBox?.lastNameModel} - ${userInBox?.rank.enumToString()} - ${userInBox?.usernameModel} - ${userInBox?.viewRightsList.toString()}');
+        var updatedUser = userInBox.copyWith(
+            firstName: user.firstName,
+            lastName: user.lastName,
+            rank: user.rank,
+            viewRights: user.viewRights);
+        _localDatasource.put(userInBox.username, updatedUser.toModel());
 
-      return const Right<Failure, void>(null);
+        _logger.info(
+            'updated user ${userInBox.firstNameModel} - ${userInBox.lastNameModel} - ${userInBox.rank.enumToString()} - ${userInBox.usernameModel} - ${userInBox.viewRightsList.toString()}');
+
+        return const Right<Failure, void>(null);
+      }
+      return const Left(UpdateDataFailure(errMsg: 'User not found to update'));
     } catch (e) {
       _logger.severe(
           'unable to update user ${user.firstName} - ${user.lastName}, ',
@@ -120,12 +129,13 @@ class AuthenticationRepositoryImplementation
       String username, String password) async {
     try {
       var user = _localDatasource.get(username);
-
+      _logger.finest(
+          'got user profile ${user?.firstNameModel} hashed password is ${user?.passwordModel}');
       if (user != null && _verifyPassword(password, user.passwordModel)) {
         return Right<Failure, UserEntity>(user);
       } else {
         _logger.info(
-            '$username and $password invalid hashpassword is ${_hashPassword(password)} ');
+            '$username and $password invalid hash password is ${_hashPassword(password)} ');
         return const Left<Failure, UserEntity>(AuthenticationFailure(
             errorMessage: 'Invalid credentials, please try again'));
       }
@@ -144,6 +154,7 @@ class AuthenticationRepositoryImplementation
   }
 
   bool _verifyPassword(String providedPassword, String storedHash) {
+    _logger.fine('comparing passwords');
     return BCrypt.checkpw(providedPassword, storedHash);
   }
 
